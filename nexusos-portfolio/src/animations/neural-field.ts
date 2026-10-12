@@ -215,6 +215,7 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     for (const n of nodes) place(n, time);
     ctx.clearRect(0, 0, width, height);
     const max2 = linkDist * linkDist;
+    ctx.lineWidth = 0.7;
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
       const pa = point(a);
@@ -225,30 +226,23 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
         const d2 = dx * dx + dy * dy;
         if (d2 > max2) continue;
         const near = 1 - Math.sqrt(d2) / linkDist;
-        const alpha = near ** 1.55 * Math.min(a.depth, b.depth) * 0.2;
-        if (alpha < 0.012) continue;
+        const flicker = 0.55 + 0.45 * Math.sin(time * 0.22 + (i * 7 + j * 13) * 0.37);
+        const alpha = near ** 1.4 * Math.min(a.depth, b.depth) * flicker * 0.3;
+        if (alpha < 0.004) continue;
         const pb = point(b);
+        ctx.strokeStyle = rgba(colors.link, alpha);
         ctx.beginPath();
         ctx.moveTo(pa.x, pa.y);
         ctx.lineTo(pb.x, pb.y);
-        ctx.lineWidth = 2.2;
-        ctx.strokeStyle = rgba(colors.link, alpha * 0.32);
-        ctx.stroke();
-        ctx.lineWidth = 0.65;
-        ctx.strokeStyle = rgba(colors.link, alpha);
         ctx.stroke();
       }
     }
     for (const n of nodes) {
-      const glow = 0.78 + 0.22 * Math.sin(time * n.glowRate + n.glowPhase);
+      const glow = 0.7 + 0.3 * Math.sin(time * n.glowRate + n.glowPhase);
       const p = point(n);
-      ctx.fillStyle = rgba(colors.node, 0.03 * glow);
+      ctx.fillStyle = rgba(colors.node, (0.12 + 0.3 * n.depth) * glow);
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 2.6 + n.depth, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = rgba(colors.node, (0.1 + 0.18 * n.depth) * glow);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 0.55 + n.depth * 0.7, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 0.6 + n.depth * 0.9, 0, Math.PI * 2);
       ctx.fill();
     }
     if (!withPulses) return;
@@ -262,13 +256,13 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
       const x = pa.x + (pb.x - pa.x) * ease;
       const y = pa.y + (pb.y - pa.y) * ease;
       const fade = Math.sin(Math.PI * p.t);
-      ctx.fillStyle = rgba(colors.pulse, 0.05 * fade);
+      ctx.fillStyle = rgba(colors.pulse, 0.06 * fade);
       ctx.beginPath();
-      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.arc(x, y, 5, 0, Math.PI * 2);
       ctx.fill();
-      ctx.fillStyle = rgba(colors.pulse, 0.5 * fade);
+      ctx.fillStyle = rgba(colors.pulse, 0.42 * fade);
       ctx.beginPath();
-      ctx.arc(x, y, 1.05, 0, Math.PI * 2);
+      ctx.arc(x, y, 1.1, 0, Math.PI * 2);
       ctx.fill();
     }
   };

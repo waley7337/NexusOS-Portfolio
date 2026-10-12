@@ -4,10 +4,6 @@
 .portfolio-main {
   scroll-behavior: smooth;
   outline: none;
-  /* The section glow is wider than the centered column. Size it from the
-     scrollport so it can fade out before the column's edges. */
-  container-type: inline-size;
-  container-name: portfolio-main;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -34,78 +30,6 @@
   height: 100%;
 }
 .scanlines{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);opacity:.35}
-
-/* The product shell paints an opaque chassis that wins over the utility
-   bg-transparent, and its atmosphere vignette plus corner radials fade to
-   nothing before the left and right edges. Keep the same light colours,
-   but let them hold through the viewport instead of masking the sides.
-   The chassis stays transparent so that light is the page, not a gutter. */
-.app-shell-frame > .chassis {
-  background: transparent;
-}
-.app-stage > .atmosphere .atmosphere-vignette,
-.space-vignette {
-  background: none;
-}
-[class*="atmosphere-layer--"] {
-  background: none;
-}
-.space-light--cobalt {
-  background: none;
-}
-.space-light--cyan {
-  background: none;
-}
-.space-light--violet {
-  background: none;
-}
-
-/* Section light. The previous linear gradient began at rgb(37 99 235 / 0.14)
-   on the section's top edge and was only as wide as the content column, so
-   every section opened with a hard horizontal cut. The same colours stay
-   (peak 0.14, then 0.05 — never higher). The layer starts above the section
-   and ends below it, and a mask fades it to transparent before its own box
-   so the blend happens in empty space. This mask is only on the glow; it
-   does not darken the neural field or the atmosphere at the viewport sides. */
-.portfolio-main .reveal-section {
-  overflow: visible;
-  isolation: isolate;
-}
-.portfolio-main .reveal-section > * {
-  position: relative;
-  z-index: 1;
-}
-.portfolio-main .reveal-section::before {
-  z-index: -1;
-  inset: auto;
-  top: -240px;
-  bottom: -240px;
-  left: 50%;
-  right: auto;
-  /* Wider than the centered column, but inset from the scrollport so the
-     layer cannot open a horizontal scrollbar. The mask fades it first. */
-  width: calc(100cqi - 32px);
-  height: auto;
-  translate: -50% 0;
-  background: none;
-  -webkit-mask-image:
-    linear-gradient(to bottom, transparent 0%, black 20%, black 50%, black 80%, transparent 100%),
-    linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to bottom, transparent 0%, black 20%, black 50%, black 80%, transparent 100%),
-    linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
-  mask-composite: intersect;
-  mask-repeat: no-repeat;
-  -webkit-mask-repeat: no-repeat;
-  mask-size: 100% 100%;
-  -webkit-mask-size: 100% 100%;
-}
-@media (prefers-reduced-motion: reduce) {
-  .portfolio-main .reveal-section::before {
-    opacity: 0;
-  }
-}
 
 /* Shared motion. 200ms sits in the 150–250ms range. Only transform and opacity
    travel; reduced motion drops the travel and keeps controls in place. */
@@ -151,15 +75,10 @@
   pointer-events: none;
 }
 @media (hover: hover) and (pointer: fine) {
-  .portfolio-nav-item:hover {
-    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.16), 0 0 18px hsl(var(--primary) / 0.12);
-  }
   .portfolio-main .portfolio-lift:hover {
     transform: translateY(-2px);
-    border-color: hsl(var(--primary) / 0.45);
-    box-shadow:
-      0 0 0 1px hsl(var(--primary) / 0.28),
-      0 12px 28px -18px hsl(var(--primary) / 0.4);
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-lift);
   }
   .app-stage :is(a, button).rounded-btn:active,
   .app-stage .portfolio-press:active {
@@ -177,7 +96,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.16) 50%, transparent 68%);
+  background: linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.045) 50%, transparent 68%);
   transform: translateX(-130%);
   opacity: 0;
   pointer-events: none;
@@ -282,12 +201,11 @@
 .arch-scrim {
   position: absolute;
   inset: 0;
-  background: rgb(2 6 16 / 0.72);
-  backdrop-filter: blur(8px);
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(var(--overlay-blur));
 }
 .arch-inspect[data-lite="true"] .arch-scrim {
   backdrop-filter: none;
-  background: rgb(2 6 16 / 0.55);
 }
 .arch-flight {
   position: absolute;
