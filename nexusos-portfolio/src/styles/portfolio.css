@@ -140,19 +140,19 @@
    The scrim exists only while a diagram is open. */
 .arch-linear {
   position: relative;
-  height: 240px;
+  width: 100%;
+  /* Same ratio as the diagrams. The card is 92% wide, so it sits inside
+     this box with a small even margin and does not stretch the section. */
+  aspect-ratio: 3600 / 2082;
   overflow: hidden;
   touch-action: pan-y;
-}
-@media (min-width: 768px) {
-  .arch-linear { height: 420px; }
 }
 .arch-card {
   position: absolute;
   inset: auto;
   left: 50%;
   top: 50%;
-  width: min(640px, 62%);
+  width: 92%;
   aspect-ratio: 3600 / 2082;
   margin: 0;
   padding: 0;
@@ -175,7 +175,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  pointer-events: none;
+  cursor: pointer;
 }
 .arch-captions { display: grid; }
 .arch-caption {
@@ -205,17 +205,18 @@
   left: 50%;
   top: 50%;
   display: flex;
-  width: min(960px, calc(100vw - 48px));
-  height: min(78vh, 720px);
+  width: min(1680px, calc(100vw - 48px));
+  height: calc(100dvh - 48px);
+  max-height: calc(100dvh - 48px);
   flex-direction: column;
   gap: 12px;
-  padding: 16px;
+  padding: 12px;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-surface);
   background: hsl(var(--surface-1));
   transform: translate(-50%, -50%);
   transform-style: preserve-3d;
-  overflow: auto;
+  overflow: hidden;
 }
 .arch-inspect[data-reduced="true"] .arch-flight {
   animation: arch-fade 200ms var(--ease-premium) both;
@@ -230,6 +231,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-shrink: 0;
+}
+.arch-flight-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: hsl(var(--surface-1));
 }
 .arch-flight-foot p { flex: 1; text-align: center; }
 @media (max-width: 767px) {
@@ -237,20 +245,28 @@
   .arch-flight-foot p { flex: 1 0 100%; order: -1; }
 }
 .arch-zoom {
-  display: grid;
+  display: flex;
   min-height: 0;
-  flex: 1;
-  place-items: center;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   border-radius: 12px;
   background: hsl(var(--surface-0));
   touch-action: none;
 }
 .arch-zoom img {
+  width: auto;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   transform-origin: center;
+}
+.arch-flight-copy {
+  flex: 0 1 auto;
+  max-height: 4.75rem;
+  overflow: auto;
 }
 @media (prefers-reduced-motion: reduce) {
   .arch-caption,

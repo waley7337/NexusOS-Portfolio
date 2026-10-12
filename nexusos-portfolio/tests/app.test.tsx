@@ -1,8 +1,16 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUiStore } from "@/stores/ui";
 import App from "~/App";
 import { DEGREE_PRIVACY_NOTICE } from "~/data/assets";
+import {
+  DEMO_ACCESS_NOTE,
+  companyPortfolioLink,
+  ghostDemoAccount,
+  nexusDemoAccount,
+  nexusLiveApplication,
+} from "~/data/demoAccess";
+import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
 import { SECTIONS } from "~/sections/registry";
@@ -71,21 +79,19 @@ describe("App", () => {
     expect(projects.textContent).not.toMatch(/github\.com\/waley7337\/nexusos/i);
   });
 
-  it("links the live app's sign-in page without implying demo credentials", () => {
+  it("keeps NexusOS sign-in links on /login while the demo section publishes the supplied accounts", () => {
     window.history.replaceState(null, "", "/#nexusos");
     const { container } = render(<App />);
-    const live = [...container.querySelectorAll<HTMLAnchorElement>('a[href*="nexuops"]')];
-    expect(live.length).toBeGreaterThanOrEqual(3);
-    for (const a of live) expect(a.getAttribute("href")).toBe("https://nexuops.com/login");
+    const nexus = screen.getByRole("region", { name: "NexusOS" });
+    const nexusLinks = [...nexus.querySelectorAll<HTMLAnchorElement>('a[href*="nexuops"]')];
+    expect(nexusLinks.length).toBeGreaterThanOrEqual(3);
+    for (const a of nexusLinks) expect(a.getAttribute("href")).toBe("https://nexuops.com/login");
     expect(screen.getByTestId("live-app-link")).toHaveTextContent("Live app · sign in");
-    expect(screen.getByTestId("live-app-note")).toHaveTextContent("No demo account or credentials are provided.");
-    expect(within(screen.getByRole("region", { name: "NexusOS" })).getByRole("link", { name: "Open Demo" })).toHaveAttribute(
-      "href",
-      "https://nexuops.com/login",
-    );
-    expect(container.textContent).not.toMatch(/demo (login|password|user)|password:|test@|nexusos\.com/i);
+    expect(screen.getByTestId("live-app-note")).toHaveTextContent("Opens the sign-in page of the live NexusOS app.");
+    expect(screen.getByTestId("live-app-note")).not.toHaveTextContent("No demo account");
+    expect(within(nexus).getByRole("link", { name: "Open Demo" })).toHaveAttribute("href", "https://nexuops.com/login");
     expect(container.querySelectorAll('input[type="password"]')).toHaveLength(0);
-    expect(screen.queryByRole("button", { name: /copy/i })).not.toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/nexusos\.com|sk-|api[_-]?key|ghp_|AKIA/i);
   });
 
   it("opens a deep link on the requested section inside the shell", () => {
@@ -98,44 +104,107 @@ describe("App", () => {
     spy.mockRestore();
   });
 
-  it("keeps demo access on verified URLs and publishes no credentials", () => {
+  it("shows the supplied demo credentials on the matching cards", async () => {
     window.history.replaceState(null, "", "/#demos");
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText } });
     const { container } = render(<App />);
     const demos = screen.getByRole("region", { name: "Live demos & access" });
     const ghost = otherProjects.find((project) => project.name === "Ghost Protocol");
+    const nexusCard = demos.querySelector<HTMLElement>('[data-demo="NexusOS"]');
+    const ghostCard = demos.querySelector<HTMLElement>('[data-demo="Ghost Protocol"]');
+    expect(nexusCard).not.toBeNull();
+    expect(ghostCard).not.toBeNull();
 
     expect(profile.liveApp.url).toBe("https://nexuops.com/login");
     expect(profile.companyPortfolioId).toBe("el-nagdi-s-portfolio");
+    expect(nexusLiveApplication).toBe("https://nexuops.com");
+    expect(companyPortfolioLink).toBe("https://nexus-os-portfolio-delta.vercel.app/#nexusos");
+    expect(nexusDemoAccount).toEqual({ email: "waleyelnagdi7@gmail.com", password: "COMPANYcomp170106@" });
+    expect(ghostDemoAccount).toEqual({ email: "nagdi9697@gmail.com", password: "COMPcomp170106@" });
     expect(ghost?.demo?.href).toBe("https://ghost-protocol-pi.vercel.app");
+    expect(DEMO_ACCESS_NOTE).toBe(
+      "Demo access credentials are provided above for both NexusOS and Ghost Protocol. Open the corresponding live demo and use the listed email and password to sign in.",
+    );
 
-    expect(within(demos).getByRole("link", { name: "Open NexusOS Demo" })).toHaveAttribute("href", profile.liveApp.url);
-    expect(within(demos).getByRole("link", { name: "Open Ghost Protocol Demo" })).toHaveAttribute("href", ghost?.demo?.href);
-    expect(within(demos).getByRole("link", { name: "GitHub" })).toHaveAttribute(
+    expect(within(nexusCard as HTMLElement).getByRole("heading", { name: "NexusOS — Company Demo Access" })).toBeInTheDocument();
+    expect(nexusCard).toHaveTextContent(nexusos.subtitle);
+    expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-id")).toHaveTextContent("el-nagdi-s-portfolio");
+    expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-id").closest("a")).toBeNull();
+    expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-link")).toHaveAttribute("href", companyPortfolioLink);
+    expect(within(nexusCard as HTMLElement).getByTestId("nexusos-live-application")).toHaveAttribute("href", "https://nexuops.com");
+    expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("href", "https://nexuops.com");
+    expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("target", "_blank");
+    expect(within(nexusCard as HTMLElement).getByTestId("nexusos-demo-email")).toHaveTextContent("waleyelnagdi7@gmail.com");
+    expect(within(nexusCard as HTMLElement).getByTestId("nexusos-demo-password")).toHaveTextContent("COMPANYcomp170106@");
+    expect(nexusCard).not.toHaveTextContent("nagdi9697@gmail.com");
+    expect(nexusCard).not.toHaveTextContent("COMPcomp170106@");
+    expect(nexusCard).not.toHaveTextContent("/login");
+
+    expect(within(ghostCard as HTMLElement).getByRole("heading", { name: "Ghost Protocol — Company Demo Access" })).toBeInTheDocument();
+    expect(ghostCard).toHaveTextContent(ghost!.summary);
+    expect(within(ghostCard as HTMLElement).getByTestId("ghost-live-application")).toHaveAttribute(
+      "href",
+      "https://ghost-protocol-pi.vercel.app",
+    );
+    expect(within(ghostCard as HTMLElement).getByRole("link", { name: "Open Ghost Protocol Demo" })).toHaveAttribute(
+      "href",
+      "https://ghost-protocol-pi.vercel.app",
+    );
+    expect(within(ghostCard as HTMLElement).getByRole("link", { name: "GitHub" })).toHaveAttribute(
       "href",
       "https://github.com/waley7337/Ghost-Protocol",
     );
-
-    const identifier = within(demos).getByTestId("company-portfolio-id");
-    expect(identifier).toHaveTextContent("el-nagdi-s-portfolio");
-    expect(identifier.closest("a")).toBeNull();
-    expect(demos).toHaveTextContent("A public address for this identifier is still unconfirmed");
-    expect(within(demos).getByTestId("nexusos-demo-note")).toHaveTextContent(
-      "Opens the live sign-in page. Demo credentials are not published yet.",
-    );
-    expect(within(demos).getByTestId("nexusos-demo-note")).toHaveTextContent("No demo account or credentials are provided.");
-    expect(within(demos).getByTestId("ghost-demo-note")).toHaveTextContent("Opens the deployed web client.");
+    expect(within(ghostCard as HTMLElement).getByTestId("ghost-demo-email")).toHaveTextContent("nagdi9697@gmail.com");
+    expect(within(ghostCard as HTMLElement).getByTestId("ghost-demo-password")).toHaveTextContent("COMPcomp170106@");
+    expect(ghostCard).not.toHaveTextContent("waleyelnagdi7@gmail.com");
+    expect(ghostCard).not.toHaveTextContent("COMPANYcomp170106@");
+    expect(ghostCard).not.toHaveTextContent("nexuops.com");
     expect(demos).not.toHaveTextContent("Pentest Report Generator");
+
+    expect(screen.getAllByTestId("demo-access-footer")).toHaveLength(1);
+    expect(screen.getByTestId("demo-access-footer")).toHaveTextContent(DEMO_ACCESS_NOTE);
+    expect(container.textContent).not.toMatch(/not published|provided separately|must be requested|No demo account/i);
+    expect(container.textContent).not.toMatch(/nexusos\.com|sk-|api[_-]?key|ghp_|AKIA/i);
+    expect(container.querySelectorAll('input[type="password"], textarea')).toHaveLength(0);
 
     for (const anchor of container.querySelectorAll<HTMLAnchorElement>("a")) {
       expect(anchor.getAttribute("href") ?? "").not.toMatch(/el-nagdi-s-portfolio/i);
     }
-    const nexuops = [...container.querySelectorAll<HTMLAnchorElement>('a[href*="nexuops"]')];
-    expect(nexuops.length).toBeGreaterThanOrEqual(3);
-    for (const anchor of nexuops) expect(anchor.getAttribute("href")).toBe("https://nexuops.com/login");
+    const loginLinks = [...container.querySelectorAll<HTMLAnchorElement>('a[href="https://nexuops.com/login"]')];
+    const liveLinks = [...container.querySelectorAll<HTMLAnchorElement>('a[href="https://nexuops.com"]')];
+    expect(loginLinks.length).toBeGreaterThanOrEqual(3);
+    expect(liveLinks.map((anchor) => anchor.getAttribute("data-testid"))).toEqual([
+      "nexusos-live-application",
+      "nexusos-open-live",
+    ]);
 
-    expect(container.textContent).not.toMatch(/demo (login|password|user)|password:|test@|nexusos\.com/i);
-    expect(container.querySelectorAll("input, textarea")).toHaveLength(0);
-    expect(screen.queryByRole("button", { name: /copy/i })).not.toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/username|e-mail|email address/i);
+    const nexusEmail = within(nexusCard as HTMLElement).getByRole("button", { name: "Copy Email for NexusOS" });
+    const nexusPassword = within(nexusCard as HTMLElement).getByRole("button", { name: "Copy Password for NexusOS" });
+    const ghostEmail = within(ghostCard as HTMLElement).getByRole("button", { name: "Copy Email for Ghost Protocol" });
+    const ghostPassword = within(ghostCard as HTMLElement).getByRole("button", { name: "Copy Password for Ghost Protocol" });
+    for (const button of [nexusEmail, nexusPassword, ghostEmail, ghostPassword]) {
+      expect(button.tagName).toBe("BUTTON");
+      expect(button).not.toBeDisabled();
+    }
+
+    nexusEmail.focus();
+    expect(nexusEmail).toHaveFocus();
+    nexusEmail.click();
+    await waitFor(() => expect(within(nexusCard as HTMLElement).getByTestId("nexusos-copy-email-status")).toHaveTextContent("Copied"));
+    expect(writeText).toHaveBeenCalledWith("waleyelnagdi7@gmail.com");
+
+    ghostPassword.click();
+    await waitFor(() => expect(within(ghostCard as HTMLElement).getByTestId("ghost-copy-password-status")).toHaveTextContent("Copied"));
+    expect(writeText).toHaveBeenLastCalledWith("COMPcomp170106@");
+
+    writeText.mockRejectedValueOnce(new Error("denied"));
+    const exec = vi.fn().mockReturnValue(false);
+    document.execCommand = exec;
+    nexusPassword.click();
+    await waitFor(() =>
+      expect(within(nexusCard as HTMLElement).getByTestId("nexusos-copy-password-status")).toHaveTextContent("Copy failed"),
+    );
+    expect(exec).toHaveBeenCalled();
   });
 });

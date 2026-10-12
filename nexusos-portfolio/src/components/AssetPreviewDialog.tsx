@@ -103,7 +103,7 @@ export function AssetActions({ asset, className }: { asset: Asset; className?: s
           aria-describedby={noticeId}
         >
           <ExternalLink aria-hidden="true" />
-          {asset.kind === "image" ? "Open full resolution" : "View PDF"}
+          {asset.kind === "image" ? "Open in Full Resolution" : "View PDF"}
         </a>
         <a className={buttonVariants({ variant: "secondary" })} href={asset.src} download={filename} aria-describedby={noticeId}>
           <Download aria-hidden="true" />

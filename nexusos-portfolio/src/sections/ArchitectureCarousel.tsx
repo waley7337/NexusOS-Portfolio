@@ -19,6 +19,10 @@ const SLIDE_EASE = "cubic-bezier(0.62, 0.05, 0.9, 0.35)";
 const TRAVEL_MS = 900;
 const MAX_SCALE = 1;
 const MIN_SCALE = 0.5;
+/** Matches `.arch-flight` so the open animation scales to the real viewer. */
+function flightWidth() {
+  return Math.min(1680, window.innerWidth - 48);
+}
 
 function useMedia(query: string) {
   const [matches, setMatches] = useState(() =>
@@ -87,15 +91,26 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0 || inspect !== null) return;
+    if ((e.button ?? 0) !== 0 || inspect !== null) return;
+    // Capturing here retargets the click away from the diagram button, so a
+    // tap never opens the viewer. Capture only after the gesture is a drag.
     movedRef.current = false;
     dragRef.current = { x: e.clientX };
-    e.currentTarget.setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag) return;
-    if (Math.abs(e.clientX - drag.x) > 6) movedRef.current = true;
+    if (Math.abs(e.clientX - drag.x) <= 8) return;
+    movedRef.current = true;
+    const el = e.currentTarget;
+    if (typeof el.setPointerCapture !== "function") return;
+    try {
+      if (typeof el.hasPointerCapture !== "function" || !el.hasPointerCapture(e.pointerId)) {
+        el.setPointerCapture(e.pointerId);
+      }
+    } catch {
+      /* The pointer can already be gone in tests. */
+    }
   };
   const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
@@ -254,7 +269,7 @@ function InspectView({
     const card = cardRef.current;
     if (!card || !canFly || phase !== "from") return;
     const rect = origin?.getBoundingClientRect();
-    const finalW = Math.min(960, window.innerWidth - 48);
+    const finalW = flightWidth();
     const tilt = Number(origin?.dataset.tilt || 18);
     const from = rect
       ? `translate(calc(-50% + ${rect.left + rect.width / 2 - window.innerWidth / 2}px), calc(-50% + ${rect.top + rect.height / 2 - window.innerHeight / 2}px)) rotateY(${Number.isFinite(tilt) ? tilt : 18}deg) scale(${Math.max(0.18, rect.width / finalW)})`
@@ -282,7 +297,7 @@ function InspectView({
       onCloseRef.current();
       return;
     }
-    const finalW = Math.min(960, window.innerWidth - 48);
+    const finalW = flightWidth();
     card.style.transition = `transform ${FLY_MS}ms ${EASE}`;
     const tilt = Number(origin?.dataset.tilt || 18);
     card.style.transform = `translate(calc(-50% + ${rect.left + rect.width / 2 - window.innerWidth / 2}px), calc(-50% + ${rect.top + rect.height / 2 - window.innerHeight / 2}px)) rotateY(${Number.isFinite(tilt) ? tilt : 18}deg) scale(${Math.max(0.18, rect.width / finalW)})`;
@@ -296,6 +311,19 @@ function InspectView({
     card.addEventListener("transitionend", finish, { once: true });
     window.setTimeout(finish, FLY_MS + 50);
   };
+
+  useEffect(() => {
+    const nodes = [document.documentElement, document.body];
+    const main = document.getElementById("main");
+    if (main) nodes.push(main);
+    const previous = nodes.map((el) => el.style.overflow);
+    for (const el of nodes) el.style.overflow = "hidden";
+    return () => {
+      nodes.forEach((el, i) => {
+        el.style.overflow = previous[i] ?? "";
+      });
+    };
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -391,7 +419,7 @@ function InspectView({
 
   return createPortal(
     <div ref={rootRef} className="arch-inspect" data-lite={lite ? "true" : "false"} data-reduced={reduced ? "true" : "false"}>
-      <div className="arch-scrim" onClick={requestClose} />
+      <div className="arch-scrim" data-testid="architecture-lightbox-scrim" onClick={requestClose} />
       <div
         ref={cardRef}
         className="arch-flight"
@@ -425,11 +453,11 @@ function InspectView({
             style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
           />
         </div>
-        <div className="space-y-3">
+        <div className="arch-flight-copy space-y-1">
           <p className="text-sm text-muted-foreground">{diagram.asset.description}</p>
           <p className="text-small text-muted-foreground">{diagram.copy}</p>
-          <AssetActions asset={diagram.asset} />
         </div>
+        <AssetActions asset={diagram.asset} className="shrink-0" />
         <div className="arch-flight-foot">
           <button type="button" className={buttonVariants({ variant: "outline", size: "sm" })} onClick={() => onStep(-1)}>
             Previous diagram
