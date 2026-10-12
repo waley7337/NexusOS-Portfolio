@@ -13,7 +13,6 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { Atmosphere } from "@/components/atmosphere";
 import { useUiStore } from "@/stores/ui";
 import { NeuralBackground } from "~/animations/NeuralBackground";
-import { CursorTail } from "~/components/CursorTail";
 import { PortfolioNav, MobileNav } from "~/components/PortfolioNav";
 import { useActiveSection } from "~/components/useActiveSection";
 import { SECTIONS } from "~/sections/registry";
@@ -90,7 +89,6 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
       {/* Full stage, not the content column: a column-sized layer stops the
           network on a vertical edge beside the nav. */}
       <NeuralBackground />
-      <CursorTail />
       <div className="app-shell-frame">
         <div className="chassis h-full overflow-hidden bg-transparent">
           <PortfolioNav active={active} onNavigate={goTo} onReplayIntro={onReplayIntro} />
