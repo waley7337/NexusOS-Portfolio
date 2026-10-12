@@ -63,18 +63,18 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   return (
     <div ref={stageRef} className="app-stage h-dvh overflow-hidden text-foreground" data-testid="portfolio-shell">
       <Atmosphere />
+      {/* Full stage, not the content column: a column-sized layer stops the
+          network on a vertical edge beside the nav. */}
+      <NeuralBackground />
       <div className="app-shell-frame">
         <div className="chassis h-full overflow-hidden bg-transparent">
           <PortfolioNav active={active} onNavigate={goTo} onReplayIntro={onReplayIntro} />
           <div className="chassis-rail hidden md:block" aria-hidden="true" />
           <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
             <MobileNav active={active} onNavigate={goTo} />
-            <div className="relative min-h-0 flex-1">
-              <NeuralBackground />
-              <main ref={mainRef} id="main" className="portfolio-main relative h-full overflow-y-auto" tabIndex={-1}>
-                {children}
-              </main>
-            </div>
+            <main ref={mainRef} id="main" className="portfolio-main relative h-full min-h-0 flex-1 overflow-y-auto" tabIndex={-1}>
+              {children}
+            </main>
           </div>
         </div>
       </div>

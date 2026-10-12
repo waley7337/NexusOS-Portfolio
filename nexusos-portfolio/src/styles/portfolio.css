@@ -12,11 +12,13 @@
 
 /* Ambient network behind the scrolling content (see NeuralBackground).
    isolation contains the scanlines' z-index:6 inside this layer, so it sits
-   above the network but never above the content painted after it. */
+   above the network but never above the content painted after it.
+   It shares the stage with Atmosphere (z-index 0) and stays under the shell. */
 .neural-background {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  z-index: 0;
+  overflow: visible;
   pointer-events: none;
   isolation: isolate;
 }
@@ -28,6 +30,85 @@
   height: 100%;
 }
 .scanlines{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);opacity:.35}
+
+/* The product shell paints an opaque chassis that wins over the utility
+   bg-transparent, and its atmosphere vignette plus corner radials fade to
+   nothing before the left and right edges. Keep the same light colours,
+   but let them hold through the viewport instead of masking the sides.
+   The chassis stays transparent so that light is the page, not a gutter. */
+.app-shell-frame > .chassis {
+  background: transparent;
+}
+.app-stage > .atmosphere .atmosphere-vignette,
+.space-vignette {
+  background: none;
+}
+.app-stage > .atmosphere .atmosphere-layer--cobalt {
+  background: radial-gradient(
+    ellipse 90% 60% at 50% 100%,
+    rgb(37 99 235 / 0.3),
+    rgb(37 99 235 / 0.14) 58%,
+    rgb(37 99 235 / 0.08) 100%
+  );
+}
+.app-stage > .atmosphere .atmosphere-layer--cyan {
+  background: radial-gradient(
+    ellipse 80% 55% at 0% 0%,
+    rgb(56 189 248 / 0.11),
+    rgb(56 189 248 / 0.06) 62%,
+    rgb(56 189 248 / 0.04) 100%
+  );
+}
+.app-stage > .atmosphere .atmosphere-layer--violet {
+  background: radial-gradient(
+    ellipse 75% 50% at 100% 18%,
+    rgb(99 102 241 / 0.09),
+    rgb(99 102 241 / 0.045) 62%,
+    rgb(99 102 241 / 0.03) 100%
+  );
+}
+.space-light--cobalt {
+  background: radial-gradient(
+    ellipse 105% 65% at 50% 112%,
+    rgb(37 99 235 / 0.42),
+    rgb(37 99 235 / 0.18) 56%,
+    rgb(37 99 235 / 0.08) 100%
+  );
+}
+.space-light--cyan {
+  background: radial-gradient(
+    ellipse 80% 60% at 100% 0%,
+    rgb(56 189 248 / 0.17),
+    rgb(56 189 248 / 0.08) 58%,
+    rgb(56 189 248 / 0.04) 100%
+  );
+}
+.space-light--violet {
+  background: radial-gradient(
+    ellipse 70% 50% at 0% 42%,
+    rgb(99 102 241 / 0.08),
+    rgb(99 102 241 / 0.04) 60%,
+    rgb(99 102 241 / 0.03) 100%
+  );
+}
+
+/* Section lights keep their vertical reveal. They no longer fade inward
+   from the left and right edges of the section. */
+.portfolio-main .reveal-section::before {
+  left: 0;
+  right: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(37 99 235 / 0.14),
+    rgb(37 99 235 / 0.05) 48%,
+    transparent
+  );
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-main .reveal-section::before {
+    opacity: 0;
+  }
+}
 
 /* The shell sits on the dark ladder; the body behind the frame matches it
    so overscroll never flashes a lighter colour. */
