@@ -118,7 +118,9 @@
   bottom: -240px;
   left: 50%;
   right: auto;
-  width: 100cqi;
+  /* Wider than the centered column, but inset from the scrollport so the
+     layer cannot open a horizontal scrollbar. The mask fades it first. */
+  width: calc(100cqi - 32px);
   height: auto;
   translate: -50% 0;
   background: linear-gradient(
