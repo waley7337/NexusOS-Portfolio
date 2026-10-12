@@ -86,11 +86,12 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   return (
     <div ref={stageRef} className="app-stage h-dvh overflow-hidden text-foreground" data-testid="portfolio-shell">
       <Atmosphere />
-      {/* Full stage, not the content column: a column-sized layer stops the
-          network on a vertical edge beside the nav. */}
-      <NeuralBackground />
       <div className="app-shell-frame">
         <div className="chassis h-full overflow-hidden bg-transparent">
+          {/* Inside the chassis, not behind it. The shell fill is opaque, so a
+              stage-level canvas never reaches the page. The layer still spans
+              the nav and the workspace. */}
+          <NeuralBackground />
           <PortfolioNav active={active} onNavigate={goTo} onReplayIntro={onReplayIntro} />
           <div className="chassis-rail hidden md:block" aria-hidden="true" />
           <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">

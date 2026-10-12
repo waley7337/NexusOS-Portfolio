@@ -11,14 +11,20 @@
 }
 
 /* Ambient network behind the scrolling content (see NeuralBackground).
-   isolation contains the scanlines' z-index:6 inside this layer, so it sits
-   above the network but never above the content painted after it.
-   It shares the stage with Atmosphere (z-index 0) and stays under the shell. */
+   The chassis fill from globals.css is opaque and covers a stage-level
+   canvas, so this layer is the first child of the chassis. isolation on
+   the chassis keeps z-index:-1 above that fill and under the nav and page.
+   isolation here contains the scanlines' z-index:6 inside the network.
+   Atmosphere stays the globals.css wash; this rule does not repaint it. */
+.app-shell-frame > .chassis {
+  position: relative;
+  isolation: isolate;
+}
 .neural-background {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  overflow: visible;
+  z-index: -1;
+  overflow: hidden;
   pointer-events: none;
   isolation: isolate;
 }

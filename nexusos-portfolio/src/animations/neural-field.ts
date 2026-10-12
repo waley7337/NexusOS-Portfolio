@@ -10,9 +10,9 @@
  *
  * Nodes drift a few pixels around a home point, each with its own phase, so
  * the motion does not travel across the screen. Links fade with distance.
- * One signal pulse starts every 1–3 seconds. Pointer and scroll parallax stay
- * within a few pixels and ease in. prefers-reduced-motion draws one static
- * frame: no drift loop, no pulses, no parallax.
+ * One signal pulse starts every 1–3 seconds. Scroll can shift the field by a
+ * few pixels. The pointer is not tracked. prefers-reduced-motion draws one
+ * static frame: no drift loop, no pulses, no parallax.
  */
 
 export interface NeuralFieldHandle {
@@ -100,8 +100,6 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
   let resizeTimer: ReturnType<typeof setTimeout> | undefined;
   let parallaxX = 0;
   let parallaxY = 0;
-  let pointerX = 0;
-  let pointerY = 0;
   let scrollShift = 0;
   let parallaxBound = false;
   let scroller: HTMLElement | null = null;
@@ -190,9 +188,8 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     time += dt;
     for (const n of nodes) place(n, time);
     const ease = 1 - Math.exp(-dt * 2.2);
-    const targetX = pointerX * 5;
-    const targetY = pointerY * 4 + scrollShift * 4;
-    parallaxX += (targetX - parallaxX) * ease;
+    const targetY = scrollShift * 4;
+    parallaxX += (0 - parallaxX) * ease;
     parallaxY += (targetY - parallaxY) * ease;
     const next: Pulse[] = [];
     for (const p of pulses) {
@@ -289,12 +286,6 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     window.cancelAnimationFrame(raf);
     raf = 0;
   };
-  const onPointer = (e: PointerEvent) => {
-    const w = window.innerWidth || 1;
-    const h = window.innerHeight || 1;
-    pointerX = e.clientX / w - 0.5;
-    pointerY = e.clientY / h - 0.5;
-  };
   const onScroll = () => {
     if (!scroller) return;
     const max = scroller.scrollHeight - scroller.clientHeight;
@@ -306,17 +297,13 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     scroller =
       canvas.closest(".app-stage")?.querySelector<HTMLElement>(".portfolio-main") ??
       document.querySelector<HTMLElement>(".portfolio-main");
-    window.addEventListener("pointermove", onPointer, { passive: true });
     scroller?.addEventListener("scroll", onScroll, { passive: true });
     parallaxBound = true;
   };
   const unbindParallax = () => {
     if (!parallaxBound) return;
-    window.removeEventListener("pointermove", onPointer);
     scroller?.removeEventListener("scroll", onScroll);
     parallaxBound = false;
-    pointerX = 0;
-    pointerY = 0;
     scrollShift = 0;
     parallaxX = 0;
     parallaxY = 0;
