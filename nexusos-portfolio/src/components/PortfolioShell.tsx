@@ -60,6 +60,29 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     window.history.replaceState(null, "", `#${id}`);
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    const scrollToHash = () => {
+      if (cancelled) return;
+      const id = window.location.hash.replace(/^#/, "");
+      if (!SECTIONS.some((section) => section.id === id)) return;
+      document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+    scrollToHash();
+    // Fonts and late image layout shift the inner scroller after the first
+    // paint. Repeat until those settle so a hash lands on its section.
+    const late = window.setTimeout(scrollToHash, 600);
+    window.addEventListener("hashchange", scrollToHash);
+    window.addEventListener("load", scrollToHash);
+    void document.fonts?.ready.then(scrollToHash);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(late);
+      window.removeEventListener("hashchange", scrollToHash);
+      window.removeEventListener("load", scrollToHash);
+    };
+  }, []);
+
   return (
     <div ref={stageRef} className="app-stage h-dvh overflow-hidden text-foreground" data-testid="portfolio-shell">
       <Atmosphere />

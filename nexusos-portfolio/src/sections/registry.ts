@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit } from "lucide-react";
+import { AppWindow, BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit } from "lucide-react";
 
 export interface SectionEntry {
   id: string;
@@ -15,5 +15,6 @@ export const SECTIONS: SectionEntry[] = [
   { id: "cv", label: "CV", icon: FileText },
   { id: "education", label: "Education", icon: GraduationCap },
   { id: "projects", label: "Other projects", icon: BookOpen },
+  { id: "demos", label: "Demo access", icon: AppWindow },
   { id: "contact", label: "Contact", icon: Mail },
 ];

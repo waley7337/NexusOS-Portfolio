@@ -5,6 +5,7 @@ import { LibrarySection } from "~/sections/LibrarySection";
 import { CvSection } from "~/sections/CvSection";
 import { EducationSection } from "~/sections/EducationSection";
 import { ProjectsSection } from "~/sections/ProjectsSection";
+import { DemoAccessSection } from "~/sections/DemoAccessSection";
 import { ContactSection } from "~/sections/ContactSection";
 
 export function Portfolio() {
@@ -17,6 +18,7 @@ export function Portfolio() {
       <CvSection />
       <EducationSection />
       <ProjectsSection />
+      <DemoAccessSection />
       <ContactSection />
     </div>
   );

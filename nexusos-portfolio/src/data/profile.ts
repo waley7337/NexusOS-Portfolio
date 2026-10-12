@@ -21,6 +21,12 @@ export const profile = {
     host: "nexuops.com",
     note: "Opens the sign-in page of the live NexusOS app. No demo account or credentials are provided.",
   },
+  /**
+   * Company portfolio identifier supplied for NexusOS. It is an identifier,
+   * not a URL and not a sign-in name. This repository has no verified public
+   * address for it, so the site shows the text and does not link it.
+   */
+  companyPortfolioId: "el-nagdi-s-portfolio",
 };
 
 export const approach = [
