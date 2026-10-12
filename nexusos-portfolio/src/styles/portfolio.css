@@ -47,53 +47,17 @@
 .space-vignette {
   background: none;
 }
-.app-stage > .atmosphere .atmosphere-layer--cobalt {
-  background: radial-gradient(
-    ellipse 90% 60% at 50% 100%,
-    rgb(37 99 235 / 0.3),
-    rgb(37 99 235 / 0.14) 58%,
-    rgb(37 99 235 / 0.08) 100%
-  );
-}
-.app-stage > .atmosphere .atmosphere-layer--cyan {
-  background: radial-gradient(
-    ellipse 80% 55% at 0% 0%,
-    rgb(56 189 248 / 0.11),
-    rgb(56 189 248 / 0.06) 62%,
-    rgb(56 189 248 / 0.04) 100%
-  );
-}
-.app-stage > .atmosphere .atmosphere-layer--violet {
-  background: radial-gradient(
-    ellipse 75% 50% at 100% 18%,
-    rgb(99 102 241 / 0.09),
-    rgb(99 102 241 / 0.045) 62%,
-    rgb(99 102 241 / 0.03) 100%
-  );
+[class*="atmosphere-layer--"] {
+  background: none;
 }
 .space-light--cobalt {
-  background: radial-gradient(
-    ellipse 105% 65% at 50% 112%,
-    rgb(37 99 235 / 0.42),
-    rgb(37 99 235 / 0.18) 56%,
-    rgb(37 99 235 / 0.08) 100%
-  );
+  background: none;
 }
 .space-light--cyan {
-  background: radial-gradient(
-    ellipse 80% 60% at 100% 0%,
-    rgb(56 189 248 / 0.17),
-    rgb(56 189 248 / 0.08) 58%,
-    rgb(56 189 248 / 0.04) 100%
-  );
+  background: none;
 }
 .space-light--violet {
-  background: radial-gradient(
-    ellipse 70% 50% at 0% 42%,
-    rgb(99 102 241 / 0.08),
-    rgb(99 102 241 / 0.04) 60%,
-    rgb(99 102 241 / 0.03) 100%
-  );
+  background: none;
 }
 
 /* Section light. The previous linear gradient began at rgb(37 99 235 / 0.14)
@@ -123,14 +87,7 @@
   width: calc(100cqi - 32px);
   height: auto;
   translate: -50% 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgb(37 99 235 / 0.05) 20%,
-    rgb(37 99 235 / 0.14) 50%,
-    rgb(37 99 235 / 0.05) 80%,
-    transparent 100%
-  );
+  background: none;
   -webkit-mask-image:
     linear-gradient(to bottom, transparent 0%, black 20%, black 50%, black 80%, transparent 100%),
     linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
