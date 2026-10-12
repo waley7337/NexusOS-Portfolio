@@ -4,6 +4,10 @@
 .portfolio-main {
   scroll-behavior: smooth;
   outline: none;
+  /* The section glow is wider than the centered column. Size it from the
+     scrollport so it can fade out before the column's edges. */
+  container-type: inline-size;
+  container-name: portfolio-main;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -92,17 +96,51 @@
   );
 }
 
-/* Section lights keep their vertical reveal. They no longer fade inward
-   from the left and right edges of the section. */
+/* Section light. The previous linear gradient began at rgb(37 99 235 / 0.14)
+   on the section's top edge and was only as wide as the content column, so
+   every section opened with a hard horizontal cut. The same colours stay
+   (peak 0.14, then 0.05 — never higher). The layer starts above the section
+   and ends below it, and a mask fades it to transparent before its own box
+   so the blend happens in empty space. This mask is only on the glow; it
+   does not darken the neural field or the atmosphere at the viewport sides. */
+.portfolio-main .reveal-section {
+  overflow: visible;
+  isolation: isolate;
+}
+.portfolio-main .reveal-section > * {
+  position: relative;
+  z-index: 1;
+}
 .portfolio-main .reveal-section::before {
-  left: 0;
-  right: 0;
+  z-index: -1;
+  inset: auto;
+  top: -240px;
+  bottom: -240px;
+  left: 50%;
+  right: auto;
+  width: 100cqi;
+  height: auto;
+  translate: -50% 0;
   background: linear-gradient(
     to bottom,
-    rgb(37 99 235 / 0.14),
-    rgb(37 99 235 / 0.05) 48%,
-    transparent
+    transparent 0%,
+    rgb(37 99 235 / 0.05) 20%,
+    rgb(37 99 235 / 0.14) 50%,
+    rgb(37 99 235 / 0.05) 80%,
+    transparent 100%
   );
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 0%, black 20%, black 50%, black 80%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 0%, black 20%, black 50%, black 80%, transparent 100%),
+    linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+  mask-composite: intersect;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
 }
 @media (prefers-reduced-motion: reduce) {
   .portfolio-main .reveal-section::before {
