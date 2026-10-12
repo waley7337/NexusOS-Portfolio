@@ -130,34 +130,31 @@
   }
 }
 
-/* Architecture ring. 3D placement is written from ArchitectureCarousel.
+/* Linear architecture carousel. Card offsets are written inline.
    The scrim exists only while a diagram is open. */
-.arch-scene {
+.arch-linear {
   position: relative;
-  height: 440px;
-  perspective: 1200px;
-  transform-style: preserve-3d;
-  display: grid;
-  place-items: center;
+  height: 240px;
+  overflow: hidden;
   touch-action: pan-y;
 }
-.arch-ring {
-  position: relative;
-  width: min(460px, 64%);
-  aspect-ratio: 3600 / 2082;
-  transform-style: preserve-3d;
-  will-change: transform;
+@media (min-width: 768px) {
+  .arch-linear { height: 420px; }
 }
 .arch-card {
   position: absolute;
-  inset: 0;
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: min(640px, 62%);
+  aspect-ratio: 3600 / 2082;
   margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   overflow: visible;
   cursor: pointer;
-  transform-style: preserve-3d;
+  transform-origin: center center;
 }
 .arch-face {
   display: block;
@@ -181,17 +178,6 @@
   transition: opacity 280ms var(--ease-premium);
 }
 .arch-caption[data-active="true"] { opacity: 1; }
-.arch-swipe { overflow: hidden; touch-action: pan-y; }
-.arch-track { display: flex; }
-.arch-swipe .arch-card {
-  position: relative;
-  inset: auto;
-  flex: 0 0 100%;
-  aspect-ratio: 3600 / 2082;
-  opacity: 1;
-  filter: none;
-  transform: none;
-}
 .arch-inspect {
   position: fixed;
   inset: 0;
@@ -261,7 +247,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .arch-caption,
-  .arch-track,
+  .arch-linear .arch-card,
   .arch-flight { transition: none; animation: none; }
 }
 

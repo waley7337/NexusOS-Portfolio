@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type MutableRefObject, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
@@ -12,7 +12,13 @@ export interface ArchitectureDiagram {
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const FLY_MS = 720;
-const AUTO_DPS = -8;
+/** Index steps start slow and then move quickly, matching the eased slider in the linear-carousel reference. */
+const SLIDE_EASE = "cubic-bezier(0.62, 0.05, 0.9, 0.35)";
+const TRAVEL_MS = 900;
+/** Dwell between index changes. The reference keyframes the index; it does not publish a frame count. */
+const STEP_MS = 3100;
+const MAX_SCALE = 1;
+const MIN_SCALE = 0.5;
 
 function useMedia(query: string) {
   const [matches, setMatches] = useState(() =>
@@ -28,18 +34,12 @@ function useMedia(query: string) {
   return matches;
 }
 
-function norm(deg: number) {
-  return ((deg % 360) + 360) % 360;
-}
-
-function frontOf(rot: number, count: number) {
-  const step = 360 / count;
-  const i = Math.round(-rot / step);
-  return ((i % count) + count) % count;
-}
-
-function closestDelta(from: number, to: number) {
-  return ((((to - from) % 360) + 540) % 360) - 180;
+function wrappedDelta(i: number, index: number, count: number) {
+  let d = i - index;
+  d %= count;
+  if (d > count / 2) d -= count;
+  if (d < -count / 2) d += count;
+  return d;
 }
 
 function clamp(n: number, min: number, max: number) {
@@ -47,193 +47,81 @@ function clamp(n: number, min: number, max: number) {
 }
 
 /**
- * Diagrams on a CSS 3D ring. The front card is the one facing the camera.
+ * Linear carousel. An index slider centres one diagram; the others sit beside
+ * it at the reference minimum scale (50 when the centre is 100). The strip
+ * eases to the next index and wraps. prefers-reduced-motion leaves it still.
  * Full-resolution files load only after a card is opened.
  */
 export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagram[] }) {
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
   const mobile = useMedia("(max-width: 767px)");
   const count = diagrams.length;
-  const stageRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const rotRef = useRef(0);
-  const velRef = useRef(0);
-  const modeRef = useRef<"auto" | "drag" | "coast" | "snap">("auto");
-  const snapTarget = useRef(0);
-  const pausedRef = useRef(false);
   const movedRef = useRef(false);
-  const dragRef = useRef<{ x: number; t: number } | null>(null);
-  const [front, setFront] = useState(0);
-  const [mobileIndex, setMobileIndex] = useState(0);
+  const dragRef = useRef<{ x: number } | null>(null);
+  const placed = useRef<number[] | null>(null);
+  const [index, setIndex] = useState(0);
   const [inspect, setInspect] = useState<number | null>(null);
   const [loaded, setLoaded] = useState<Record<string, boolean>>({});
   const restoreRef = useRef<HTMLButtonElement | null>(null);
-
-  const apply = useCallback(
-    (rot: number) => {
-      const ring = ringRef.current;
-      const stage = stageRef.current;
-      if (!ring || !stage || mobile) return;
-      const step = 360 / count;
-      const radius = Math.min(280, Math.max(180, stage.clientWidth * 0.26));
-      ring.style.transform = `rotateY(${rot}deg)`;
-      for (let i = 0; i < count; i++) {
-        const card = cardRefs.current[i];
-        if (!card) continue;
-        const ang = i * step;
-        const rel = norm(rot + ang);
-        const signed = rel > 180 ? rel - 360 : rel;
-        const facing = Math.cos((signed * Math.PI) / 180);
-        const t = (facing + 1) / 2;
-        // Residual yaw keeps the diagram readable. A full outward face at
-        // ±120° would show the back of the image.
-        const tilt = clamp(signed * 0.42, -48, 48);
-        card.dataset.tilt = tilt.toFixed(2);
-        card.style.transform = `rotateY(${ang}deg) translateZ(${radius}px) rotateY(${(-rot - ang + tilt).toFixed(3)}deg)`;
-        const face = card.querySelector<HTMLElement>(".arch-face");
-        if (face) {
-          const recede = inspect !== null ? 0.45 : 1;
-          face.style.opacity = String((0.32 + 0.68 * t) * recede);
-          face.style.filter = reduced ? "none" : `blur(${((1 - t) * 1.5).toFixed(2)}px)`;
-        }
-        card.style.zIndex = String(10 + Math.round(t * 30));
-        card.style.visibility = inspect === i ? "hidden" : "visible";
-      }
-    },
-    [count, inspect, mobile, reduced],
-  );
+  const deltas = diagrams.map((_, i) => wrappedDelta(i, index, count));
+  const jumps = deltas.map((d, i) => placed.current !== null && Math.abs(d - placed.current[i]) > 1);
 
   useEffect(() => {
-    apply(rotRef.current);
-  }, [apply, front]);
+    placed.current = deltas;
+  });
 
   useEffect(() => {
-    if (reduced || mobile || typeof requestAnimationFrame !== "function") return;
-    let alive = true;
-    let raf = 0;
-    let last = 0;
-    const loop = (now: number) => {
-      if (!alive) return;
-      const dt = Math.min(0.05, last ? (now - last) / 1000 : 0.016);
-      last = now;
-      const mode = modeRef.current;
-      if (mode === "coast") {
-        velRef.current *= Math.exp(-dt * 3.4);
-        rotRef.current += velRef.current * dt;
-        if (Math.abs(velRef.current) < 12) {
-          const step = 360 / count;
-          snapTarget.current = Math.round(rotRef.current / step) * step;
-          modeRef.current = "snap";
-        }
-      } else if (mode === "snap") {
-        const diff = snapTarget.current - rotRef.current;
-        rotRef.current += diff * (1 - Math.exp(-dt * 9));
-        if (Math.abs(diff) < 0.08) {
-          rotRef.current = snapTarget.current;
-          modeRef.current = "auto";
-          velRef.current = 0;
-        }
-      } else if (mode === "auto" && !pausedRef.current && inspect === null) {
-        rotRef.current += AUTO_DPS * dt;
-      }
-      apply(rotRef.current);
-      const next = frontOf(rotRef.current, count);
-      setFront((prev) => (prev === next ? prev : next));
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => {
-      alive = false;
-      cancelAnimationFrame(raf);
-    };
-  }, [apply, count, inspect, mobile, reduced]);
+    if (reduced || inspect !== null) return;
+    const timer = window.setTimeout(() => setIndex((i) => (i + 1) % count), STEP_MS);
+    return () => clearTimeout(timer);
+  }, [reduced, inspect, index, count]);
 
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el || mobile) return;
-    const onWheel = (e: WheelEvent) => {
-      const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
-      if (!horizontal || inspect !== null) return;
-      e.preventDefault();
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      rotRef.current -= delta * 0.18;
-      velRef.current = -delta * 0.6;
-      modeRef.current = "coast";
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [inspect, mobile]);
-
-  const goTo = (index: number) => {
-    const target = -index * (360 / count);
-    if (reduced || mobile || typeof requestAnimationFrame !== "function") {
-      rotRef.current = target;
-      apply(target);
-      setFront(index);
-      return;
-    }
-    snapTarget.current = rotRef.current + closestDelta(rotRef.current, target);
-    modeRef.current = "snap";
-  };
+  const goTo = (next: number) => setIndex(((next % count) + count) % count);
 
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (inspect !== null) return;
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      goTo((front + 1) % count);
+      goTo(index + 1);
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
-      goTo((front - 1 + count) % count);
+      goTo(index - 1);
     }
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (mobile || e.button !== 0 || inspect !== null) return;
+    if (e.button !== 0 || inspect !== null) return;
     movedRef.current = false;
-    dragRef.current = { x: e.clientX, t: performance.now() };
-    modeRef.current = "drag";
+    dragRef.current = { x: e.clientX };
     e.currentTarget.setPointerCapture(e.pointerId);
   };
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
-    if (!drag || modeRef.current !== "drag") return;
-    const dx = e.clientX - drag.x;
-    if (Math.abs(dx) > 5) movedRef.current = true;
-    const dt = Math.max(0.016, (performance.now() - drag.t) / 1000);
-    rotRef.current -= dx * 0.32;
-    velRef.current = (-dx * 0.32) / dt;
-    drag.x = e.clientX;
-    drag.t = performance.now();
-    apply(rotRef.current);
+    if (!drag) return;
+    if (Math.abs(e.clientX - drag.x) > 6) movedRef.current = true;
   };
-  const onPointerUp = () => {
-    if (modeRef.current !== "drag") return;
+  const onPointerUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current;
     dragRef.current = null;
-    modeRef.current = reduced ? "auto" : "coast";
-    if (reduced) {
-      const step = 360 / count;
-      rotRef.current = Math.round(rotRef.current / step) * step;
-      apply(rotRef.current);
-      setFront(frontOf(rotRef.current, count));
-    }
+    if (!drag || !movedRef.current) return;
+    const dx = e.clientX - drag.x;
+    if (dx <= -48) goTo(index + 1);
+    else if (dx >= 48) goTo(index - 1);
   };
 
-  const open = (index: number, el: HTMLButtonElement) => {
+  const open = (i: number, el: HTMLButtonElement) => {
     if (movedRef.current) {
       movedRef.current = false;
       return;
     }
     restoreRef.current = el;
-    setLoaded((prev) => ({ ...prev, [diagrams[index].asset.id]: true }));
-    setInspect(index);
-    pausedRef.current = true;
+    setLoaded((prev) => ({ ...prev, [diagrams[i].asset.id]: true }));
+    setInspect(i);
+    goTo(i);
   };
 
-  const close = () => {
-    setInspect(null);
-    pausedRef.current = false;
-  };
+  const close = () => setInspect(null);
 
   const stepInspect = (dir: number) => {
     if (inspect === null) return;
@@ -245,69 +133,53 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
 
   return (
     <div className="space-y-6">
-      {mobile ? (
-        <MobileRing
-          diagrams={diagrams}
-          reduced={reduced}
-          index={mobileIndex}
-          onIndex={setMobileIndex}
-          onOpen={open}
-          cardRefs={cardRefs}
-        />
-      ) : (
-        <div
-          ref={stageRef}
-          className="arch-scene"
-          data-inspecting={inspect !== null ? "true" : "false"}
-          onKeyDown={onKeyDown}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          onMouseEnter={() => {
-            pausedRef.current = true;
-          }}
-          onMouseLeave={() => {
-            if (inspect === null) pausedRef.current = false;
-          }}
-          onFocusCapture={() => {
-            pausedRef.current = true;
-          }}
-          onBlurCapture={(e) => {
-            if (!e.currentTarget.contains(e.relatedTarget as Node) && inspect === null) pausedRef.current = false;
-          }}
-        >
-          <div ref={ringRef} className="arch-ring">
-            {diagrams.map((diagram, i) => (
-              <button
-                key={diagram.asset.id}
-                ref={(node) => {
-                  cardRefs.current[i] = node;
-                }}
-                type="button"
-                className="arch-card focus-ring"
-                aria-label={`Inspect ${diagram.asset.title}`}
-                aria-current={i === front ? "true" : undefined}
-                onClick={(e) => open(i, e.currentTarget)}
-              >
-                <span className="arch-face">
-                  <img src={diagram.asset.preview ?? diagram.asset.src} alt="" loading="lazy" draggable={false} />
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <div
+        className="arch-linear"
+        data-reduced={reduced ? "true" : "false"}
+        onKeyDown={onKeyDown}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        {diagrams.map((diagram, i) => {
+          const d = deltas[i];
+          const scale = d === 0 ? MAX_SCALE : MIN_SCALE;
+          return (
+            <button
+              key={diagram.asset.id}
+              ref={(node) => {
+                cardRefs.current[i] = node;
+              }}
+              type="button"
+              className="arch-card focus-ring"
+              data-tilt="0"
+              aria-label={`Inspect ${diagram.asset.title}`}
+              aria-current={i === index ? "true" : undefined}
+              onClick={(e) => open(i, e.currentTarget)}
+              style={{
+                transform: `translate(-50%, -50%) translateX(calc(${d} * (92% + 18px))) scale(${scale})`,
+                transition: reduced || jumps[i] ? "none" : `transform ${TRAVEL_MS}ms ${SLIDE_EASE}`,
+                zIndex: d === 0 ? 3 : 1,
+              }}
+            >
+              <span className="arch-face">
+                <img src={diagram.asset.preview ?? diagram.asset.src} alt="" loading="lazy" draggable={false} />
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
       <div className="arch-captions">
         {diagrams.map((diagram, i) => {
-          const active = (mobile ? mobileIndex : front) === i;
+          const active = index === i;
           return (
-          <div key={diagram.asset.id} className="arch-caption" data-active={active ? "true" : "false"} aria-hidden={active ? undefined : true}>
-            <p className="eyebrow">{diagram.label}</p>
-            <h3 className="text-h2">{diagram.asset.title}</h3>
-            <p className="text-body text-muted-foreground">{diagram.copy}</p>
-          </div>
+            <div key={diagram.asset.id} className="arch-caption" data-active={active ? "true" : "false"} aria-hidden={active ? undefined : true}>
+              <p className="eyebrow">{diagram.label}</p>
+              <h3 className="text-h2">{diagram.asset.title}</h3>
+              <p className="text-body text-muted-foreground">{diagram.copy}</p>
+            </div>
           );
         })}
       </div>
@@ -326,98 +198,6 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
           onStep={stepInspect}
         />
       )}
-    </div>
-  );
-}
-
-function MobileRing({
-  diagrams,
-  reduced,
-  index,
-  onIndex,
-  onOpen,
-  cardRefs,
-}: {
-  diagrams: ArchitectureDiagram[];
-  reduced: boolean;
-  index: number;
-  onIndex: (index: number) => void;
-  onOpen: (index: number, el: HTMLButtonElement) => void;
-  cardRefs: MutableRefObject<(HTMLButtonElement | null)[]>;
-}) {
-  const [dragX, setDragX] = useState(0);
-  const [animate, setAnimate] = useState(true);
-  const start = useRef<{ x: number; t: number; moved: boolean } | null>(null);
-  const count = diagrams.length;
-
-  const settle = (dx: number, vx: number) => {
-    let next = index;
-    if (dx < -48 || vx < -0.4) next = Math.min(count - 1, index + 1);
-    else if (dx > 48 || vx > 0.4) next = Math.max(0, index - 1);
-    setAnimate(!reduced);
-    onIndex(next);
-    setDragX(0);
-  };
-
-  return (
-    <div
-      className="arch-swipe"
-      onPointerDown={(e) => {
-        if (e.button !== 0) return;
-        start.current = { x: e.clientX, t: performance.now(), moved: false };
-        setAnimate(false);
-        e.currentTarget.setPointerCapture(e.pointerId);
-      }}
-      onPointerMove={(e) => {
-        if (!start.current) return;
-        const dx = e.clientX - start.current.x;
-        if (Math.abs(dx) > 6) start.current.moved = true;
-        setDragX(dx);
-      }}
-      onPointerUp={(e) => {
-        if (!start.current) return;
-        const dx = e.clientX - start.current.x;
-        const dt = Math.max(16, performance.now() - start.current.t);
-        const moved = start.current.moved;
-        start.current = null;
-        if (!moved) {
-          setDragX(0);
-          return;
-        }
-        settle(dx, dx / dt);
-      }}
-    >
-      <div
-        className="arch-track"
-        style={{
-          transform: `translate3d(calc(${-index * 100}% + ${dragX}px), 0, 0)`,
-          transition: animate ? `transform 220ms ${EASE}` : "none",
-        }}
-      >
-        {diagrams.map((diagram, i) => (
-          <button
-            key={diagram.asset.id}
-            ref={(node) => {
-              cardRefs.current[i] = node;
-            }}
-            type="button"
-            className="arch-card focus-ring"
-            aria-label={`Inspect ${diagram.asset.title}`}
-            aria-current={i === index ? "true" : undefined}
-            onClick={(e) => {
-              if (i !== index) {
-                onIndex(i);
-                return;
-              }
-              onOpen(i, e.currentTarget);
-            }}
-          >
-            <span className="arch-face">
-              <img src={diagram.asset.preview ?? diagram.asset.src} alt="" loading="lazy" draggable={false} />
-            </span>
-          </button>
-        ))}
-      </div>
     </div>
   );
 }
