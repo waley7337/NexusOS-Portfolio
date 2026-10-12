@@ -209,6 +209,7 @@
   background: hsl(var(--surface-1));
   transform: translate(-50%, -50%);
   transform-style: preserve-3d;
+  overflow: auto;
 }
 .arch-inspect[data-reduced="true"] .arch-flight {
   animation: arch-fade 200ms var(--ease-premium) both;

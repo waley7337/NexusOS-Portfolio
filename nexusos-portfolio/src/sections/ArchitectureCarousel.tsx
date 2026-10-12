@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { AssetActions } from "~/components/AssetPreviewDialog";
 import type { Asset } from "~/data/assets";
 
 export interface ArchitectureDiagram {
@@ -15,8 +17,6 @@ const FLY_MS = 720;
 /** Index steps start slow and then move quickly, matching the eased slider in the linear-carousel reference. */
 const SLIDE_EASE = "cubic-bezier(0.62, 0.05, 0.9, 0.35)";
 const TRAVEL_MS = 900;
-/** Dwell between index changes. The reference keyframes the index; it does not publish a frame count. */
-const STEP_MS = 3100;
 const MAX_SCALE = 1;
 const MIN_SCALE = 0.5;
 
@@ -49,8 +49,10 @@ function clamp(n: number, min: number, max: number) {
 /**
  * Linear carousel. An index slider centres one diagram; the others sit beside
  * it at the reference minimum scale (50 when the centre is 100). The strip
- * eases to the next index and wraps. prefers-reduced-motion leaves it still.
- * Full-resolution files load only after a card is opened.
+ * eases to a new index only when commanded — click, drag, arrow keys, or the
+ * previous and next controls — and wraps. prefers-reduced-motion replaces the
+ * travel with an instant change. Full-resolution files load only after a card
+ * is opened.
  */
 export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagram[] }) {
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
@@ -70,12 +72,6 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
   useEffect(() => {
     placed.current = deltas;
   });
-
-  useEffect(() => {
-    if (reduced || inspect !== null) return;
-    const timer = window.setTimeout(() => setIndex((i) => (i + 1) % count), STEP_MS);
-    return () => clearTimeout(timer);
-  }, [reduced, inspect, index, count]);
 
   const goTo = (next: number) => setIndex(((next % count) + count) % count);
 
@@ -132,11 +128,13 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
   };
 
   return (
-    <div className="space-y-6">
+    <div
+      className="grid items-center gap-5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]"
+      onKeyDown={onKeyDown}
+    >
       <div
         className="arch-linear"
         data-reduced={reduced ? "true" : "false"}
-        onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -171,17 +169,37 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
         })}
       </div>
 
-      <div className="arch-captions">
-        {diagrams.map((diagram, i) => {
-          const active = index === i;
-          return (
-            <div key={diagram.asset.id} className="arch-caption" data-active={active ? "true" : "false"} aria-hidden={active ? undefined : true}>
-              <p className="eyebrow">{diagram.label}</p>
-              <h3 className="text-h2">{diagram.asset.title}</h3>
-              <p className="text-body text-muted-foreground">{diagram.copy}</p>
-            </div>
-          );
-        })}
+      <div className="space-y-4">
+        <div className="arch-captions">
+          {diagrams.map((diagram, i) => {
+            const active = index === i;
+            return (
+              <div key={diagram.asset.id} className="arch-caption space-y-2" data-active={active ? "true" : "false"} aria-hidden={active ? undefined : true}>
+                <p className="eyebrow">{diagram.label}</p>
+                <h3 className="text-h2">{diagram.asset.title}</h3>
+                <p className="text-body text-muted-foreground">{diagram.copy}</p>
+              </div>
+            );
+          })}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+            aria-label="Previous architecture diagram"
+            onClick={() => goTo(index - 1)}
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+            aria-label="Next architecture diagram"
+            onClick={() => goTo(index + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {inspect !== null && (
@@ -383,7 +401,10 @@ function InspectView({
         data-phase={phase}
       >
         <div className="arch-flight-bar">
-          <p className="text-h4">{diagram.asset.title}</p>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <p className="text-h4">{diagram.asset.title}</p>
+            <Badge>{diagram.asset.meta}</Badge>
+          </div>
           <button type="button" className={buttonVariants({ variant: "secondary", size: "sm" })} onClick={requestClose}>
             <X aria-hidden="true" />
             Close
@@ -404,11 +425,15 @@ function InspectView({
             style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
           />
         </div>
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">{diagram.asset.description}</p>
+          <p className="text-small text-muted-foreground">{diagram.copy}</p>
+          <AssetActions asset={diagram.asset} />
+        </div>
         <div className="arch-flight-foot">
           <button type="button" className={buttonVariants({ variant: "outline", size: "sm" })} onClick={() => onStep(-1)}>
             Previous diagram
           </button>
-          <p className="text-small text-muted-foreground">{diagram.copy}</p>
           <button type="button" className={buttonVariants({ variant: "outline", size: "sm" })} onClick={() => onStep(1)}>
             Next diagram
           </button>
