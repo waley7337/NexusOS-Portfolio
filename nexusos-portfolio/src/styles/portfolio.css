@@ -150,6 +150,110 @@
   }
 }
 
+/* Shared motion. 200ms sits in the 150–250ms range. Only transform and opacity
+   travel; reduced motion drops the travel and keeps controls in place. */
+@media (prefers-reduced-motion: no-preference) {
+  .portfolio-nav-indicator {
+    transition: transform 200ms var(--ease-premium), opacity 200ms var(--ease-premium);
+  }
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header h2,
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header p,
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header > :last-child:not(:first-child) {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header h2 {
+    animation: portfolio-rise 220ms var(--ease-premium) both;
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header p {
+    animation: portfolio-rise 220ms var(--ease-premium) 70ms both;
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header > :last-child:not(:first-child) {
+    animation: portfolio-rise 220ms var(--ease-premium) 120ms both;
+  }
+  .portfolio-lift {
+    transition: transform 200ms var(--ease-premium), box-shadow 200ms var(--ease-premium), border-color 200ms var(--ease-premium);
+  }
+  .app-stage :is(a, button).rounded-btn,
+  .app-stage .portfolio-press {
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-premium);
+  }
+}
+.portfolio-nav-indicator {
+  position: absolute;
+  z-index: 0;
+  left: 0.75rem;
+  right: 1rem;
+  top: 0;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--primary) / 0.1);
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.22);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .portfolio-nav-item:hover {
+    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.16), 0 0 18px hsl(var(--primary) / 0.12);
+  }
+  .portfolio-main .portfolio-lift:hover {
+    transform: translateY(-2px);
+    border-color: hsl(var(--primary) / 0.45);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.28),
+      0 12px 28px -18px hsl(var(--primary) / 0.4);
+  }
+  .app-stage :is(a, button).rounded-btn:active,
+  .app-stage .portfolio-press:active {
+    transform: scale(0.97);
+  }
+}
+.app-stage :is(a, button).rounded-btn,
+.app-stage .portfolio-press {
+  position: relative;
+  overflow: hidden;
+}
+.app-stage :is(a, button).rounded-btn::after,
+.app-stage .portfolio-press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.16) 50%, transparent 68%);
+  transform: translateX(-130%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .app-stage :is(a, button).rounded-btn:hover::after,
+  .app-stage .portfolio-press:hover::after {
+    opacity: 1;
+    transform: translateX(130%);
+    transition: transform 220ms var(--ease-premium), opacity 220ms var(--ease-premium);
+  }
+}
+@keyframes portfolio-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-nav-indicator,
+  .portfolio-lift,
+  .app-stage :is(a, button).rounded-btn,
+  .app-stage .portfolio-press,
+  .app-stage :is(a, button).rounded-btn::after,
+  .app-stage .portfolio-press::after {
+    transition: none;
+    animation: none;
+  }
+  .portfolio-main .portfolio-lift:hover,
+  .app-stage :is(a, button).rounded-btn:active,
+  .app-stage .portfolio-press:active {
+    transform: none;
+  }
+}
+
 /* The shell sits on the dark ladder; the body behind the frame matches it
    so overscroll never flashes a lighter colour. */
 body { background-color: hsl(var(--surface-0)); }

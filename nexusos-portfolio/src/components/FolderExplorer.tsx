@@ -89,7 +89,7 @@ function FolderTile({ folder, onOpen }: { folder: Folder; onOpen: () => void }) 
       ref={ref}
       type="button"
       onClick={onOpen}
-      className="surface card-lift spotlight focus-edge group relative flex w-full flex-col gap-3 p-4 text-left"
+      className="portfolio-lift surface card-lift spotlight focus-edge group relative flex w-full flex-col gap-3 p-4 text-left"
       data-folder={folder.id}
     >
       <Ticks />

@@ -24,7 +24,7 @@ export function ProjectsSection() {
         {otherProjects.map((project) => (
           <Card
             key={project.name}
-            className={cn("flex flex-col gap-4 p-5", project.prominent && "lg:col-span-2")}
+            className={cn("portfolio-lift flex flex-col gap-4 p-5", project.prominent && "lg:col-span-2")}
             data-project={project.name}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">

@@ -39,7 +39,7 @@ export function Hero() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((s) => (
-          <Card key={s.label} className="relative p-5">
+          <Card key={s.label} className="portfolio-lift relative p-5">
             <Ticks />
             <p className="num font-mono text-[28px] font-semibold leading-none text-foreground">{s.value}</p>
             <p className="text-machine mt-3">{s.label}</p>
