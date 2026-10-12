@@ -37,6 +37,25 @@ describe("App", () => {
     expect(screen.getByRole("link", { name: "+43 676 5119613" })).toHaveAttribute("href", "tel:+436765119613");
   });
 
+  it("lists the verified other projects and no unverified names", () => {
+    window.history.replaceState(null, "", "/#projects");
+    render(<App />);
+    const projects = screen.getByRole("region", { name: "Other projects" });
+    expect(projects).toHaveTextContent("Ghost Protocol");
+    expect(projects).toHaveTextContent("Pentest Report Generator (v1)");
+    expect(projects).toHaveTextContent("In progress");
+    expect(projects).toHaveTextContent("Prototype · local only");
+    const ghost = within(projects).getByRole("link", { name: "Live web app" });
+    expect(ghost).toHaveAttribute("href", "https://ghost-protocol-pi.vercel.app");
+    const repos = within(projects).getAllByRole("link", { name: "GitHub" });
+    expect(repos.map((a) => a.getAttribute("href"))).toEqual([
+      "https://github.com/waley7337/Ghost-Protocol",
+      "https://github.com/waley7337/pentest-report-tool",
+    ]);
+    expect(projects).not.toHaveTextContent(/PermissionGraph|Contract Sentinel|Client Portal/i);
+    expect(projects.textContent).not.toMatch(/github\.com\/waley7337\/nexusos/i);
+  });
+
   it("links the live app's sign-in page without implying demo credentials", () => {
     window.history.replaceState(null, "", "/#nexusos");
     const { container } = render(<App />);

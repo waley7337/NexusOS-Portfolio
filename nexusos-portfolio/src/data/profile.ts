@@ -59,14 +59,3 @@ export const education = {
     years: "2021–2022",
   },
 };
-
-export const otherProjects = [
-  {
-    name: "Pentest Report Generator (v1)",
-    detail: "Python & Streamlit tool that processes Nessus scan files, merges duplicate findings and produces structured PDF reports.",
-  },
-  {
-    name: "Ghost Protocol",
-    detail: "Completed security-oriented project focused on systematic testing, technical documentation and structured problem-solving.",
-  },
-];
