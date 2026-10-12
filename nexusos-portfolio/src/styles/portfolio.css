@@ -211,6 +211,142 @@
   }
 }
 
+/* Architecture ring. 3D placement is written from ArchitectureCarousel.
+   The scrim exists only while a diagram is open. */
+.arch-scene {
+  position: relative;
+  height: 440px;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  display: grid;
+  place-items: center;
+  touch-action: pan-y;
+}
+.arch-ring {
+  position: relative;
+  width: min(460px, 64%);
+  aspect-ratio: 3600 / 2082;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.arch-card {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  cursor: pointer;
+  transform-style: preserve-3d;
+}
+.arch-face {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-surface);
+  background: hsl(var(--surface-2));
+}
+.arch-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.arch-captions { display: grid; }
+.arch-caption {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 280ms var(--ease-premium);
+}
+.arch-caption[data-active="true"] { opacity: 1; }
+.arch-swipe { overflow: hidden; touch-action: pan-y; }
+.arch-track { display: flex; }
+.arch-swipe .arch-card {
+  position: relative;
+  inset: auto;
+  flex: 0 0 100%;
+  aspect-ratio: 3600 / 2082;
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+.arch-inspect {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  perspective: 1400px;
+}
+.arch-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(2 6 16 / 0.72);
+  backdrop-filter: blur(8px);
+}
+.arch-inspect[data-lite="true"] .arch-scrim {
+  backdrop-filter: none;
+  background: rgb(2 6 16 / 0.55);
+}
+.arch-flight {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  width: min(960px, calc(100vw - 48px));
+  height: min(78vh, 720px);
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-surface);
+  background: hsl(var(--surface-1));
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+}
+.arch-inspect[data-reduced="true"] .arch-flight {
+  animation: arch-fade 200ms var(--ease-premium) both;
+}
+@keyframes arch-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.arch-flight-bar,
+.arch-flight-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.arch-flight-foot p { flex: 1; text-align: center; }
+@media (max-width: 767px) {
+  .arch-flight-foot { flex-wrap: wrap; }
+  .arch-flight-foot p { flex: 1 0 100%; order: -1; }
+}
+.arch-zoom {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: hsl(var(--surface-0));
+  touch-action: none;
+}
+.arch-zoom img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arch-caption,
+  .arch-track,
+  .arch-flight { transition: none; animation: none; }
+}
+
 /* The shell sits on the dark ladder; the body behind the frame matches it
    so overscroll never flashes a lighter colour. */
 body { background-color: hsl(var(--surface-0)); }
