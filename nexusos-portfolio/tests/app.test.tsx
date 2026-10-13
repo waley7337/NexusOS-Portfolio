@@ -97,6 +97,8 @@ describe("App", () => {
     expect(preview).not.toBeNull();
     expect(preview).toHaveAttribute("src", cv.preview);
     expect(preview?.getAttribute("src")).toMatch(/\.webp$/);
+    const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
+    expect(css).toMatch(/\.doc-shot \{[^}]*max-width:\s*17rem;/);
     expect(within(cvRegion).getByRole("link", { name: "View PDF" })).toHaveAttribute("href", cv.src);
     expect(within(cvRegion).getByRole("link", { name: "Download" })).toHaveAttribute("download", "waley-el-nagdi-cv-de.pdf");
     expect(screen.getAllByRole("link", { name: "Download" })).toHaveLength(1);

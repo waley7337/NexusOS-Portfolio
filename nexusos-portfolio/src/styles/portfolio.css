@@ -431,17 +431,21 @@
   object-fit: contain;
   cursor: pointer;
 }
-/* One document, same face as an architecture card. 910/1287 is the CV preview. */
+/* One document, same face as an architecture card. 910/1287 is the CV preview.
+   The inline shot stays a page card. Clicking it still opens the full image. */
 .doc-shot {
   display: block;
   width: 100%;
+  max-width: 17rem;
+  min-width: 0;
   margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   aspect-ratio: 910 / 1287;
   cursor: pointer;
-  overflow: visible;
+  overflow: hidden;
+  justify-self: start;
 }
 .doc-shot .arch-face {
   height: 100%;
