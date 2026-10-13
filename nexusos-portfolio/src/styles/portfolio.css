@@ -61,6 +61,18 @@
     transform-origin: 50% 12%;
     animation: spatial-float 920ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
   }
+  .portfolio-section[data-spatial="in"] .workflow-step {
+    transform-origin: 50% 0%;
+    animation: workflow-step-float 560ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
+  }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(1) { animation-delay: 40ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(2) { animation-delay: 80ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(3) { animation-delay: 120ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(4) { animation-delay: 160ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(5) { animation-delay: 200ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(6) { animation-delay: 240ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(7) { animation-delay: 280ms; }
+  .portfolio-section[data-spatial="in"] .workflow-step:nth-child(8) { animation-delay: 320ms; }
   aside .portfolio-nav-item,
   .portfolio-nav-scroll .portfolio-nav-item {
     transform: perspective(800px) translate3d(0, 0, 0);
@@ -70,6 +82,16 @@
   }
   .portfolio-nav-scroll .portfolio-nav-item[aria-current="location"] {
     transform: perspective(700px) translate3d(0, -2px, 16px) scale(1.04);
+  }
+}
+@keyframes workflow-step-float {
+  0% {
+    opacity: 0.78;
+    transform: perspective(1200px) translate3d(0, 24px, -64px) rotateX(7deg) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) translate3d(0, 0, 0) rotateX(0deg) scale(1);
   }
 }
 @keyframes spatial-float {
@@ -334,6 +356,7 @@
   .contact-preview-window,
   .contact-preview-scrim,
   .portfolio-section[data-spatial="in"],
+  .workflow-step,
   aside .portfolio-nav-item,
   .portfolio-nav-scroll .portfolio-nav-item,
   .app-stage :is(a, button).rounded-btn,
@@ -349,6 +372,7 @@
   .contact-note,
   .contact-panel .divide-y > *,
   .portfolio-section[data-spatial="in"],
+  .workflow-step,
   aside .portfolio-nav-item,
   .portfolio-nav-scroll .portfolio-nav-item {
     opacity: 1;

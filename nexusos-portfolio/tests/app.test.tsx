@@ -294,6 +294,27 @@ describe("App", () => {
     expect(ids.indexOf("education")).toBeLessThan(ids.indexOf("nexusos"));
     expect(ids.indexOf("projects")).toBeLessThan(ids.indexOf("demos"));
     expect(ids.indexOf("demos")).toBeLessThan(ids.indexOf("contact"));
+    expect(ids.indexOf("nexusos")).toBeLessThan(ids.indexOf("workflow"));
+    expect(ids.indexOf("workflow")).toBeLessThan(ids.indexOf("architecture"));
+  });
+
+  it("floats the NexusOS workflow with the same spatial motion", async () => {
+    window.history.replaceState(null, "", "/#overview");
+    render(<App />);
+    const workflow = screen.getByRole("region", { name: "NexusOS workflow" });
+    expect(workflow).toHaveTextContent(
+      "NexusOS is developed using an iterative, modular full-stack development workflow designed to maintain clear separation of concerns, scalability, and maintainability.",
+    );
+    expect(within(workflow).getByText("Architecture & Codebase Structure")).toBeInTheDocument();
+    expect(within(workflow).getByText("Deployment & Production")).toBeInTheDocument();
+    expect(workflow).toHaveTextContent("Architecture → Implementation → Integration → Testing → Refinement → Deployment");
+    expect(workflow).toHaveTextContent("React · TypeScript · FastAPI · PostgreSQL · Redis · Git · GitHub · Vercel · Railway · Cloudflare");
+    fireEvent.click(screen.getAllByRole("link", { name: "NexusOS workflow" })[0]);
+    await waitFor(() => expect(workflow.dataset.spatial).toBe("in"));
+    expect(window.location.hash).toBe("#workflow");
+    const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
+    expect(css).toMatch(/@keyframes workflow-step-float \{[\s\S]*rotateX\(7deg\)/);
+    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.workflow-step[\s\S]*transform: none/);
   });
 
   it("floats the contact panel once per visit", async () => {
