@@ -7,7 +7,7 @@ import { Section } from "~/sections/Section";
 
 export function CvSection() {
   return (
-    <Section id="cv" title="CV" subtitle="The original document, unchanged — preview it here, open it, or download it.">
+    <Section id="cv" title="CV" subtitle="The original document, unchanged. Click the preview to inspect it, or download the PDF.">
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
         <DocumentPreview asset={cv} />
         <Card className="h-fit space-y-4 p-5">

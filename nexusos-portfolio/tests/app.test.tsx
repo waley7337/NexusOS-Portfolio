@@ -86,6 +86,42 @@ describe("App", () => {
     expect(screen.getByRole("link", { name: "+43 676 5119613" })).toHaveAttribute("href", "tel:+436765119613");
   });
 
+  it("shows the CV as an image shot and links Ghost Protocol from contact", () => {
+    window.history.replaceState(null, "", "/#cv");
+    render(<App />);
+    const cvRegion = screen.getByRole("region", { name: "CV" });
+    expect(cvRegion.querySelector("object, embed, iframe")).toBeNull();
+    const shot = within(cvRegion).getByRole("button", { name: `Inspect ${cv.title}` });
+    expect(shot).toHaveAttribute("data-preview-guard", "true");
+    const preview = shot.querySelector("img");
+    expect(preview).not.toBeNull();
+    expect(preview).toHaveAttribute("src", cv.preview);
+    expect(preview?.getAttribute("src")).toMatch(/\.webp$/);
+    expect(within(cvRegion).getByRole("link", { name: "View PDF" })).toHaveAttribute("href", cv.src);
+    expect(within(cvRegion).getByRole("link", { name: "Download" })).toHaveAttribute("download", "waley-el-nagdi-cv-de.pdf");
+    expect(screen.getAllByRole("link", { name: "Download" })).toHaveLength(1);
+
+    fireEvent.click(shot);
+    const dialog = screen.getByRole("dialog", { name: cv.title });
+    expect(dialog.querySelector("object, embed, iframe")).toBeNull();
+    expect(within(dialog).getByRole("img", { name: cv.title })).toHaveAttribute("src", cv.preview);
+    expect(within(dialog).getByRole("link", { name: "View PDF" })).toHaveAttribute("href", cv.src);
+    expect(within(dialog).getByRole("link", { name: "Download" })).toHaveAttribute("href", cv.src);
+    fireEvent.click(screen.getByTestId("cv-lightbox-scrim"));
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(shot).toHaveFocus();
+
+    const contact = screen.getByRole("region", { name: "Contact" });
+    const ghost = within(contact).getByRole("link", { name: "Ghost Protocol" });
+    expect(ghost).toHaveAttribute("href", "https://ghost-protocol-pi.vercel.app");
+    expect(ghost).toHaveAttribute("target", "_blank");
+    expect(within(contact).getByRole("link", { name: profile.email })).toHaveAttribute("href", `mailto:${profile.email}`);
+    expect(within(contact).getByRole("link", { name: "+43 676 5119613" })).toHaveAttribute("href", "tel:+436765119613");
+    expect(within(contact).getByRole("link", { name: "github.com/waley7337" })).toHaveAttribute("href", profile.github);
+    expect(within(contact).getByRole("link", { name: "nexuops.com/login" })).toHaveAttribute("href", "https://nexuops.com/login");
+    expect(within(screen.getByRole("region", { name: "Architecture" })).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+  });
+
   it("lists the verified other projects and no unverified names", () => {
     window.history.replaceState(null, "", "/#projects");
     render(<App />);

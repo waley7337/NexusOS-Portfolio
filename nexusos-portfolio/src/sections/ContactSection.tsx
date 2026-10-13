@@ -1,10 +1,13 @@
-import { Github, LogIn, Mail, MapPin, Phone } from "lucide-react";
+import { AppWindow, Github, LogIn, Mail, MapPin, Phone } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Row, RowGroup } from "@/components/ui/structure";
 import { cn } from "@/lib/utils";
 import { profile } from "~/data/profile";
+import { otherProjects } from "~/data/projects";
 import { Section } from "~/sections/Section";
+
+const ghostProtocolHref = otherProjects.find((project) => project.name === "Ghost Protocol")?.demo?.href;
 
 export function ContactSection() {
   return (
@@ -38,6 +41,13 @@ export function ContactSection() {
               </a>
               <p className="text-small text-muted-foreground">{profile.liveApp.note}</p>
             </Row>
+            {ghostProtocolHref && (
+              <Row marker={<AppWindow className="h-4 w-4" />} register="Ghost Protocol">
+                <a className="focus-ring rounded-control text-sm hover:text-primary" href={ghostProtocolHref} target="_blank" rel="noreferrer">
+                  Ghost Protocol
+                </a>
+              </Row>
+            )}
             <Row marker={<MapPin className="h-4 w-4" />} register="Location">
               <p className="text-sm">{profile.location}</p>
               <p className="text-small text-muted-foreground">{profile.availability}</p>
