@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { multiTenantFlow, securityArchitecture, systemArchitecture } from "~/data/assets";
 import { nexusos } from "~/data/nexusos";
@@ -114,28 +114,34 @@ describe("architecture carousel", () => {
     }
   });
 
-  it("offers download and full resolution from the enlarged diagram", () => {
+  it("opens the original image for viewing and does not offer a download", () => {
     render(<ArchitectureSection />);
-    fireEvent.click(screen.getByRole("button", { name: "Inspect System Architecture" }));
+    const card = screen.getByRole("button", { name: "Inspect System Architecture" });
+    expect(card).toHaveAttribute("data-preview-guard", "true");
+    const menu = createEvent.contextMenu(card);
+    fireEvent(card, menu);
+    expect(menu.defaultPrevented).toBe(true);
+    const drag = createEvent.dragStart(card);
+    fireEvent(card, drag);
+    expect(drag.defaultPrevented).toBe(true);
+
+    fireEvent.click(card);
     const dialog = screen.getByRole("dialog", { name: "System Architecture" });
     expect(within(dialog).getByText(systemArchitecture.meta)).toBeInTheDocument();
     expect(within(dialog).getByText(systemArchitecture.description)).toBeInTheDocument();
     expect(within(dialog).getByText(nexusos.architecture.system)).toBeInTheDocument();
     const full = within(dialog).getByRole("link", { name: "Open in Full Resolution" });
-    const download = within(dialog).getByRole("link", { name: "Download" });
     expect(full).toHaveAttribute("href", systemArchitecture.src);
     expect(full).toHaveAttribute("target", "_blank");
     expect(full).toHaveAttribute("rel", "noreferrer");
     expect(full.getAttribute("href")).toMatch(/\.png$/);
-    expect(download).toHaveAttribute("href", systemArchitecture.src);
-    expect(download).toHaveAttribute("download", "system-architecture.png");
-    expect(download).not.toHaveAttribute("target");
+    expect(within(dialog).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+    expect(within(dialog).getByRole("img", { name: "System Architecture" }).closest("[data-preview-guard]")).not.toBeNull();
 
     fireEvent.click(within(dialog).getByRole("button", { name: "Next diagram" }));
     const security = screen.getByRole("dialog", { name: "Security Architecture" });
     expect(within(security).getByText(securityArchitecture.meta)).toBeInTheDocument();
-    expect(within(security).getByRole("link", { name: "Download" })).toHaveAttribute("href", securityArchitecture.src);
-    expect(within(security).getByRole("link", { name: "Download" })).toHaveAttribute("download", "security-architecture.png");
+    expect(within(security).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
     expect(within(security).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute("href", securityArchitecture.src);
 
     fireEvent.click(within(security).getByRole("button", { name: "Next diagram" }));
@@ -143,7 +149,7 @@ describe("architecture carousel", () => {
     expect(within(tenancy).getByText(multiTenantFlow.meta)).toBeInTheDocument();
     expect(within(tenancy).getByText(nexusos.architecture.tenancy)).toBeInTheDocument();
     expect(within(tenancy).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute("href", multiTenantFlow.src);
-    expect(within(tenancy).getByRole("link", { name: "Download" })).toHaveAttribute("download", "multi-tenant-request-flow.png");
+    expect(within(tenancy).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
   });
 
   it("does not publish demo passwords or secrets", () => {

@@ -274,6 +274,18 @@
   .arch-flight { transition: none; animation: none; }
 }
 
+/* Casual copy deterrents. Applied only to protected document previews and
+   architecture screenshots. The rest of the page keeps normal text selection. */
+.preview-guard {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.preview-guard :is(img, object) {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 /* The shell sits on the dark ladder; the body behind the frame matches it
    so overscroll never flashes a lighter colour. */
 body { background-color: hsl(var(--surface-0)); }

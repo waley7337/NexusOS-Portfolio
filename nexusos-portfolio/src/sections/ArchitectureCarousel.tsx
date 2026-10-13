@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { AssetActions } from "~/components/AssetPreviewDialog";
+import { blockPreviewGesture } from "~/components/previewGuard";
 import type { Asset } from "~/data/assets";
 
 export interface ArchitectureDiagram {
@@ -165,10 +166,13 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
                 cardRefs.current[i] = node;
               }}
               type="button"
-              className="arch-card focus-ring"
+              className="arch-card preview-guard focus-ring"
               data-tilt="0"
+              data-preview-guard="true"
               aria-label={`Inspect ${diagram.asset.title}`}
               aria-current={i === index ? "true" : undefined}
+              onContextMenu={blockPreviewGesture}
+              onDragStart={blockPreviewGesture}
               onClick={(e) => open(i, e.currentTarget)}
               style={{
                 transform: `translate(-50%, -50%) translateX(calc(${d} * (92% + 18px))) scale(${scale})`,
@@ -439,7 +443,10 @@ function InspectView({
           </button>
         </div>
         <div
-          className="arch-zoom"
+          className="arch-zoom preview-guard"
+          data-preview-guard="true"
+          onContextMenu={blockPreviewGesture}
+          onDragStart={blockPreviewGesture}
           onPointerDown={onZoomPointerDown}
           onPointerMove={onZoomPointerMove}
           onPointerUp={onZoomPointerUp}

@@ -11,6 +11,7 @@ import { Ticks } from "@/components/ui/structure";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import type { Asset, Folder } from "~/data/assets";
 import { AssetPreviewDialog } from "~/components/AssetPreviewDialog";
+import { blockPreviewGesture, shouldGuardPreview } from "~/components/previewGuard";
 
 export function FolderExplorer({ folders }: { folders: Folder[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -126,7 +127,17 @@ function AssetTile({ asset, onOpen }: { asset: Asset; onOpen: () => void }) {
               src={asset.preview}
               alt=""
               loading="lazy"
-              className={asset.kind === "pdf" ? "h-full w-full object-cover object-top" : "h-full w-full object-cover"}
+              draggable={shouldGuardPreview(asset) ? false : undefined}
+              data-preview-guard={shouldGuardPreview(asset) ? "true" : undefined}
+              onContextMenu={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+              onDragStart={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+              className={
+                asset.kind === "pdf"
+                  ? "preview-guard h-full w-full object-cover object-top"
+                  : shouldGuardPreview(asset)
+                    ? "preview-guard h-full w-full object-cover"
+                    : "h-full w-full object-cover"
+              }
             />
           ) : (
             <div className="flex h-full items-center justify-center">

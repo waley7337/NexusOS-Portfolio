@@ -1,8 +1,8 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { createEvent, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUiStore } from "@/stores/ui";
 import App from "~/App";
-import { DEGREE_PRIVACY_NOTICE } from "~/data/assets";
+import { cv, DEGREE_PRIVACY_NOTICE } from "~/data/assets";
 import {
   DEMO_ACCESS_NOTE,
   companyPortfolioLink,
@@ -43,7 +43,18 @@ describe("App", () => {
     const view = degree.getByRole("link", { name: "View PDF" });
     expect(view).toHaveAttribute("href", "/documents/education/licence-etudes-anglophones-strasbourg-2020.pdf");
     expect(view).toHaveAccessibleDescription(DEGREE_PRIVACY_NOTICE);
-    expect(degree.getByRole("link", { name: "Download" })).toHaveAttribute("download");
+    expect(degree.queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+    const downloads = screen.getAllByRole("link", { name: "Download" });
+    expect(downloads).toHaveLength(1);
+    expect(downloads[0]).toHaveAttribute("href", cv.src);
+    expect(downloads[0]).toHaveAttribute("download", "waley-el-nagdi-cv-de.pdf");
+    const cvPreview = screen.getByTestId("preview-cv-de");
+    expect(cvPreview).toHaveAttribute("data-preview-guard", "true");
+    const menu = createEvent.contextMenu(cvPreview);
+    fireEvent(cvPreview, menu);
+    expect(menu.defaultPrevented).toBe(true);
+    expect(screen.getByText(/self-taught developer/i).closest("[data-preview-guard]")).toBeNull();
+    expect(screen.getByRole("img", { name: "Mission Control — dark" }).closest("[data-preview-guard]")).toBeNull();
     expect(screen.queryByText(/available on request/i)).not.toBeInTheDocument();
     expect(screen.getByTestId("project-status")).toHaveTextContent(
       "actively developed software platform with core modules implemented and further development ongoing.",
