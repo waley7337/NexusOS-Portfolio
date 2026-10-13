@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { createEvent, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUiStore } from "@/stores/ui";
@@ -22,10 +24,24 @@ describe("App", () => {
     useUiStore.setState({ spaceStage: "off", isAuthEntryActive: false });
   });
 
+  it("disables text selection on the page and leaves text fields selectable", () => {
+    const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
+    expect(css).toMatch(/html\s*\{[^}]*-webkit-user-select:\s*none;/);
+    expect(css).toMatch(/html\s*\{[^}]*user-select:\s*none;/);
+    expect(css).toMatch(
+      /html :is\(input, textarea, select, \[contenteditable="true"\]\)\s*\{[^}]*-webkit-user-select:\s*text;[^}]*user-select:\s*text;/s,
+    );
+  });
+
   it("opens on the star-entry door with the NexusOS space field", () => {
     render(<App />);
-    expect(screen.getByTestId("star-entry")).toBeInTheDocument();
+    const door = screen.getByTestId("star-entry");
+    expect(door).toBeInTheDocument();
     expect(screen.getByTestId("space-field")).toHaveAttribute("data-space-stage", "idle");
+    const menu = createEvent.contextMenu(door);
+    fireEvent(door, menu);
+    expect(menu.defaultPrevented).toBe(true);
+    expect(screen.getByRole("button", { name: /enter portfolio/i })).toBeEnabled();
   });
 
   it("deep links skip the intro and render every section", () => {
@@ -53,8 +69,16 @@ describe("App", () => {
     const menu = createEvent.contextMenu(cvPreview);
     fireEvent(cvPreview, menu);
     expect(menu.defaultPrevented).toBe(true);
-    expect(screen.getByText(/self-taught developer/i).closest("[data-preview-guard]")).toBeNull();
-    expect(screen.getByRole("img", { name: "Mission Control — dark" }).closest("[data-preview-guard]")).toBeNull();
+    const bio = screen.getByText(/self-taught developer/i);
+    expect(bio.closest("[data-preview-guard]")).toBeNull();
+    const bioMenu = createEvent.contextMenu(bio);
+    fireEvent(bio, bioMenu);
+    expect(bioMenu.defaultPrevented).toBe(true);
+    const interfaceShot = screen.getByRole("img", { name: "Mission Control — dark" });
+    expect(interfaceShot.closest("[data-preview-guard]")).toBeNull();
+    const shotMenu = createEvent.contextMenu(interfaceShot);
+    fireEvent(interfaceShot, shotMenu);
+    expect(shotMenu.defaultPrevented).toBe(true);
     expect(screen.queryByText(/available on request/i)).not.toBeInTheDocument();
     expect(screen.getByTestId("project-status")).toHaveTextContent(
       "actively developed software platform with core modules implemented and further development ongoing.",

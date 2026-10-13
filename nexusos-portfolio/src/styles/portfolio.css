@@ -274,8 +274,21 @@
   .arch-flight { transition: none; animation: none; }
 }
 
-/* Casual copy deterrents. Applied only to protected document previews and
-   architecture screenshots. The rest of the page keeps normal text selection. */
+/* Selection is off for the whole portfolio, including the intro. A real
+   text field stays selectable (the copy fallback uses a textarea). */
+html {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html :is(input, textarea, select, [contenteditable="true"]) {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Drag deterrents stay on protected document previews and architecture
+   screenshots. Context menu and selection are handled for the whole page. */
 .preview-guard {
   -webkit-user-select: none;
   user-select: none;

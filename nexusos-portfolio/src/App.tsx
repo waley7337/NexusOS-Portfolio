@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SpaceField } from "@/components/space-field";
 import { useUiStore } from "@/stores/ui";
 import { StarEntry } from "~/animations/StarEntry";
 import { PortfolioShell } from "~/components/PortfolioShell";
+import { blockDocumentContextMenu } from "~/components/previewGuard";
 import { Portfolio } from "~/sections/Portfolio";
 
 const ENTERED_KEY = "nexusos-portfolio:entered";
@@ -26,6 +27,11 @@ function shouldShowIntro(): boolean {
 
 export default function App() {
   const [phase, setPhase] = useState<"intro" | "portfolio">(() => (shouldShowIntro() ? "intro" : "portfolio"));
+
+  useEffect(() => {
+    document.addEventListener("contextmenu", blockDocumentContextMenu);
+    return () => document.removeEventListener("contextmenu", blockDocumentContextMenu);
+  }, []);
 
   const enter = () => {
     try {

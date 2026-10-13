@@ -6,12 +6,18 @@ const ARCHITECTURE_IMAGE = /\/images\/(architecture|security|multi-tenancy)\//;
 
 /**
  * Protected document previews (PDFs) and architecture screenshots.
- * Product interface screenshots and ordinary page text stay selectable.
+ * These also block image drag. The context menu and text selection
+ * are disabled for the whole page, not only these assets.
  */
 export function shouldGuardPreview(asset: Pick<Asset, "kind" | "src">): boolean {
   return asset.kind === "pdf" || ARCHITECTURE_IMAGE.test(asset.src);
 }
 
 export function blockPreviewGesture(event: MouseEvent | DragEvent) {
+  event.preventDefault();
+}
+
+/** Closes the browser menu (Save image, copy, and the rest) for this page. */
+export function blockDocumentContextMenu(event: Event) {
   event.preventDefault();
 }
