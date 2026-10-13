@@ -35,7 +35,7 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
       if (!animate) indicator.style.transition = "none";
       indicator.style.opacity = "1";
       indicator.style.height = `${current.offsetHeight}px`;
-      indicator.style.transform = `translate3d(0, ${current.offsetTop}px, 0)`;
+      indicator.style.transform = `perspective(900px) translate3d(0, ${current.offsetTop}px, 10px)`;
       if (!animate) {
         indicator.getBoundingClientRect();
         indicator.style.transition = "";

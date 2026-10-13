@@ -50,85 +50,163 @@
   min-height: 2rem;
 }
 
-/* Contact previews larger once, when the sidebar or mobile tab opens it.
-   It starts back and small, travels forward on translate3d, and rests
-   closer and slightly larger. The pose attribute comes from the nav and
-   from #contact. Reduced motion skips the travel and leaves the panel flat. */
-.contact-stage {
-  overflow: visible;
-  perspective: 1200px;
-  perspective-origin: 50% 36%;
+/* Tab changes float the destination section in space. perspective() is on
+   the element itself so the scroller's overflow does not flatten it.
+   Reduced motion never sets data-spatial. */
+.contact-stage { overflow: visible; }
+.contact-panel-source { cursor: zoom-in; }
+.contact-panel-source :is(a, button) { cursor: pointer; }
+@media (prefers-reduced-motion: no-preference) {
+  .portfolio-section[data-spatial="in"] {
+    transform-origin: 50% 12%;
+    animation: spatial-float 920ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
+  }
+  aside .portfolio-nav-item,
+  .portfolio-nav-scroll .portfolio-nav-item {
+    transform: perspective(800px) translate3d(0, 0, 0);
+  }
+  aside .portfolio-nav-item[aria-current="location"] {
+    transform: perspective(800px) translate3d(0, 0, 22px) scale(1.035);
+  }
+  .portfolio-nav-scroll .portfolio-nav-item[aria-current="location"] {
+    transform: perspective(700px) translate3d(0, -2px, 16px) scale(1.04);
+  }
 }
-.contact-panel {
-  transform-origin: 50% 18%;
+@keyframes spatial-float {
+  0% {
+    transform: perspective(1400px) translate3d(0, 42px, -160px) rotateX(12deg) scale(0.86);
+  }
+  58% {
+    transform: perspective(1400px) translate3d(0, 10px, -48px) rotateX(5deg) scale(0.94);
+  }
+  84% {
+    transform: perspective(1400px) translate3d(0, -4px, 16px) rotateX(-1deg) scale(1.012);
+  }
+  100% {
+    transform: perspective(1400px) translate3d(0, 0, 0) rotateX(0deg) scale(1);
+  }
+}
+
+/* Contact opens a viewport window. It starts at the card and springs
+   forward, then rests closer than the page. The pose attribute still comes
+   from the nav and from #contact. Reduced motion shows the window flat. */
+.contact-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  perspective: 1600px;
+  perspective-origin: 50% 40%;
+}
+.contact-preview-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(var(--overlay-blur));
+}
+.contact-preview-window {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 46%;
+  display: flex;
+  width: min(44rem, calc(100vw - 2.5rem));
+  max-height: min(40rem, calc(100dvh - 2.5rem));
+  flex-direction: column;
+  overflow: auto;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-surface);
+  background: hsl(var(--surface-1));
+  box-shadow:
+    0 30px 80px rgb(0 0 0 / 0.55),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
+  transform: translate3d(-50%, -50%, 0);
   transform-style: preserve-3d;
 }
+.contact-preview-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 0;
+}
+.contact-preview-body { padding: 12px 20px 8px; }
+.contact-preview .contact-note { padding: 0 20px 16px; }
+.contact-preview[data-pose="prep"] .contact-preview-window,
+.contact-preview[data-pose="prep"] .contact-preview-scrim {
+  opacity: 0;
+}
 @media (max-width: 767px) {
-  .contact-stage { perspective: 900px; }
+  .contact-preview { perspective: 1100px; }
+  .contact-preview-window {
+    top: 50%;
+    width: min(44rem, calc(100vw - 1.25rem));
+  }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .contact-stage[data-contact-pose="in"],
-  .contact-stage[data-contact-pose="settled"] {
+  .contact-preview[data-pose="in"] .contact-preview-scrim {
+    animation: contact-scrim 920ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
+  }
+  .contact-preview[data-pose="in"] .contact-preview-window {
+    animation: contact-window 920ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
+  }
+  .contact-preview[data-pose="settled"] .contact-preview-window {
     opacity: 1;
-    transition: none;
+    transform: perspective(1600px) translate3d(-50%, -50%, 36px) rotateX(0deg) scale(1);
   }
-  .contact-stage[data-contact-pose="in"] .contact-panel,
-  .contact-stage[data-contact-pose="settled"] .contact-panel {
-    transition: none;
+  .contact-preview[data-pose="in"] :is(.contact-preview-window .divide-y > *, .contact-cta, .contact-note) {
+    animation: contact-detail 440ms cubic-bezier(0.25, 0.8, 0.3, 1) both;
   }
-  .contact-stage[data-contact-pose="in"] .contact-panel {
-    animation: contact-forward 1080ms var(--ease-premium) both;
-  }
-  .contact-stage[data-contact-pose="settled"] .contact-panel {
-    opacity: 1;
-    transform: translate3d(0, 0, 16px) rotateX(0deg) scale(1.036);
-  }
-  .contact-stage[data-contact-pose="in"] :is(.contact-panel .divide-y > *, .contact-cta, .contact-note) {
-    animation: contact-detail 440ms var(--ease-premium) both;
-  }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(1) { animation-delay: 180ms; }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(2) { animation-delay: 250ms; }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(3) { animation-delay: 320ms; }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(4) { animation-delay: 390ms; }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(5) { animation-delay: 460ms; }
-  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(6) { animation-delay: 530ms; }
-  .contact-stage[data-contact-pose="in"] .contact-cta { animation-delay: 420ms; }
-  .contact-stage[data-contact-pose="in"] .contact-note { animation-delay: 600ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(1) { animation-delay: 120ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(2) { animation-delay: 170ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(3) { animation-delay: 220ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(4) { animation-delay: 270ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(5) { animation-delay: 320ms; }
+  .contact-preview[data-pose="in"] .divide-y > :nth-child(6) { animation-delay: 370ms; }
+  .contact-preview[data-pose="in"] .contact-cta { animation-delay: 280ms; }
+  .contact-preview[data-pose="in"] .contact-note { animation-delay: 420ms; }
 }
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
-  .contact-stage[data-contact-pose="in"] .contact-panel {
-    animation-name: contact-forward-compact;
+  .contact-preview[data-pose="in"] .contact-preview-window {
+    animation-name: contact-window-compact;
   }
-  .contact-stage[data-contact-pose="settled"] .contact-panel {
-    transform: translate3d(0, 0, 10px) rotateX(0deg) scale(1.018);
+  .contact-preview[data-pose="settled"] .contact-preview-window {
+    transform: perspective(1100px) translate3d(-50%, -50%, 16px) rotateX(0deg) scale(1);
   }
 }
-@keyframes contact-forward {
+@keyframes contact-scrim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes contact-window {
   0% {
-    opacity: 0.84;
-    transform: translate3d(0, 18px, -72px) rotateX(4.5deg) scale(0.93);
+    opacity: 0.62;
+    transform: perspective(1600px) translate3d(calc(-50% + var(--contact-dx, 0px)), calc(-50% + var(--contact-dy, 36px)), -240px) rotateX(14deg) scale(var(--contact-from, 0.62));
   }
-  64% {
+  55% {
     opacity: 1;
-    transform: translate3d(0, 3px, 8px) rotateX(0.6deg) scale(1.012);
+    transform: perspective(1600px) translate3d(calc(-50% + var(--contact-dx, 0px) * 0.22), calc(-50% + var(--contact-dy, 36px) * 0.18), -72px) rotateX(6deg) scale(0.9);
+  }
+  82% {
+    opacity: 1;
+    transform: perspective(1600px) translate3d(-50%, calc(-50% - 8px), 48px) rotateX(-1.4deg) scale(1.02);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 16px) rotateX(0deg) scale(1.036);
+    transform: perspective(1600px) translate3d(-50%, -50%, 36px) rotateX(0deg) scale(1);
   }
 }
-@keyframes contact-forward-compact {
+@keyframes contact-window-compact {
   0% {
-    opacity: 0.9;
-    transform: translate3d(0, 12px, -32px) rotateX(2deg) scale(0.97);
+    opacity: 0.72;
+    transform: perspective(1100px) translate3d(calc(-50% + var(--contact-dx, 0px)), calc(-50% + var(--contact-dy, 24px)), -120px) rotateX(8deg) scale(var(--contact-from, 0.7));
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 10px) rotateX(0deg) scale(1.018);
+    transform: perspective(1100px) translate3d(-50%, -50%, 16px) rotateX(0deg) scale(1);
   }
 }
 @keyframes contact-detail {
-  from { opacity: 0.78; }
+  from { opacity: 0.72; }
   to { opacity: 1; }
 }
 
@@ -162,8 +240,13 @@
 /* Shared motion. 200ms sits in the 150–250ms range. Only transform and opacity
    travel; reduced motion drops the travel and keeps controls in place. */
 @media (prefers-reduced-motion: no-preference) {
+  .portfolio-nav-item {
+    transition-property: transform, color, background-color, border-color;
+    transition-duration: 640ms, 180ms, 180ms, 180ms;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.3, 1), var(--ease-premium), var(--ease-premium), var(--ease-premium);
+  }
   .portfolio-nav-indicator {
-    transition: transform 200ms var(--ease-premium), opacity 200ms var(--ease-premium);
+    transition: transform 640ms cubic-bezier(0.25, 0.8, 0.3, 1), height 640ms cubic-bezier(0.25, 0.8, 0.3, 1), opacity 240ms ease;
   }
   .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header h2,
   .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header p,
@@ -248,6 +331,11 @@
   .contact-cta,
   .contact-note,
   .contact-panel .divide-y > *,
+  .contact-preview-window,
+  .contact-preview-scrim,
+  .portfolio-section[data-spatial="in"],
+  aside .portfolio-nav-item,
+  .portfolio-nav-scroll .portfolio-nav-item,
   .app-stage :is(a, button).rounded-btn,
   .app-stage .portfolio-press,
   .app-stage :is(a, button).rounded-btn::after,
@@ -259,9 +347,17 @@
   .contact-panel,
   .contact-cta,
   .contact-note,
-  .contact-panel .divide-y > * {
+  .contact-panel .divide-y > *,
+  .portfolio-section[data-spatial="in"],
+  aside .portfolio-nav-item,
+  .portfolio-nav-scroll .portfolio-nav-item {
     opacity: 1;
     transform: none;
+  }
+  .contact-preview-window {
+    opacity: 1;
+    transform: translate3d(-50%, -50%, 0);
+    animation: none;
   }
   .portfolio-main .portfolio-lift:hover,
   .app-stage :is(a, button).rounded-btn:active,

@@ -9,12 +9,14 @@
  * behaviour: data-reveal="cinematic" is set only when this shell mounted
  * during the cinematic, and removed once it settles.
  */
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Atmosphere } from "@/components/atmosphere";
 import { useUiStore } from "@/stores/ui";
 import { NeuralBackground } from "~/animations/NeuralBackground";
+import { ContactPreview } from "~/components/ContactPreview";
 import { PortfolioNav, MobileNav } from "~/components/PortfolioNav";
 import { useActiveSection } from "~/components/useActiveSection";
+import { ContactPreviewRequest } from "~/sections/ContactSection";
 import { SECTIONS } from "~/sections/registry";
 
 export function PortfolioShell({ children, onReplayIntro }: { children: ReactNode; onReplayIntro: () => void }) {
@@ -24,7 +26,9 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   const revealFromCinematic = useRef(useUiStore.getState().isAuthEntryActive);
   const active = useActiveSection(mainRef, SECTIONS.map((s) => s.id));
   const contactPose = useRef<"off" | "in" | "settled">("off");
-  const contactEnd = useRef<((event: Event) => void) | null>(null);
+  const [contactPreview, setContactPreview] = useState<"off" | "in" | "settled">("off");
+  const openerRef = useRef<HTMLElement | null>(null);
+  const spatialEnd = useRef<((event: AnimationEvent) => void) | null>(null);
   const previousActive = useRef(active);
   const smoothNav = useRef<string | null>(null);
   const contactArrival = useRef(0);
@@ -57,13 +61,15 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     };
   }, [authEntryActive]);
 
-  const resetContact = () => {
+  const resetContact = (restoreFocus: boolean) => {
     const section = document.getElementById("contact");
-    const panel = section?.querySelector(".contact-panel");
-    if (panel && contactEnd.current) panel.removeEventListener("animationend", contactEnd.current);
-    contactEnd.current = null;
     contactPose.current = "off";
     if (section) delete section.dataset.contactPose;
+    setContactPreview("off");
+    if (!restoreFocus) return;
+    const opener = openerRef.current;
+    openerRef.current = null;
+    opener?.focus();
   };
 
   const presentContact = () => {
@@ -72,26 +78,52 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     const pose = section.dataset.contactPose;
     if (pose === "in" || pose === "settled") return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const next = reduced ? "settled" : "in";
     section.dataset.visible = "true";
-    if (reduced) {
-      section.dataset.contactPose = "settled";
-      contactPose.current = "settled";
-      return;
-    }
-    section.dataset.contactPose = "in";
-    contactPose.current = "in";
-    const panel = section.querySelector(".contact-panel");
-    if (!panel) return;
-    const onEnd = (event: Event) => {
-      if (event.target !== panel) return;
-      if (section.dataset.contactPose !== "in") return;
-      section.dataset.contactPose = "settled";
-      contactPose.current = "settled";
-      panel.removeEventListener("animationend", onEnd);
-      if (contactEnd.current === onEnd) contactEnd.current = null;
+    section.dataset.contactPose = next;
+    contactPose.current = next;
+    setContactPreview(next);
+  };
+
+  const settleContact = () => {
+    const section = document.getElementById("contact");
+    if (!section || section.dataset.contactPose !== "in") return;
+    section.dataset.contactPose = "settled";
+    contactPose.current = "settled";
+    setContactPreview("settled");
+  };
+
+  const clearSpatial = () => {
+    const current = document.querySelector<HTMLElement>('[data-spatial="in"]');
+    if (current && spatialEnd.current) current.removeEventListener("animationend", spatialEnd.current);
+    spatialEnd.current = null;
+    document.querySelectorAll<HTMLElement>("[data-spatial]").forEach((node) => {
+      delete node.dataset.spatial;
+    });
+  };
+
+  const presentSpatial = (id: string) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const section = document.getElementById(id);
+    if (!section || section.dataset.spatial === "in") return;
+    clearSpatial();
+    section.dataset.spatial = "in";
+    const onEnd = (event: AnimationEvent) => {
+      if (event.target !== section || event.animationName !== "spatial-float") return;
+      delete section.dataset.spatial;
+      section.removeEventListener("animationend", onEnd);
+      if (spatialEnd.current === onEnd) spatialEnd.current = null;
     };
-    contactEnd.current = onEnd;
-    panel.addEventListener("animationend", onEnd);
+    spatialEnd.current = onEnd;
+    section.addEventListener("animationend", onEnd);
+  };
+
+  const requestContactPreview = () => {
+    if (contactPose.current === "in" || contactPose.current === "settled") return;
+    clearSpatial();
+    openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    window.history.replaceState(null, "", "#contact");
+    presentContact();
   };
 
   const contactInView = () => {
@@ -111,14 +143,18 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     const wasHere =
       id === "contact" &&
       (active === "contact" || contactInView() || contactPose.current === "in" || contactPose.current === "settled");
-    if (id !== "contact") resetContact();
+    if (id === "contact") clearSpatial();
+    else resetContact(false);
     const before = mainRef.current?.scrollTop ?? 0;
     smoothNav.current = reduced ? null : id;
     target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
     window.history.replaceState(null, "", `#${id}`);
-    if (id !== "contact" || wasHere) return;
-    if (reduced) {
-      presentContact();
+    const sameSection = id !== "contact" && active === id;
+    if (id === "contact" && !wasHere) {
+      openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    }
+    if (wasHere || sameSection || reduced) {
+      if (id === "contact" && !wasHere && reduced) presentContact();
       return;
     }
     const main = mainRef.current;
@@ -126,25 +162,29 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     const play = () => {
       if (played || arrival !== contactArrival.current) return;
       played = true;
-      presentContact();
+      if (id === "contact") presentContact();
+      else presentSpatial(id);
     };
     main?.addEventListener("scrollend", play, { once: true });
     window.setTimeout(() => {
       if (main && main.scrollTop !== before) return;
       play();
     }, 80);
+    // Some browsers never emit scrollend. Play once the smooth scroll has
+    // had time to land, and not while the section is still off screen.
+    window.setTimeout(play, 900);
   };
 
   useEffect(() => {
     if (previousActive.current === "contact" && active !== "contact" && contactPose.current === "settled") {
-      resetContact();
+      resetContact(false);
     }
     previousActive.current = active;
   }, [active]);
 
   useEffect(() => {
     let cancelled = false;
-    const scrollToHash = () => {
+    const scrollToHash = (animate: boolean) => {
       if (cancelled) return;
       const id = window.location.hash.replace(/^#/, "");
       if (!SECTIONS.some((section) => section.id === id)) return;
@@ -155,21 +195,26 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
       // travel before the section is in view.
       if (smoothNav.current === id) return;
       if (id === "contact") presentContact();
-      else resetContact();
+      else {
+        resetContact(false);
+        if (animate) presentSpatial(id);
+      }
       target.scrollIntoView({ behavior: "auto", block: "start" });
     };
-    scrollToHash();
+    const align = () => scrollToHash(false);
+    align();
     // Fonts and late image layout shift the inner scroller after the first
     // paint. Repeat until those settle so a hash lands on its section.
-    const late = window.setTimeout(scrollToHash, 600);
-    window.addEventListener("hashchange", scrollToHash);
-    window.addEventListener("load", scrollToHash);
-    void document.fonts?.ready.then(scrollToHash);
+    const late = window.setTimeout(align, 600);
+    const onHash = () => scrollToHash(true);
+    window.addEventListener("hashchange", onHash);
+    window.addEventListener("load", align);
+    void document.fonts?.ready.then(align);
     return () => {
       cancelled = true;
       window.clearTimeout(late);
-      window.removeEventListener("hashchange", scrollToHash);
-      window.removeEventListener("load", scrollToHash);
+      window.removeEventListener("hashchange", onHash);
+      window.removeEventListener("load", align);
     };
   }, []);
 
@@ -187,11 +232,14 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
           <div className="flex min-h-0 min-w-0 flex-col overflow-hidden">
             <MobileNav active={active} onNavigate={goTo} />
             <main ref={mainRef} id="main" className="portfolio-main relative h-full min-h-0 flex-1 overflow-y-auto" tabIndex={-1}>
-              {children}
+              <ContactPreviewRequest.Provider value={requestContactPreview}>{children}</ContactPreviewRequest.Provider>
             </main>
           </div>
         </div>
       </div>
+      {contactPreview !== "off" && (
+        <ContactPreview pose={contactPreview} onSettle={settleContact} onClose={() => resetContact(true)} />
+      )}
     </div>
   );
 }
