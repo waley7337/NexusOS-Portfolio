@@ -1,4 +1,3 @@
-import { createContext, useContext } from "react";
 import { AppWindow, Github, LogIn, Mail, MapPin, Phone } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,10 +9,7 @@ import { Section } from "~/sections/Section";
 
 const ghostProtocolHref = otherProjects.find((project) => project.name === "Ghost Protocol")?.demo?.href;
 
-/** Opens the floating contact window. The shell provides the real handler. */
-export const ContactPreviewRequest = createContext<() => void>(() => {});
-
-export function ContactBody() {
+function ContactBody() {
   return (
     <>
       <RowGroup>
@@ -58,7 +54,7 @@ export function ContactBody() {
   );
 }
 
-export function ContactNote() {
+function ContactNote() {
   return (
     <p className="contact-note text-machine">
       Built on the NexusOS design system — tokens, SpaceField and Starfield compiled from the NexusOS frontend
@@ -67,23 +63,9 @@ export function ContactNote() {
 }
 
 export function ContactSection() {
-  const openPreview = useContext(ContactPreviewRequest);
   return (
-    <Section
-      id="contact"
-      className="contact-stage"
-      title="Contact"
-      subtitle="Looking for an AQUA placement in application development."
-    >
-      <Card
-        data-testid="contact-card"
-        className="contact-panel contact-panel-source p-6"
-        onClick={(event) => {
-          const target = event.target;
-          if (!(target instanceof Element) || target.closest("a, button")) return;
-          openPreview();
-        }}
-      >
+    <Section id="contact" title="Contact" subtitle="Looking for an AQUA placement in application development.">
+      <Card className="p-6">
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <ContactBody />
         </div>

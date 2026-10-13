@@ -300,7 +300,7 @@ describe("App", () => {
     expect(ids.indexOf("workflow")).toBeLessThan(ids.indexOf("architecture"));
   });
 
-  it("floats the NexusOS workflow with the same spatial motion", async () => {
+  it("shows the NexusOS workflow without a floating motion", () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
     const workflow = screen.getByRole("region", { name: "NexusOS workflow" });
@@ -312,109 +312,25 @@ describe("App", () => {
     expect(workflow).toHaveTextContent("Architecture → Implementation → Integration → Testing → Refinement → Deployment");
     expect(workflow).toHaveTextContent("React · TypeScript · FastAPI · PostgreSQL · Redis · Git · GitHub · Vercel · Railway · Cloudflare");
     fireEvent.click(screen.getAllByRole("link", { name: "NexusOS workflow" })[0]);
-    await waitFor(() => expect(workflow.dataset.spatial).toBe("in"));
+    expect(workflow.dataset.spatial).toBeUndefined();
     expect(window.location.hash).toBe("#workflow");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
-    expect(css).toMatch(/@keyframes workflow-step-float \{[\s\S]*rotateX\(7deg\)/);
-    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.workflow-step[\s\S]*transform: none/);
+    expect(css).not.toMatch(/@keyframes (?:spatial-float|workflow-step-float|contact-window)/);
   });
 
-  it("floats the contact panel once per visit", async () => {
+  it("opens contact in the page instead of a floating window", () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
-    const contact = document.getElementById("contact");
-    expect(contact?.dataset.contactPose).toBeUndefined();
-    const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
-    contactTab.focus();
-    expect(contactTab).toHaveFocus();
-    fireEvent.click(contactTab);
-    await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
-    expect(contact?.dataset.visible).toBe("true");
+    fireEvent.click(screen.getAllByRole("link", { name: "Contact" })[0]);
     expect(window.location.hash).toBe("#contact");
-    let writes = 0;
-    const original = contact!.setAttribute.bind(contact);
-    contact!.setAttribute = (name: string, value: string) => {
-      if (name === "data-contact-pose") writes += 1;
-      original(name, value);
-    };
-    fireEvent.click(contactTab);
-    expect(writes).toBe(0);
-    expect(window.location.hash).toBe("#contact");
-    fireEvent.click(screen.getAllByRole("link", { name: "Overview" })[0]);
-    expect(contact?.getAttribute("data-contact-pose")).toBeNull();
-    const mobileContact = document.querySelector('nav.portfolio-nav-scroll a[href="#contact"]');
-    expect(mobileContact).not.toBeNull();
-    fireEvent.click(mobileContact as HTMLElement);
-    await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
-    expect(window.location.hash).toBe("#contact");
-  });
-
-  it("rests the contact preview as a spatial floating window", () => {
-    const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
-    expect(css).toMatch(/\.contact-preview \{[^}]*perspective:\s*1600px;/);
-    const motion = css.slice(css.indexOf("@keyframes contact-window {"), css.indexOf("@keyframes contact-window-compact"));
-    expect(motion).toContain(
-      "translate3d(calc(-50% + var(--contact-dx, 0px)), calc(-50% + var(--contact-dy, 36px)), -240px)",
-    );
-    expect(motion).toContain("rotateX(14deg)");
-    expect(motion).toContain("scale(var(--contact-from, 0.62))");
-    expect(motion).toContain("translate3d(-50%, -50%, 36px) rotateX(0deg) scale(1)");
-    expect(css).toMatch(/data-pose="settled"\] \.contact-preview-window \{[^}]*translate3d\(-50%, -50%, 36px\)/);
-    expect(css).toMatch(/@keyframes contact-window-compact \{[\s\S]*scale\(1\)/);
-    expect(css).toMatch(/@keyframes spatial-float \{[\s\S]*rotateX\(12deg\) scale\(0\.86\)/);
-    expect(css).toContain("cubic-bezier(0.25, 0.8, 0.3, 1)");
-    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.contact-panel[\s\S]*transform: none/);
-    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.contact-preview-window[\s\S]*animation: none/);
-  });
-
-  it("floats each section from its tab and zooms the contact card into a window", async () => {
-    window.history.replaceState(null, "", "/#overview");
-    render(<App />);
-    fireEvent.click(screen.getAllByRole("link", { name: "Architecture" })[0]);
-    await waitFor(() => expect(document.getElementById("architecture")?.dataset.spatial).toBe("in"));
     expect(document.getElementById("contact")?.dataset.contactPose).toBeUndefined();
+    expect(document.getElementById("contact")?.dataset.spatial).toBeUndefined();
     expect(screen.queryByRole("dialog", { name: "Contact" })).not.toBeInTheDocument();
-
-    const card = screen.getByTestId("contact-card");
-    fireEvent.click(card);
-    const dialog = await screen.findByRole("dialog", { name: "Contact" });
-    expect(dialog.className).toContain("contact-preview-window");
-    expect(document.getElementById("contact")?.dataset.contactPose).toBe("in");
-    expect(within(dialog).getByRole("link", { name: "Ghost Protocol" })).toHaveAttribute(
+    const contact = screen.getByRole("region", { name: "Contact" });
+    expect(within(contact).getByRole("link", { name: "Ghost Protocol" })).toHaveAttribute(
       "href",
       "https://ghost-protocol-pi.vercel.app",
     );
-    expect(within(dialog).getByRole("link", { name: profile.email })).toHaveAttribute("href", `mailto:${profile.email}`);
-
-    fireEvent.click(card);
-    expect(screen.getAllByRole("dialog", { name: "Contact" })).toHaveLength(1);
-
-    fireEvent.keyDown(document, { key: "Escape" });
-    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Contact" })).not.toBeInTheDocument());
-    expect(document.getElementById("contact")?.dataset.contactPose).toBeUndefined();
-    expect(card).not.toHaveFocus();
-  });
-
-  it("skips the contact travel when reduced motion is set", () => {
-    const original = window.matchMedia;
-    window.matchMedia = (query: string) =>
-      ({
-        matches: query.includes("prefers-reduced-motion"),
-        media: query,
-        onchange: null,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => false,
-      }) as MediaQueryList;
-    window.history.replaceState(null, "", "/#contact");
-    render(<App />);
-    const contact = document.getElementById("contact");
-    expect(contact?.dataset.contactPose).toBe("settled");
-    const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
-    fireEvent.click(contactTab);
-    expect(contact?.dataset.contactPose).toBe("settled");
-    window.matchMedia = original;
   });
 });
