@@ -266,9 +266,12 @@ describe("App", () => {
     const contact = document.getElementById("contact");
     expect(contact?.dataset.contactPose).toBeUndefined();
     const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
+    contactTab.focus();
+    expect(contactTab).toHaveFocus();
     fireEvent.click(contactTab);
     await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
     expect(contact?.dataset.visible).toBe("true");
+    expect(window.location.hash).toBe("#contact");
     let writes = 0;
     const original = contact!.setAttribute.bind(contact);
     contact!.setAttribute = (name: string, value: string) => {
@@ -277,10 +280,29 @@ describe("App", () => {
     };
     fireEvent.click(contactTab);
     expect(writes).toBe(0);
+    expect(window.location.hash).toBe("#contact");
     fireEvent.click(screen.getAllByRole("link", { name: "Overview" })[0]);
     expect(contact?.getAttribute("data-contact-pose")).toBeNull();
-    fireEvent.click(contactTab);
+    const mobileContact = document.querySelector('nav.portfolio-nav-scroll a[href="#contact"]');
+    expect(mobileContact).not.toBeNull();
+    fireEvent.click(mobileContact as HTMLElement);
     await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
+    expect(window.location.hash).toBe("#contact");
+  });
+
+  it("rests the contact preview larger and forward", () => {
+    const css = readFileSync(path.join(process.cwd(), "src/styles/portfolio.css"), "utf8");
+    expect(css).toMatch(/\.contact-stage \{[^}]*perspective:\s*1200px;/);
+    const forward = css.slice(css.indexOf("@keyframes contact-forward {"), css.indexOf("@keyframes contact-forward-compact"));
+    expect(forward).toContain("translate3d(0, 18px, -72px)");
+    expect(forward).toContain("rotateX(4.5deg)");
+    expect(forward).toContain("scale(0.93)");
+    expect(forward).toContain("translate3d(0, 0, 16px) rotateX(0deg) scale(1.036)");
+    expect(css).toMatch(
+      /data-contact-pose="settled"\] \.contact-panel \{\s*opacity: 1;\s*transform: translate3d\(0, 0, 16px\) rotateX\(0deg\) scale\(1\.036\);/,
+    );
+    expect(css).toMatch(/@keyframes contact-forward-compact \{[\s\S]*scale\(1\.018\)/);
+    expect(css).toMatch(/prefers-reduced-motion: reduce\)[\s\S]*\.contact-panel[\s\S]*transform: none/);
   });
 
   it("skips the contact travel when reduced motion is set", () => {

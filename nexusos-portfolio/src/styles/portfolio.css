@@ -50,15 +50,17 @@
   min-height: 2rem;
 }
 
-/* Contact floats forward once, when the section is opened. The pose
-   attribute is set from the nav and from #contact. Reduced motion skips
-   the travel and leaves the panel in place. */
+/* Contact previews larger once, when the sidebar or mobile tab opens it.
+   It starts back and small, travels forward on translate3d, and rests
+   closer and slightly larger. The pose attribute comes from the nav and
+   from #contact. Reduced motion skips the travel and leaves the panel flat. */
 .contact-stage {
+  overflow: visible;
   perspective: 1200px;
-  perspective-origin: 50% 42%;
+  perspective-origin: 50% 36%;
 }
 .contact-panel {
-  transform-origin: 50% 45%;
+  transform-origin: 50% 18%;
   transform-style: preserve-3d;
 }
 @media (max-width: 767px) {
@@ -70,8 +72,16 @@
     opacity: 1;
     transition: none;
   }
+  .contact-stage[data-contact-pose="in"] .contact-panel,
+  .contact-stage[data-contact-pose="settled"] .contact-panel {
+    transition: none;
+  }
   .contact-stage[data-contact-pose="in"] .contact-panel {
     animation: contact-forward 1080ms var(--ease-premium) both;
+  }
+  .contact-stage[data-contact-pose="settled"] .contact-panel {
+    opacity: 1;
+    transform: translate3d(0, 0, 16px) rotateX(0deg) scale(1.036);
   }
   .contact-stage[data-contact-pose="in"] :is(.contact-panel .divide-y > *, .contact-cta, .contact-note) {
     animation: contact-detail 440ms var(--ease-premium) both;
@@ -88,33 +98,36 @@
   .contact-stage[data-contact-pose="in"] .contact-panel {
     animation-name: contact-forward-compact;
   }
+  .contact-stage[data-contact-pose="settled"] .contact-panel {
+    transform: translate3d(0, 0, 10px) rotateX(0deg) scale(1.018);
+  }
 }
 @keyframes contact-forward {
   0% {
-    opacity: 0.8;
-    transform: translate3d(0, 18px, -80px) rotateX(5deg) scale(0.965);
+    opacity: 0.84;
+    transform: translate3d(0, 18px, -72px) rotateX(4.5deg) scale(0.93);
   }
-  62% {
+  64% {
     opacity: 1;
-    transform: translate3d(0, 7px, -6px) rotateX(1.4deg) scale(0.99);
+    transform: translate3d(0, 3px, 8px) rotateX(0.6deg) scale(1.012);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+    transform: translate3d(0, 0, 16px) rotateX(0deg) scale(1.036);
   }
 }
 @keyframes contact-forward-compact {
   0% {
-    opacity: 0.88;
-    transform: translate3d(0, 12px, -28px) rotateX(2deg) scale(0.985);
+    opacity: 0.9;
+    transform: translate3d(0, 12px, -32px) rotateX(2deg) scale(0.97);
   }
   100% {
     opacity: 1;
-    transform: none;
+    transform: translate3d(0, 0, 10px) rotateX(0deg) scale(1.018);
   }
 }
 @keyframes contact-detail {
-  from { opacity: 0; }
+  from { opacity: 0.78; }
   to { opacity: 1; }
 }
 
