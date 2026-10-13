@@ -10,13 +10,13 @@ import { ContactSection } from "~/sections/ContactSection";
 
 export function Portfolio() {
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-20 px-5 pb-16 pt-8 sm:px-8 lg:px-10 lg:pt-12">
+    <div className="portfolio-sheet">
       <Hero />
+      <CvSection />
+      <EducationSection />
       <NexusOSSection />
       <ArchitectureSection />
       <LibrarySection />
-      <CvSection />
-      <EducationSection />
       <ProjectsSection />
       <DemoAccessSection />
       <ContactSection />

@@ -7,8 +7,8 @@ import { approach, profile, stats } from "~/data/profile";
 
 export function Hero() {
   return (
-    <section id="overview" aria-label="Overview" className="scroll-mt-6 space-y-10">
-      <div className="relative space-y-6 py-2">
+    <section id="overview" aria-label="Overview" className="portfolio-section">
+      <div className="relative space-y-6">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="accent">Portfolio · 2026</Badge>
           <Badge>AQUA / LAP Applikationsentwicklung – Coding</Badge>
@@ -37,16 +37,18 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {stats.map((s) => (
-          <Card key={s.label} className="portfolio-lift relative p-5">
-            <Ticks />
-            <p className="num font-mono text-[28px] font-semibold leading-none text-foreground">{s.value}</p>
-            <p className="text-machine mt-3">{s.label}</p>
-          </Card>
-        ))}
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {stats.map((s) => (
+            <Card key={s.label} className="portfolio-lift relative p-5">
+              <Ticks />
+              <p className="num font-mono text-[28px] font-semibold leading-none text-foreground">{s.value}</p>
+              <p className="text-machine mt-3">{s.label}</p>
+            </Card>
+          ))}
+        </div>
+        <p className="text-machine">NexusOS figures, from the project documentation</p>
       </div>
-      <p className="text-machine -mt-6">NexusOS figures, from the project documentation</p>
 
       <div className="grid gap-3 md:grid-cols-3">
         {approach.map((a) => (

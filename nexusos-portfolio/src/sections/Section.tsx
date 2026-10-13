@@ -21,7 +21,7 @@ export function Section({
 }) {
   const ref = useRevealOnScroll<HTMLElement>();
   return (
-    <section ref={ref} id={id} aria-label={title} className={cn("reveal-section scroll-mt-6 space-y-6", className)}>
+    <section ref={ref} id={id} aria-label={title} className={cn("reveal-section portfolio-section", className)}>
       <SectionHeader title={title} subtitle={subtitle} action={action} tone="primary" className="portfolio-header" />
       {children}
     </section>

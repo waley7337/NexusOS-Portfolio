@@ -242,4 +242,67 @@ describe("App", () => {
     );
     expect(exec).toHaveBeenCalled();
   });
+
+  it("keeps nav tabs in the same order as the page sections", () => {
+    window.history.replaceState(null, "", "/#overview");
+    render(<App />);
+    const ids = [...document.querySelectorAll("main section")].map((section) => section.id);
+    expect(ids).toEqual(SECTIONS.map((section) => section.id));
+    const hrefs = (nav: Element) => [...nav.querySelectorAll("a")].map((link) => link.getAttribute("href"));
+    const expected = SECTIONS.map((section) => `#${section.id}`);
+    expect(hrefs(document.querySelector("aside nav") as Element)).toEqual(expected);
+    expect(hrefs(document.querySelector("nav.portfolio-nav-scroll") as Element)).toEqual(expected);
+    expect(ids[0]).toBe("overview");
+    expect(ids.at(-1)).toBe("contact");
+    expect(ids.indexOf("cv")).toBeLessThan(ids.indexOf("nexusos"));
+    expect(ids.indexOf("education")).toBeLessThan(ids.indexOf("nexusos"));
+    expect(ids.indexOf("projects")).toBeLessThan(ids.indexOf("demos"));
+    expect(ids.indexOf("demos")).toBeLessThan(ids.indexOf("contact"));
+  });
+
+  it("floats the contact panel once per visit", () => {
+    window.history.replaceState(null, "", "/#overview");
+    render(<App />);
+    const contact = document.getElementById("contact");
+    expect(contact?.dataset.contactPose).toBeUndefined();
+    const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
+    fireEvent.click(contactTab);
+    expect(contact?.dataset.contactPose).toBe("in");
+    expect(contact?.dataset.visible).toBe("true");
+    let writes = 0;
+    const original = contact!.setAttribute.bind(contact);
+    contact!.setAttribute = (name: string, value: string) => {
+      if (name === "data-contact-pose") writes += 1;
+      original(name, value);
+    };
+    fireEvent.click(contactTab);
+    expect(writes).toBe(0);
+    fireEvent.click(screen.getAllByRole("link", { name: "Overview" })[0]);
+    expect(contact?.getAttribute("data-contact-pose")).toBeNull();
+    fireEvent.click(contactTab);
+    expect(contact?.dataset.contactPose).toBe("in");
+  });
+
+  it("skips the contact travel when reduced motion is set", () => {
+    const original = window.matchMedia;
+    window.matchMedia = (query: string) =>
+      ({
+        matches: query.includes("prefers-reduced-motion"),
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      }) as MediaQueryList;
+    window.history.replaceState(null, "", "/#contact");
+    render(<App />);
+    const contact = document.getElementById("contact");
+    expect(contact?.dataset.contactPose).toBe("settled");
+    const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
+    fireEvent.click(contactTab);
+    expect(contact?.dataset.contactPose).toBe("settled");
+    window.matchMedia = original;
+  });
 });

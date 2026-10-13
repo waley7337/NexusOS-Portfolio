@@ -23,6 +23,10 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   const mainRef = useRef<HTMLElement>(null);
   const revealFromCinematic = useRef(useUiStore.getState().isAuthEntryActive);
   const active = useActiveSection(mainRef, SECTIONS.map((s) => s.id));
+  const contactPose = useRef<"off" | "in" | "settled">("off");
+  const contactEnd = useRef<((event: Event) => void) | null>(null);
+  const previousActive = useRef(active);
+  const smoothNav = useRef<string | null>(null);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -52,13 +56,77 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
     };
   }, [authEntryActive]);
 
+  const resetContact = () => {
+    const section = document.getElementById("contact");
+    const panel = section?.querySelector(".contact-panel");
+    if (panel && contactEnd.current) panel.removeEventListener("animationend", contactEnd.current);
+    contactEnd.current = null;
+    contactPose.current = "off";
+    if (section) delete section.dataset.contactPose;
+  };
+
+  const presentContact = () => {
+    const section = document.getElementById("contact");
+    if (!section) return;
+    const pose = section.dataset.contactPose;
+    if (pose === "in" || pose === "settled") return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    section.dataset.visible = "true";
+    if (reduced) {
+      section.dataset.contactPose = "settled";
+      contactPose.current = "settled";
+      return;
+    }
+    section.dataset.contactPose = "in";
+    contactPose.current = "in";
+    const panel = section.querySelector(".contact-panel");
+    if (!panel) return;
+    const onEnd = (event: Event) => {
+      if (event.target !== panel) return;
+      if (section.dataset.contactPose !== "in") return;
+      section.dataset.contactPose = "settled";
+      contactPose.current = "settled";
+      panel.removeEventListener("animationend", onEnd);
+      if (contactEnd.current === onEnd) contactEnd.current = null;
+    };
+    contactEnd.current = onEnd;
+    panel.addEventListener("animationend", onEnd);
+  };
+
+  const contactInView = () => {
+    const main = mainRef.current;
+    const section = document.getElementById("contact");
+    if (!main || !section) return false;
+    const mainBox = main.getBoundingClientRect();
+    const box = section.getBoundingClientRect();
+    return box.top < mainBox.top + 80 && box.bottom > mainBox.top + 48;
+  };
+
   const goTo = (id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (id === "contact") {
+      const already =
+        active === "contact" ||
+        contactInView() ||
+        contactPose.current === "in" ||
+        contactPose.current === "settled";
+      if (!already) presentContact();
+    } else {
+      resetContact();
+    }
+    smoothNav.current = reduced ? null : id;
     target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
     window.history.replaceState(null, "", `#${id}`);
   };
+
+  useEffect(() => {
+    if (previousActive.current === "contact" && active !== "contact" && contactPose.current === "settled") {
+      resetContact();
+    }
+    previousActive.current = active;
+  }, [active]);
 
   useEffect(() => {
     let cancelled = false;
@@ -66,7 +134,14 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
       if (cancelled) return;
       const id = window.location.hash.replace(/^#/, "");
       if (!SECTIONS.some((section) => section.id === id)) return;
-      document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" });
+      const target = document.getElementById(id);
+      if (!target) return;
+      if (id === "contact") presentContact();
+      else resetContact();
+      // A tab click already started a smooth scroll to this section. A late
+      // hash correction would cut that scroll short.
+      if (smoothNav.current === id) return;
+      target.scrollIntoView({ behavior: "auto", block: "start" });
     };
     scrollToHash();
     // Fonts and late image layout shift the inner scroller after the first

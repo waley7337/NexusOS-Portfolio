@@ -109,9 +109,25 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
 }
 
 export function MobileNav({ active, onNavigate }: NavProps) {
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    const current = nav?.querySelector<HTMLElement>('[aria-current="location"]');
+    if (!nav || !current) return;
+    const left = current.offsetLeft;
+    const right = left + current.offsetWidth;
+    const view = nav.scrollLeft + nav.clientWidth;
+    if (left >= nav.scrollLeft && right <= view) return;
+    if (typeof nav.scrollTo !== "function") return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    nav.scrollTo({ left: Math.max(0, left - 12), behavior: reduced ? "auto" : "smooth" });
+  }, [active]);
+
   return (
     <nav
-      className="flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft px-3 py-2 md:hidden"
+      ref={navRef}
+      className="portfolio-nav-scroll flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft py-2 md:hidden"
       aria-label="Portfolio sections"
     >
       {SECTIONS.map(({ id, label }) => (
@@ -124,7 +140,7 @@ export function MobileNav({ active, onNavigate }: NavProps) {
             onNavigate(id);
           }}
           className={cn(
-            "focus-ring shrink-0 rounded-control px-3 py-1.5 text-xs transition-colors duration-fast",
+            "portfolio-nav-item focus-ring inline-flex shrink-0 items-center rounded-control px-3 text-xs transition-colors duration-fast",
             active === id ? "bg-primary/10 font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3",
           )}
         >

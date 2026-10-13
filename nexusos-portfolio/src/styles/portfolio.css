@@ -10,6 +10,111 @@
   .portfolio-main { scroll-behavior: auto; }
 }
 
+/* One content measure and one vertical interval. Section headings keep
+   scroll-margin so they clear the top of the scroller under the nav. */
+.portfolio-sheet {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 2rem 1.25rem 4rem;
+}
+@media (min-width: 640px) {
+  .portfolio-sheet { padding-inline: 2rem; }
+}
+@media (min-width: 1024px) {
+  .portfolio-sheet { padding: 3rem 2.5rem 4rem; }
+}
+.portfolio-sheet > .portfolio-section + .portfolio-section {
+  margin-top: 5rem;
+}
+.portfolio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  scroll-margin-top: 1.5rem;
+}
+.portfolio-nav-item {
+  min-height: 2.25rem;
+  transition-timing-function: var(--ease-premium);
+}
+.portfolio-nav-scroll {
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .portfolio-nav-scroll { padding-inline: 2rem; }
+}
+.portfolio-nav-scroll .portfolio-nav-item {
+  min-height: 2rem;
+}
+
+/* Contact floats forward once, when the section is opened. The pose
+   attribute is set from the nav and from #contact. Reduced motion skips
+   the travel and leaves the panel in place. */
+.contact-stage {
+  perspective: 1200px;
+  perspective-origin: 50% 42%;
+}
+.contact-panel {
+  transform-origin: 50% 45%;
+  transform-style: preserve-3d;
+}
+@media (max-width: 767px) {
+  .contact-stage { perspective: 900px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contact-stage[data-contact-pose="in"],
+  .contact-stage[data-contact-pose="settled"] {
+    opacity: 1;
+    transition: none;
+  }
+  .contact-stage[data-contact-pose="in"] .contact-panel {
+    animation: contact-forward 1080ms var(--ease-premium) both;
+  }
+  .contact-stage[data-contact-pose="in"] :is(.contact-panel .divide-y > *, .contact-cta, .contact-note) {
+    animation: contact-detail 440ms var(--ease-premium) both;
+  }
+  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(1) { animation-delay: 180ms; }
+  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(2) { animation-delay: 250ms; }
+  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(3) { animation-delay: 320ms; }
+  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(4) { animation-delay: 390ms; }
+  .contact-stage[data-contact-pose="in"] .contact-panel .divide-y > :nth-child(5) { animation-delay: 460ms; }
+  .contact-stage[data-contact-pose="in"] .contact-cta { animation-delay: 420ms; }
+  .contact-stage[data-contact-pose="in"] .contact-note { animation-delay: 520ms; }
+}
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .contact-stage[data-contact-pose="in"] .contact-panel {
+    animation-name: contact-forward-compact;
+  }
+}
+@keyframes contact-forward {
+  0% {
+    opacity: 0.8;
+    transform: translate3d(0, 18px, -80px) rotateX(5deg) scale(0.965);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(0, 7px, -6px) rotateX(1.4deg) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateX(0deg) scale(1);
+  }
+}
+@keyframes contact-forward-compact {
+  0% {
+    opacity: 0.88;
+    transform: translate3d(0, 12px, -28px) rotateX(2deg) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes contact-detail {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* Ambient network behind the scrolling content (see NeuralBackground).
    The chassis fill from globals.css is opaque and covers a stage-level
    canvas, so this layer is the first child of the chassis. isolation on
@@ -122,12 +227,24 @@
 @media (prefers-reduced-motion: reduce) {
   .portfolio-nav-indicator,
   .portfolio-lift,
+  .contact-panel,
+  .contact-cta,
+  .contact-note,
+  .contact-panel .divide-y > *,
   .app-stage :is(a, button).rounded-btn,
   .app-stage .portfolio-press,
   .app-stage :is(a, button).rounded-btn::after,
   .app-stage .portfolio-press::after {
     transition: none;
     animation: none;
+  }
+  .contact-stage,
+  .contact-panel,
+  .contact-cta,
+  .contact-note,
+  .contact-panel .divide-y > * {
+    opacity: 1;
+    transform: none;
   }
   .portfolio-main .portfolio-lift:hover,
   .app-stage :is(a, button).rounded-btn:active,

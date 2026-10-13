@@ -42,7 +42,7 @@ export function NexusOSSection() {
         </div>
       }
     >
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <p className="text-h3 font-medium leading-snug">{nexusos.subtitle}</p>
           {nexusos.summary.map((p) => (

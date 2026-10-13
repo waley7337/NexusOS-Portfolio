@@ -9,11 +9,11 @@ export interface SectionEntry {
 
 export const SECTIONS: SectionEntry[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "cv", label: "CV", icon: FileText },
+  { id: "education", label: "Education", icon: GraduationCap },
   { id: "nexusos", label: "NexusOS", icon: Orbit },
   { id: "architecture", label: "Architecture", icon: Network },
   { id: "library", label: "Library", icon: FolderOpen },
-  { id: "cv", label: "CV", icon: FileText },
-  { id: "education", label: "Education", icon: GraduationCap },
   { id: "projects", label: "Other projects", icon: BookOpen },
   { id: "demos", label: "Demo access", icon: AppWindow },
   { id: "contact", label: "Contact", icon: Mail },
