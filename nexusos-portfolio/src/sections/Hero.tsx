@@ -50,7 +50,7 @@ export function Hero() {
         <p className="text-machine">NexusOS figures, from the project documentation</p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
+      <div className="grid gap-3 lg:grid-cols-3">
         {approach.map((a) => (
           <div key={a.title} className="border-l border-rail pl-4">
             <p className="text-h4">{a.title}</p>

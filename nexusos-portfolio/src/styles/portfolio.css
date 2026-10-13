@@ -16,13 +16,16 @@
   width: 100%;
   max-width: 72rem;
   margin-inline: auto;
-  padding: 2rem 1.25rem 4rem;
+  padding: 2rem 1.25rem max(4rem, calc(100dvh - 18rem));
 }
 @media (min-width: 640px) {
   .portfolio-sheet { padding-inline: 2rem; }
 }
 @media (min-width: 1024px) {
-  .portfolio-sheet { padding: 3rem 2.5rem 4rem; }
+  .portfolio-sheet {
+    padding-top: 3rem;
+    padding-inline: 2.5rem;
+  }
 }
 .portfolio-sheet > .portfolio-section + .portfolio-section {
   margin-top: 5rem;

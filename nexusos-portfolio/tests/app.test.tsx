@@ -260,14 +260,14 @@ describe("App", () => {
     expect(ids.indexOf("demos")).toBeLessThan(ids.indexOf("contact"));
   });
 
-  it("floats the contact panel once per visit", () => {
+  it("floats the contact panel once per visit", async () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
     const contact = document.getElementById("contact");
     expect(contact?.dataset.contactPose).toBeUndefined();
     const contactTab = screen.getAllByRole("link", { name: "Contact" })[0];
     fireEvent.click(contactTab);
-    expect(contact?.dataset.contactPose).toBe("in");
+    await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
     expect(contact?.dataset.visible).toBe("true");
     let writes = 0;
     const original = contact!.setAttribute.bind(contact);
@@ -280,7 +280,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("link", { name: "Overview" })[0]);
     expect(contact?.getAttribute("data-contact-pose")).toBeNull();
     fireEvent.click(contactTab);
-    expect(contact?.dataset.contactPose).toBe("in");
+    await waitFor(() => expect(contact?.dataset.contactPose).toBe("in"));
   });
 
   it("skips the contact travel when reduced motion is set", () => {

@@ -27,6 +27,7 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   const contactEnd = useRef<((event: Event) => void) | null>(null);
   const previousActive = useRef(active);
   const smoothNav = useRef<string | null>(null);
+  const contactArrival = useRef(0);
 
   useEffect(() => {
     const el = stageRef.current;
@@ -105,20 +106,33 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   const goTo = (id: string) => {
     const target = document.getElementById(id);
     if (!target) return;
+    const arrival = ++contactArrival.current;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (id === "contact") {
-      const already =
-        active === "contact" ||
-        contactInView() ||
-        contactPose.current === "in" ||
-        contactPose.current === "settled";
-      if (!already) presentContact();
-    } else {
-      resetContact();
-    }
+    const wasHere =
+      id === "contact" &&
+      (active === "contact" || contactInView() || contactPose.current === "in" || contactPose.current === "settled");
+    if (id !== "contact") resetContact();
+    const before = mainRef.current?.scrollTop ?? 0;
     smoothNav.current = reduced ? null : id;
     target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
     window.history.replaceState(null, "", `#${id}`);
+    if (id !== "contact" || wasHere) return;
+    if (reduced) {
+      presentContact();
+      return;
+    }
+    const main = mainRef.current;
+    let played = false;
+    const play = () => {
+      if (played || arrival !== contactArrival.current) return;
+      played = true;
+      presentContact();
+    };
+    main?.addEventListener("scrollend", play, { once: true });
+    window.setTimeout(() => {
+      if (main && main.scrollTop !== before) return;
+      play();
+    }, 80);
   };
 
   useEffect(() => {
@@ -136,11 +150,12 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
       if (!SECTIONS.some((section) => section.id === id)) return;
       const target = document.getElementById(id);
       if (!target) return;
+      // A tab click already started a smooth scroll to this section. A late
+      // hash correction would cut that scroll short and start the contact
+      // travel before the section is in view.
+      if (smoothNav.current === id) return;
       if (id === "contact") presentContact();
       else resetContact();
-      // A tab click already started a smooth scroll to this section. A late
-      // hash correction would cut that scroll short.
-      if (smoothNav.current === id) return;
       target.scrollIntoView({ behavior: "auto", block: "start" });
     };
     scrollToHash();

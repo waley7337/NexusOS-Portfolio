@@ -15,7 +15,7 @@ export function ContactSection() {
       subtitle="Looking for an AQUA placement in application development."
     >
       <Card className="contact-panel p-6">
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
           <RowGroup>
             <Row marker={<Mail className="h-4 w-4" />} register="Email">
               <a className="focus-ring rounded-control text-sm hover:text-primary" href={`mailto:${profile.email}`}>
