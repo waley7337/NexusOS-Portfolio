@@ -1,4 +1,5 @@
 import { Hero } from "~/sections/Hero";
+import { TransparencySection } from "~/sections/TransparencySection";
 import { NexusOSSection } from "~/sections/NexusOSSection";
 import { WorkflowSection } from "~/sections/WorkflowSection";
 import { ArchitectureSection } from "~/sections/ArchitectureSection";
@@ -13,6 +14,7 @@ export function Portfolio() {
   return (
     <div className="portfolio-sheet">
       <Hero />
+      <TransparencySection />
       <CvSection />
       <EducationSection />
       <NexusOSSection />

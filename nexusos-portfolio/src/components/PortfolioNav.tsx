@@ -8,7 +8,9 @@
 import { useEffect, useRef } from "react";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SECTIONS } from "~/sections/registry";
+import { LanguageSwitch } from "~/components/LanguageSwitch";
+import { usePortfolioLanguage } from "~/i18n/language";
+import { SECTIONS, sectionLabel } from "~/sections/registry";
 import { profile } from "~/data/profile";
 
 interface NavProps {
@@ -17,6 +19,7 @@ interface NavProps {
 }
 
 export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & { onReplayIntro: () => void }) {
+  const { language } = usePortfolioLanguage();
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const seen = useRef(false);
@@ -64,10 +67,15 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
       <div className="px-5 pb-3">
         <p className="text-h4">{profile.name}</p>
         <p className="text-small text-muted-foreground">{profile.role}</p>
+        <div className="mt-3">
+          <LanguageSwitch />
+        </div>
       </div>
       <nav ref={navRef} className="portfolio-nav relative flex-1 space-y-0.5 overflow-y-auto overflow-x-clip p-3 pr-4">
         <span ref={indicatorRef} className="portfolio-nav-indicator" aria-hidden="true" />
-        {SECTIONS.map(({ id, label, icon: Icon }) => {
+        {SECTIONS.map((section) => {
+          const { id, icon: Icon } = section;
+          const label = sectionLabel(section, language);
           const isActive = active === id;
           return (
             <a
@@ -110,6 +118,7 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
 
 export function MobileNav({ active, onNavigate }: NavProps) {
   const navRef = useRef<HTMLElement>(null);
+  const { language } = usePortfolioLanguage();
 
   useEffect(() => {
     const nav = navRef.current;
@@ -125,28 +134,37 @@ export function MobileNav({ active, onNavigate }: NavProps) {
   }, [active]);
 
   return (
-    <nav
-      ref={navRef}
-      className="portfolio-nav-scroll flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft py-2 md:hidden"
-      aria-label="Portfolio sections"
-    >
-      {SECTIONS.map(({ id, label }) => (
-        <a
-          key={id}
-          href={`#${id}`}
-          aria-current={active === id ? "location" : undefined}
-          onClick={(e) => {
-            e.preventDefault();
-            onNavigate(id);
-          }}
-          className={cn(
-            "portfolio-nav-item focus-ring inline-flex shrink-0 items-center rounded-control px-3 text-xs transition-colors duration-fast",
-            active === id ? "bg-primary/10 font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3",
-          )}
-        >
-          {label}
-        </a>
-      ))}
-    </nav>
+    <>
+      <nav
+        ref={navRef}
+        className="portfolio-nav-scroll flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft py-2 md:hidden"
+        aria-label="Portfolio sections"
+      >
+        {SECTIONS.map((section) => {
+          const { id } = section;
+          const label = sectionLabel(section, language);
+          return (
+            <a
+              key={id}
+              href={`#${id}`}
+              aria-current={active === id ? "location" : undefined}
+              onClick={(e) => {
+                e.preventDefault();
+                onNavigate(id);
+              }}
+              className={cn(
+                "portfolio-nav-item focus-ring inline-flex shrink-0 items-center rounded-control px-3 text-xs transition-colors duration-fast",
+                active === id ? "bg-primary/10 font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3",
+              )}
+            >
+              {label}
+            </a>
+          );
+        })}
+      </nav>
+      <div className="border-b border-line-soft px-5 py-2 md:hidden">
+        <LanguageSwitch />
+      </div>
+    </>
   );
 }

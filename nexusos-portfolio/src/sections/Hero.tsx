@@ -4,8 +4,12 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Ticks } from "@/components/ui/structure";
 import { approach, profile, stats } from "~/data/profile";
+import { transparencyOpening } from "~/data/transparency";
+import { usePortfolioLanguage } from "~/i18n/language";
 
 export function Hero() {
+  const { language } = usePortfolioLanguage();
+
   return (
     <section id="overview" aria-label="Overview" className="portfolio-section">
       <div className="relative space-y-6">
@@ -36,6 +40,8 @@ export function Hero() {
           </a>
         </div>
       </div>
+
+      <p className="max-w-3xl border-l border-rail pl-4 text-sm leading-relaxed text-muted-foreground">{transparencyOpening[language]}</p>
 
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

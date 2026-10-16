@@ -3,6 +3,7 @@ import { SpaceField } from "@/components/space-field";
 import { useUiStore } from "@/stores/ui";
 import { StarEntry } from "~/animations/StarEntry";
 import { PortfolioShell } from "~/components/PortfolioShell";
+import { LanguageProvider } from "~/i18n/language";
 import { blockDocumentContextMenu } from "~/components/previewGuard";
 import { Portfolio } from "~/sections/Portfolio";
 
@@ -57,9 +58,11 @@ export default function App() {
       {phase === "intro" ? (
         <StarEntry onEnter={enter} />
       ) : (
-        <PortfolioShell onReplayIntro={replay}>
-          <Portfolio />
-        </PortfolioShell>
+        <LanguageProvider>
+          <PortfolioShell onReplayIntro={replay}>
+            <Portfolio />
+          </PortfolioShell>
+        </LanguageProvider>
       )}
     </>
   );

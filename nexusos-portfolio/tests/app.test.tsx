@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { createEvent, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, createEvent, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useUiStore } from "@/stores/ui";
 import App from "~/App";
@@ -15,11 +15,14 @@ import {
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
+import { transparencyDetail, transparencyOpening, transparencyTitle } from "~/data/transparency";
 import { SECTIONS } from "~/sections/registry";
 
 describe("App", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
+    window.localStorage.clear();
+    document.documentElement.lang = "en";
     window.history.replaceState(null, "", "/");
     useUiStore.setState({ spaceStage: "off", isAuthEntryActive: false });
   });
@@ -296,8 +299,51 @@ describe("App", () => {
     expect(ids.indexOf("education")).toBeLessThan(ids.indexOf("nexusos"));
     expect(ids.indexOf("projects")).toBeLessThan(ids.indexOf("demos"));
     expect(ids.indexOf("demos")).toBeLessThan(ids.indexOf("contact"));
+    expect(ids.indexOf("overview")).toBeLessThan(ids.indexOf("transparency"));
+    expect(ids.indexOf("transparency")).toBeLessThan(ids.indexOf("cv"));
     expect(ids.indexOf("nexusos")).toBeLessThan(ids.indexOf("workflow"));
     expect(ids.indexOf("workflow")).toBeLessThan(ids.indexOf("architecture"));
+  });
+
+  it("places the supplied transparency note before the overview cards and keeps the English detail unpublished", () => {
+    window.history.replaceState(null, "", "/#overview");
+    render(<App />);
+    const overview = screen.getByRole("region", { name: "Overview" });
+    const note = within(overview).getByText(transparencyOpening.en);
+    const figures = within(overview).getByText("NexusOS figures, from the project documentation");
+    expect(note.compareDocumentPosition(figures) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(overview).not.toHaveTextContent(transparencyOpening.de);
+
+    const tab = screen.getByRole("region", { name: transparencyTitle.en });
+    expect(within(tab).queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
+    expect(tab).not.toHaveTextContent(transparencyDetail.de[0].paragraphs[0]);
+    expect(document.documentElement).toHaveAttribute("lang", "en");
+  });
+
+  it("switches the opening note and the transparency tab to the supplied German text", () => {
+    window.history.replaceState(null, "", "/#overview");
+    render(<App />);
+    fireEvent.click(screen.getAllByRole("button", { name: "Deutsch" })[0]);
+
+    expect(screen.getByRole("region", { name: "Overview" })).toHaveTextContent(transparencyOpening.de);
+    expect(screen.getByRole("region", { name: "Overview" })).not.toHaveTextContent(transparencyOpening.en);
+    const tab = screen.getByRole("region", { name: transparencyTitle.de });
+    for (const part of transparencyDetail.de) {
+      expect(within(tab).getByRole("heading", { level: 3, name: part.heading })).toBeInTheDocument();
+      for (const paragraph of part.paragraphs) {
+        expect(tab).toHaveTextContent(paragraph);
+      }
+    }
+    expect(screen.getAllByRole("link", { name: transparencyTitle.de }).length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByRole("link", { name: transparencyTitle.en })).not.toBeInTheDocument();
+    expect(document.documentElement).toHaveAttribute("lang", "de");
+    expect(window.localStorage.getItem("nexusos-portfolio:language")).toBe("de");
+
+    cleanup();
+    window.history.replaceState(null, "", "/#transparency");
+    render(<App />);
+    expect(screen.getByRole("region", { name: transparencyTitle.de })).toBeInTheDocument();
+    expect(document.documentElement).toHaveAttribute("lang", "de");
   });
 
   it("shows the NexusOS workflow without a floating motion", () => {
