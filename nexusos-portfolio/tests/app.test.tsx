@@ -13,6 +13,7 @@ import {
   nexusGithub,
   nexusLiveApplication,
 } from "~/data/demoAccess";
+import { ghostDocs } from "~/data/ghostProtocol";
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
@@ -212,7 +213,7 @@ describe("App", () => {
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-live-application")).toHaveAttribute("href", "https://nexuops.com");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("href", "https://nexuops.com");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("target", "_blank");
-    expect(nexusGithub).toBe("https://github.com/waley7337/NexusOS-Portfolio");
+    expect(nexusGithub).toBe("https://github.com/waley7337/NexusOS");
     expect(within(nexusCard as HTMLElement).getByRole("link", { name: "GitHub" })).toHaveAttribute("href", nexusGithub);
     expect(within(nexusCard as HTMLElement).getByRole("link", { name: "GitHub" })).toHaveAttribute("target", "_blank");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-demo-email")).toHaveTextContent("waleyelnagdi7@gmail.com");
@@ -307,6 +308,29 @@ describe("App", () => {
     expect(ids.indexOf("transparency")).toBeLessThan(ids.indexOf("cv"));
     expect(ids.indexOf("nexusos")).toBeLessThan(ids.indexOf("workflow"));
     expect(ids.indexOf("workflow")).toBeLessThan(ids.indexOf("architecture"));
+    expect(ids.indexOf("architecture")).toBeLessThan(ids.indexOf("ghost-protocol"));
+    expect(ids.indexOf("ghost-protocol")).toBeLessThan(ids.indexOf("library"));
+  });
+
+  it("shows Ghost Protocol with the same carousel and documentation cards", () => {
+    window.history.replaceState(null, "", "/#ghost-protocol");
+    render(<App />);
+    const region = screen.getByRole("region", { name: "Ghost Protocol" });
+    expect(within(region).getByTestId("ghost-project-status")).toHaveTextContent(
+      "In progress. The web client is deployed. Password reset, signed public desktop builds and conflict-safe multi-device sync are not.",
+    );
+    expect(within(region).getByRole("button", { name: "Previous Ghost Protocol screenshot" })).toBeInTheDocument();
+    expect(within(region).getByRole("button", { name: "Next Ghost Protocol screenshot" })).toBeInTheDocument();
+    for (const title of ["Operations", "Mission lab", "Ranks"]) {
+      const card = within(region).getByRole("button", { name: `Inspect ${title}` });
+      expect(card.querySelector("img")?.getAttribute("src")).toMatch(/\.preview\.webp$/);
+    }
+    expect(within(region).getAllByRole("link", { name: /^Open / })).toHaveLength(ghostDocs.length);
+    for (const entry of ghostDocs) {
+      expect(within(region).getByRole("link", { name: `Open ${entry.title}` })).toHaveAttribute("href", entry.href);
+    }
+    expect(region).not.toHaveTextContent("waleyelnagdi7@gmail.com");
+    expect(region).not.toHaveTextContent("COMPANYcomp170106@");
   });
 
   it("places the supplied transparency note before the overview cards and keeps the English detail unpublished", () => {

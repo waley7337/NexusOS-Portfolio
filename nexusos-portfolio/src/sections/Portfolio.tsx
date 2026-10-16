@@ -3,6 +3,7 @@ import { TransparencySection } from "~/sections/TransparencySection";
 import { NexusOSSection } from "~/sections/NexusOSSection";
 import { WorkflowSection } from "~/sections/WorkflowSection";
 import { ArchitectureSection } from "~/sections/ArchitectureSection";
+import { GhostProtocolSection } from "~/sections/GhostProtocolSection";
 import { LibrarySection } from "~/sections/LibrarySection";
 import { CvSection } from "~/sections/CvSection";
 import { EducationSection } from "~/sections/EducationSection";
@@ -20,6 +21,7 @@ export function Portfolio() {
       <NexusOSSection />
       <WorkflowSection />
       <ArchitectureSection />
+      <GhostProtocolSection />
       <LibrarySection />
       <ProjectsSection />
       <DemoAccessSection />

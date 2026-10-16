@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { AppWindow, BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit, ScrollText, Workflow } from "lucide-react";
+import { AppWindow, BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit, ScrollText, Shield, Workflow } from "lucide-react";
 import type { PortfolioLanguage } from "~/i18n/language";
 
 export interface SectionEntry {
@@ -26,6 +26,7 @@ export const SECTIONS: SectionEntry[] = [
   { id: "nexusos", label: "NexusOS", icon: Orbit },
   { id: "workflow", label: "NexusOS workflow", icon: Workflow },
   { id: "architecture", label: "Architecture", icon: Network },
+  { id: "ghost-protocol", label: "Ghost Protocol", icon: Shield },
   { id: "library", label: "Library", icon: FolderOpen },
   { id: "projects", label: "Other projects", icon: BookOpen },
   { id: "demos", label: "Demo access", icon: AppWindow },

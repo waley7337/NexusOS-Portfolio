@@ -1,8 +1,8 @@
 import type { DragEvent, MouseEvent } from "react";
 import type { Asset } from "~/data/assets";
 
-/** Architecture diagrams live in these image folders. Interface screenshots do not. */
-const ARCHITECTURE_IMAGE = /\/images\/(architecture|security|multi-tenancy)\//;
+/** Architecture diagrams and Ghost Protocol carousel shots. Interface screenshots do not. */
+const ARCHITECTURE_IMAGE = /\/images\/(architecture|security|multi-tenancy|ghost-protocol)\//;
 
 /**
  * Protected document previews (PDFs) and architecture screenshots.

@@ -12,8 +12,8 @@ export const companyPortfolioLink = "https://nexus-os-portfolio-delta.vercel.app
 /** Live application control. Distinct from the sign-in path at profile.liveApp. */
 export const nexusLiveApplication = "https://nexuops.com";
 
-/** Public repository for this portfolio. The NexusOS application repo is not this URL. */
-export const nexusGithub = "https://github.com/waley7337/NexusOS-Portfolio";
+/** NexusOS application repository. The portfolio repo is a different URL. */
+export const nexusGithub = "https://github.com/waley7337/NexusOS";
 
 export const nexusDemoAccount = {
   email: "waleyelnagdi7@gmail.com",

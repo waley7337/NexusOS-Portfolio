@@ -99,8 +99,8 @@ describe("links and screenshots", () => {
     const files = [...walk(path.join(root, "src")), path.join(root, "index.html")];
     for (const f of files) {
       const text = fs.readFileSync(f, "utf8");
-      // Blocks the private application repo. The public portfolio repo ends in "-Portfolio".
-      expect(text, f).not.toMatch(/github\.com\/waley7337\/nexusos(?!-)/i);
+      // The NexusOS demo card links to github.com/waley7337/NexusOS, the repository the owner named.
+      // Redacted PDFs still must not contain that path. nexusos.com stays unpublished.
       expect(text, f).not.toMatch(/nexusos\.com/i);
     }
   });

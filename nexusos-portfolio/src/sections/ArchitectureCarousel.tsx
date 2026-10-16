@@ -59,7 +59,14 @@ function clamp(n: number, min: number, max: number) {
  * travel with an instant change. Full-resolution files load only after a card
  * is opened.
  */
-export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagram[] }) {
+export function ArchitectureCarousel({
+  diagrams,
+  controlLabel = "architecture diagram",
+}: {
+  diagrams: ArchitectureDiagram[];
+  /** Accessible name for the previous and next controls. Defaults keep the architecture tests stable. */
+  controlLabel?: string;
+}) {
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
   const mobile = useMedia("(max-width: 767px)");
   const count = diagrams.length;
@@ -205,7 +212,7 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
           <button
             type="button"
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            aria-label="Previous architecture diagram"
+            aria-label={`Previous ${controlLabel}`}
             onClick={() => goTo(index - 1)}
           >
             Previous
@@ -213,7 +220,7 @@ export function ArchitectureCarousel({ diagrams }: { diagrams: ArchitectureDiagr
           <button
             type="button"
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            aria-label="Next architecture diagram"
+            aria-label={`Next ${controlLabel}`}
             onClick={() => goTo(index + 1)}
           >
             Next

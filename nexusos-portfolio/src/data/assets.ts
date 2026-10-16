@@ -193,6 +193,17 @@ export const currentDesignShots: Asset[] = [
 /** The four shown inline in the NexusOS section; the library folder holds all of them. */
 export const interfaceShots = currentDesignShots.slice(0, 4);
 
+const GHOST = "ghost-protocol";
+const ghostShot = (name: string, title: string, description: string) =>
+  image(GHOST, name, title, description, "PNG · 1412×799 · live web client");
+
+/** Captured from the deployed Ghost Protocol web client. Three distinct panels. */
+export const ghostProtocolShots: Asset[] = [
+  ghostShot("operations", "Operations", "Operations panel of the deployed web client."),
+  ghostShot("mission-lab", "Mission lab", "Mission lab panel of the deployed web client."),
+  ghostShot("ranks", "Ranks", "Rank progression panel of the deployed web client."),
+];
+
 export const folders: Folder[] = [
   {
     id: "cv",
@@ -249,5 +260,12 @@ export const folders: Folder[] = [
     description: "Tenant isolation and request flow.",
     group: "Images",
     assets: [multiTenantFlow],
+  },
+  {
+    id: "ghost-protocol",
+    label: "Ghost Protocol",
+    description: "Screenshots of the deployed Ghost Protocol web client.",
+    group: "Images",
+    assets: ghostProtocolShots,
   },
 ];
