@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { transparencyDetail, transparencyTitle, verificationWorkflow } from "~/data/transparency";
+import { transparencyDetail, transparencyTitle, transparencyWorkflowLink, verificationWorkflow } from "~/data/transparency";
 import { usePortfolioLanguage } from "~/i18n/language";
 import { Section } from "~/sections/Section";
 
@@ -10,6 +10,16 @@ export function TransparencySection() {
   return (
     <Section id="transparency" title={transparencyTitle[language]}>
       <div className="grid gap-3">
+        {detail?.map((part) => (
+          <Card key={part.heading} className="space-y-3 p-5 sm:p-6">
+            <h3 className="text-h4">{part.heading}</h3>
+            {part.paragraphs.map((paragraph) => (
+              <p key={paragraph} className="text-sm leading-relaxed text-muted-foreground">
+                {paragraph}
+              </p>
+            ))}
+          </Card>
+        ))}
         {language === "en" ? (
           <Card className="p-5 sm:p-6">
             <h3 className="text-h4">{verificationWorkflow.title}</h3>
@@ -26,16 +36,10 @@ export function TransparencySection() {
             </ol>
           </Card>
         ) : null}
-        {detail?.map((part) => (
-          <Card key={part.heading} className="space-y-3 p-5 sm:p-6">
-            <h3 className="text-h4">{part.heading}</h3>
-            {part.paragraphs.map((paragraph) => (
-              <p key={paragraph} className="text-sm leading-relaxed text-muted-foreground">
-                {paragraph}
-              </p>
-            ))}
-          </Card>
-        ))}
+        <Card className="space-y-3 p-5 sm:p-6">
+          <h3 className="text-h4">{language === "de" ? "Bezug zum Arbeitsablauf" : "Relationship to the workflow"}</h3>
+          <p className="text-sm leading-relaxed text-muted-foreground">{transparencyWorkflowLink[language]}</p>
+        </Card>
       </div>
     </Section>
   );

@@ -204,6 +204,65 @@ export const ghostProtocolShots: Asset[] = [
   ghostShot("ranks", "Ranks", "Rank progression panel of the deployed web client."),
 ];
 
+const ghostAsset = (name: string, title: string, description: string, meta: string): Asset => ({
+  id: `gp-${name}`,
+  title,
+  description,
+  kind: "image",
+  status: "published",
+  src: `/images/${GHOST}/${name}.png`,
+  preview: `/images/${GHOST}/${name}.preview.webp`,
+  meta,
+});
+
+/** Interface screenshots, ordered as a short product tour. */
+export const ghostProtocolTour: Asset[] = [
+  ghostAsset("01-boot-sequence", "Boot sequence", "The initialization screen — Ghost Protocol systems coming online before the operations center loads.", "PNG · 3599×2080 · web client"),
+  ghostAsset("02-operations-center", "Operations Center", "The mission dashboard: completion, total XP, operative rank and streak across the practitioner-tier core techniques.", "PNG · 3599×2080 · web client"),
+  ghostAsset("03-mission-grid", "Mission grid", "The practitioner-tier techniques as a grid of missions, each with its XP reward and solved state.", "PNG · 3599×2080 · web client"),
+  ghostAsset("04-intel-codex", "Intel Codex", "A reference of the smuggling concepts behind the missions — CL.TE, TE.CL, TE.TE, H2.CL, CRLF injection, response queue poisoning and more.", "PNG · 3599×2080 · web client"),
+  ghostAsset("05-operative-ranks", "Operative Ranks", "The rank ladder from Civilian to Ghost Protocol, with the operator's current rank highlighted.", "PNG · 3599×2080 · web client"),
+  ghostAsset("06-rank-progression", "Rank progression", "The same ladder showing XP thresholds for each operative rank.", "PNG · 3599×2080 · web client"),
+  ghostAsset("07-operator-profile", "Operator profile", "The signed-in operator panel: rank, level and XP, with sign-out.", "PNG · 3599×2080 · web client"),
+  ghostAsset("08-mission-complete", "Mission complete", "The HTTP/2 request-splitting mission solved — the +500 XP reward and best-time overlay.", "PNG · 3599×2080 · web client"),
+  ghostAsset("09-attack-flow", "Mission attack flow", "A mission's attack-flow diagram: attacker to front-end to a downgraded back-end, above the payload editor.", "PNG · 3599×2080 · web client"),
+  ghostAsset("10-web-cache-poisoning", "Web cache poisoning", "An expert-tier mission brief: poison the cache so a resource serves a redirect to every future visitor.", "PNG · 3599×2080 · web client"),
+  ghostAsset("11-mission-guide", "Step-by-step mission guide", "The expanded mission guide: understand the chain, set up the exploit server, craft the poison request, verify.", "PNG · 3599×2080 · web client"),
+  ghostAsset("12-payload-editor", "Payload editor", "The payload editor and server-response pane where operators build and fire a crafted request.", "PNG · 3599×2080 · web client"),
+];
+
+/** Architecture diagrams derived from the implemented Ghost Protocol codebase. */
+export const ghostProtocolArchitecture: Asset[] = [
+  ghostAsset(
+    "system-architecture",
+    "System Architecture",
+    "Four layers from the untrusted Electron renderer and web client, through the trust boundary, to the token-authenticated API and Railway PostgreSQL — with implementation status and documented limits.",
+    "PNG · 3600×2082",
+  ),
+  ghostAsset(
+    "security-architecture",
+    "Security Architecture",
+    "Defense in depth across the renderer, bridge, credential and backend layers — the controls live today and the residual risks that remain honest.",
+    "PNG · 3600×2082",
+  ),
+];
+
+/** Workflow artefacts: the engineering story and the development roadmap. */
+export const ghostProtocolWorkflow: Asset[] = [
+  ghostAsset(
+    "development-roadmap",
+    "Development Roadmap",
+    "From secure scaffold to live production: core product verified, the security audit underway, and the release and portfolio phases next.",
+    "PNG · 3600×2082",
+  ),
+  ghostAsset(
+    "case-study",
+    "Engineering Case Study",
+    "The one-page case study: the challenge, the solution, before/after, key security decisions, results and honest scope.",
+    "PNG · 2480×3508 · portrait",
+  ),
+];
+
 export const folders: Folder[] = [
   {
     id: "cv",
@@ -264,8 +323,8 @@ export const folders: Folder[] = [
   {
     id: "ghost-protocol",
     label: "Ghost Protocol",
-    description: "Screenshots of the deployed Ghost Protocol web client.",
+    description: "Screenshots, architecture diagrams and workflow artefacts for Ghost Protocol.",
     group: "Images",
-    assets: ghostProtocolShots,
+    assets: [...ghostProtocolShots, ...ghostProtocolTour, ...ghostProtocolArchitecture, ...ghostProtocolWorkflow],
   },
 ];

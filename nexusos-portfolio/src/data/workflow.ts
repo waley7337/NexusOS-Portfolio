@@ -47,3 +47,55 @@ export const workflowSteps = [
 export const workflowCycle = "Architecture → Implementation → Integration → Testing → Refinement → Deployment";
 
 export const workflowStack = "React · TypeScript · FastAPI · PostgreSQL · Redis · Git · GitHub · Vercel · Railway · Cloudflare";
+
+export const workflowRelationship = {
+  en: "These steps describe how NexusOS is developed. A workflow description is not evidence that a feature is operational. What is implemented, what is verified and what is only planned is stated separately under Transparency & Development Approach and on each project.",
+  de: "Diese Schritte beschreiben, wie NexusOS entwickelt wird. Eine Beschreibung des Arbeitsablaufs ist kein Nachweis, dass eine Funktion betriebsbereit ist. Was umgesetzt, was überprüft und was nur geplant ist, steht getrennt unter Transparenz & Entwicklungsansatz und bei jedem Projekt.",
+} as const;
+
+export const workflowDe = {
+  title: "NexusOS-Arbeitsablauf",
+  intro:
+    "NexusOS wird in einem iterativen, modularen Full-Stack-Entwicklungsablauf entwickelt. Der Ablauf hält die Zuständigkeiten klar getrennt und ist auf Skalierbarkeit und Wartbarkeit ausgerichtet.",
+  steps: [
+    {
+      index: "01",
+      title: "Architektur und Codebasis",
+      body: "Die Anwendungsarchitektur wurde festgelegt und die Codebasis in modulare Frontend-Komponenten, Backend-Dienste, Konfiguration und unterstützende Infrastruktur gegliedert.",
+    },
+    {
+      index: "02",
+      title: "Frontend-Entwicklung",
+      body: "Die Benutzeroberfläche wurde mit React und TypeScript aufgebaut, mit wiederverwendbaren Komponenten, klaren Layouts und interaktiven Elementen für ein konsistentes Anwendungserlebnis.",
+    },
+    {
+      index: "03",
+      title: "Backend-Entwicklung und API-Anbindung",
+      body: "Die Backend-Funktionalität wurde mit FastAPI umgesetzt. Frontend-Komponenten sind über HTTP-APIs und einen strukturierten Datenaustausch mit der serverseitigen Geschäftslogik verbunden.",
+    },
+    {
+      index: "04",
+      title: "Datenbank und Datenhaltung",
+      body: "PostgreSQL dient der dauerhaften Speicherung. Die Datenzugriffe unterstützen Geschäftsmodule, CRM-Funktionen und die Anforderungen einer mandantenfähigen Anwendung.",
+    },
+    {
+      index: "05",
+      title: "Testen und Qualitätssicherung",
+      body: "Automatisierte Tests, Typprüfung, Build-Validierung und iteratives Debugging dienen dazu, Fehler zu finden, Funktionen zu prüfen und Regressionen während der Entwicklung zu begrenzen.",
+    },
+    {
+      index: "06",
+      title: "Versionsverwaltung und Iteration",
+      body: "Der Quellcode wird mit Git und GitHub geführt. Commits und getrennte Branches halten Änderungen nachvollziehbar und trennen die Arbeit an der Anwendung von der Arbeit am Portfolio.",
+    },
+    {
+      index: "07",
+      title: "Bereitstellung und Produktion",
+      body: "Die Bereitstellung ist auf Vercel für das Frontend, Railway für die Backend-Dienste und Cloudflare für die Domain-Infrastruktur ausgerichtet, mit einer Prüfung in der Produktion, um die bereitgestellte Anwendung zu validieren.",
+    },
+  ],
+  cycle: "Architektur → Umsetzung → Integration → Test → Verfeinerung → Bereitstellung",
+  stack: workflowStack,
+  cycleLabel: "Entwicklungszyklus",
+  stackLabel: "Technologie",
+} as const;

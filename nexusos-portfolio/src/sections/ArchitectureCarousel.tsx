@@ -166,6 +166,7 @@ export function ArchitectureCarousel({
         {diagrams.map((diagram, i) => {
           const d = deltas[i];
           const scale = d === 0 ? MAX_SCALE : MIN_SCALE;
+          const tilt = reduced || d === 0 ? 0 : clamp(d * -14, -22, 22);
           return (
             <button
               key={diagram.asset.id}
@@ -174,7 +175,7 @@ export function ArchitectureCarousel({
               }}
               type="button"
               className="arch-card preview-guard focus-ring"
-              data-tilt="0"
+              data-tilt={String(tilt)}
               data-preview-guard="true"
               aria-label={`Inspect ${diagram.asset.title}`}
               aria-current={i === index ? "true" : undefined}
@@ -182,9 +183,9 @@ export function ArchitectureCarousel({
               onDragStart={blockPreviewGesture}
               onClick={(e) => open(i, e.currentTarget)}
               style={{
-                transform: `translate(-50%, -50%) translateX(calc(${d} * (92% + 18px))) scale(${scale})`,
+                transform: `translate(-50%, -50%) translateX(calc(${d} * (96% + 18px))) rotateY(${tilt}deg) scale(${scale})`,
                 transition: reduced || jumps[i] ? "none" : `transform ${TRAVEL_MS}ms ${SLIDE_EASE}`,
-                zIndex: d === 0 ? 3 : 1,
+                zIndex: 10 - Math.abs(d),
               }}
             >
               <span className="arch-face">

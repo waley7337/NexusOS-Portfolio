@@ -17,7 +17,7 @@ import { ghostDocs } from "~/data/ghostProtocol";
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
-import { transparencyDetail, transparencyOpening, transparencyTitle, verificationWorkflow } from "~/data/transparency";
+import { transparencyDetail, transparencyOpening, transparencyTitle, transparencyWorkflowLink, verificationWorkflow } from "~/data/transparency";
 import { SECTIONS } from "~/sections/registry";
 
 describe("App", () => {
@@ -325,6 +325,10 @@ describe("App", () => {
       const card = within(region).getByRole("button", { name: `Inspect ${title}` });
       expect(card.querySelector("img")?.getAttribute("src")).toMatch(/\.preview\.webp$/);
     }
+    expect(within(region).getByRole("tab", { name: "Ghost Protocol" })).toHaveAttribute("aria-selected", "true");
+    expect(within(region).getByRole("tab", { name: "Workflow" })).toHaveAttribute("aria-selected", "false");
+    expect(within(region).getByRole("tab", { name: "Architecture" })).toHaveAttribute("aria-selected", "false");
+    expect(within(region).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
     expect(within(region).getAllByRole("link", { name: /^Open / })).toHaveLength(ghostDocs.length);
     for (const entry of ghostDocs) {
       expect(within(region).getByRole("link", { name: `Open ${entry.title}` })).toHaveAttribute("href", entry.href);
@@ -351,6 +355,10 @@ describe("App", () => {
       expect(tab).toHaveTextContent(paragraph);
     }
     expect(tab).not.toHaveTextContent(transparencyDetail.de[0].paragraphs[0]);
+    for (const part of transparencyDetail.en) {
+      expect(within(tab).getByRole("heading", { level: 3, name: part.heading })).toBeInTheDocument();
+    }
+    expect(tab).toHaveTextContent(transparencyWorkflowLink.en);
     expect(document.documentElement).toHaveAttribute("lang", "en");
   });
 
@@ -366,6 +374,8 @@ describe("App", () => {
     expect(overviewDe).not.toHaveTextContent(transparencyOpening.en.body);
     const tab = screen.getByRole("region", { name: transparencyTitle.de });
     expect(tab).not.toHaveTextContent(verificationWorkflow.paragraphs[0]);
+    expect(tab).toHaveTextContent(transparencyWorkflowLink.de);
+    expect(tab).not.toHaveTextContent(transparencyDetail.en[0].heading);
     for (const part of transparencyDetail.de) {
       expect(within(tab).getByRole("heading", { level: 3, name: part.heading })).toBeInTheDocument();
       for (const paragraph of part.paragraphs) {

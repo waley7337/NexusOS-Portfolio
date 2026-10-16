@@ -8,6 +8,7 @@ import { caseStudy, interfaceShots, type Asset } from "~/data/assets";
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { AssetPreviewDialog } from "~/components/AssetPreviewDialog";
+import { ProjectProgress } from "~/components/ProjectProgress";
 import { Section } from "~/sections/Section";
 
 export function NexusOSSection() {
@@ -60,6 +61,9 @@ export function NexusOSSection() {
           <p className="text-small text-foreground" data-testid="project-status">
             {nexusos.status.headline}
           </p>
+          <div className="mt-4 border-t border-line-soft pt-4">
+            <ProjectProgress id="nexusos" />
+          </div>
           <RowGroup className="mt-2">
             <Row register={<Badge variant="success">Implemented</Badge>}>
               <p className="text-small text-muted-foreground">{nexusos.status.implemented}</p>

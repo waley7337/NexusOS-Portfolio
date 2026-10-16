@@ -3,8 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ProjectProgress } from "~/components/ProjectProgress";
 import { otherProjects, type ProjectStatus } from "~/data/projects";
 import { Section } from "~/sections/Section";
+
+const PROGRESS_ID: Record<string, string> = {
+  "Ghost Protocol": "ghost-protocol",
+  "Pentest Report Generator (v1)": "pentest-report-generator",
+};
 
 const STATUS_VARIANT: Record<ProjectStatus, "success" | "info" | "warning" | "default"> = {
   completed: "success",
@@ -73,6 +79,7 @@ export function ProjectsSection() {
             </div>
 
             <p className="text-body text-muted-foreground">{project.summary}</p>
+            {PROGRESS_ID[project.name] ? <ProjectProgress id={PROGRESS_ID[project.name]} /> : null}
 
             <div className={cn("grid gap-4", project.prominent && "md:grid-cols-2")}>
               <div className="space-y-2">

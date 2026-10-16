@@ -1,8 +1,8 @@
 /**
- * Approved transparency copy only.
- * The detailed English disclaimer is not in this repository or the supplied
- * source text, so English has the opening statement and the tab title, and
- * no detailed body.
+ * Transparency copy.
+ * The opening statements and the German detail are the supplied text.
+ * The English detail follows that German text so both languages have the
+ * short note and the detailed section. Labels stay unbracketed.
  */
 
 export const transparencyOpening = {
@@ -34,8 +34,53 @@ export const verificationWorkflow = {
   ],
 } as const;
 
+export const transparencyWorkflowLink = {
+  en: "The NexusOS workflow section describes the development process. It is not evidence that a feature is operational. Implemented work, verification and production readiness stay separate.",
+  de: "Der Abschnitt zum NexusOS-Arbeitsablauf beschreibt den Entwicklungsprozess. Er ist kein Nachweis, dass eine Funktion betriebsbereit ist. Umgesetzte Arbeit, Überprüfung und Produktionsreife bleiben getrennt.",
+} as const;
+
 export const transparencyDetail = {
-  en: null,
+  en: [
+    {
+      heading: "Learning by building",
+      paragraphs: [
+        "I treat software development as a continuous process of building, questioning, testing and improving. These projects are practical learning environments: I work through software architecture, integrate technologies, take on technical problems and develop a clearer understanding of how systems actually behave.",
+        "I want to be transparent about what these projects show — and what they do not claim.",
+      ],
+    },
+    {
+      heading: "My role and the use of LLMs",
+      paragraphs: [
+        "I use large language models as development tools: to support implementation, investigate problems, compare alternative approaches and deepen my understanding of new technologies. Generated code and explanations can be wrong, incomplete or a poor fit for a given architecture. They have to be reviewed and verified rather than accepted as they are.",
+        "My contribution is the software architecture, the system design, the technical decisions, the requirements and constraints, the governance, and the judgement of how the pieces fit together. I work to understand the systems I build, to find weaknesses, to investigate failures systematically and to check real behaviour against tests and the evidence I have.",
+        "The share of work that is mine varies by project. I do not present AI-assisted development as proof that I wrote every line independently. I also do not claim comprehensive expertise in every technology in use. What I do claim is that I understand the systems I build and that I take responsibility for their technical quality, their limits and their further development.",
+      ],
+    },
+    {
+      heading: "Why unfinished projects are shown",
+      paragraphs: [
+        "I also present projects that are still in development, because I want to show more than a finished interface or a polished presentation. I want employers to see how I approach complex requirements, structure an application, weigh architecture decisions, integrate components and recognise what still has to be built.",
+        "An unfinished project can still show technical initiative and problem-solving. Implemented functionality is not automatically verified functionality, and a large codebase does not mean a system is ready for production.",
+        "For each project I want the current state, the functions already built, the evidence, the known limits, the open blockers and the next necessary steps to be documented plainly. Where a check is still outstanding, I say so instead of presenting an assumption as a fact.",
+      ],
+    },
+    {
+      heading: "How I am learning",
+      paragraphs: [
+        "I am on the path to becoming a software developer, and I know I still have a great deal to learn. I want to deepen the technical foundations, get better at judging different approaches and apply sound professional practice more consistently.",
+        "That is one reason I chose the LAB route: I want to extend what I know through structured learning and practical experience, to firm up the foundations and to prepare deliberately for the demands of professional software development.",
+        "I am curious about how systems work, I like difficult technical problems, and I am motivated to keep improving the quality of the work. Finding a limitation or a defect is not something to hide. It is a chance to learn and to build a better solution.",
+      ],
+    },
+    {
+      heading: "An honest account of progress",
+      paragraphs: [
+        "A completion percentage is meant to describe the documented state of a clearly defined project scope — not my personal competence and not the volume of code written. It should rest on criteria that can be followed and on the evidence available. When the information is not enough for a defensible assessment, the progress stays unset.",
+        "I distinguish implementation progress, technical verification and production readiness. A function can be implemented and still untested. An application can work locally and still fail in integration or deployment. A technically substantial project can still be unfit for production use.",
+        "The aim is not to present every project as finished. I want to show what I can build, how I approach technical problems, what I understand today and how I intend to keep developing.",
+      ],
+    },
+  ],
   de: [
     {
       heading: "Lernen durch praktisches Entwickeln",

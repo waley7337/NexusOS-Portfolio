@@ -24,7 +24,7 @@ export const SECTIONS: SectionEntry[] = [
   { id: "cv", label: "CV", icon: FileText },
   { id: "education", label: "Education", icon: GraduationCap },
   { id: "nexusos", label: "NexusOS", icon: Orbit },
-  { id: "workflow", label: "NexusOS workflow", icon: Workflow },
+  { id: "workflow", label: "NexusOS workflow", labels: { de: "NexusOS-Arbeitsablauf" }, icon: Workflow },
   { id: "architecture", label: "Architecture", icon: Network },
   { id: "ghost-protocol", label: "Ghost Protocol", icon: Shield },
   { id: "library", label: "Library", icon: FolderOpen },
