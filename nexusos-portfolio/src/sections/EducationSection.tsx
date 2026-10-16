@@ -39,7 +39,7 @@ export function EducationSection() {
         </Card>
 
         {published ? (
-          <Card className="flex h-fit flex-col gap-3 p-6" data-testid="degree-download">
+          <Card className="portfolio-lift flex h-fit flex-col gap-3 p-6" data-testid="degree-download">
             <FileText className="h-[var(--icon-md)] w-[var(--icon-md)] text-muted-foreground" aria-hidden="true" />
             <div className="space-y-1.5">
               <p className="text-h4">Degree certificate</p>
@@ -51,7 +51,7 @@ export function EducationSection() {
             <AssetActions asset={degree} />
           </Card>
         ) : (
-          <Card className="flex h-fit flex-col gap-3 border-dashed p-6" data-testid="degree-on-request">
+          <Card className="portfolio-lift flex h-fit flex-col gap-3 border-dashed p-6" data-testid="degree-on-request">
             <Lock className="h-[var(--icon-md)] w-[var(--icon-md)] text-muted-foreground" aria-hidden="true" />
             <p className="text-h4">Degree certificate — available on request</p>
             <p className="text-small text-muted-foreground">{degree.note}</p>

@@ -108,6 +108,16 @@ describe("neural field", () => {
     expect(canvas.height).toBe(1600);
   });
 
+  it("does not follow the pointer", () => {
+    mockMotion(false);
+    const add = vi.spyOn(window, "addEventListener");
+    const field = createNeuralField(canvas);
+    const types = add.mock.calls.map((call) => call[0]);
+    expect(types).not.toContain("pointermove");
+    expect(types).not.toContain("mousemove");
+    field.destroy();
+  });
+
   it("cleans up the frame loop, observers and listeners on unmount", () => {
     const { mql } = mockMotion(false);
     const removeDoc = vi.spyOn(document, "removeEventListener");

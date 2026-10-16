@@ -24,7 +24,7 @@ export function ProjectsSection() {
         {otherProjects.map((project) => (
           <Card
             key={project.name}
-            className={cn("flex flex-col gap-4 p-5", project.prominent && "lg:col-span-2")}
+            className={cn("portfolio-lift flex flex-col gap-4 p-5", project.prominent && "lg:col-span-2")}
             data-project={project.name}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -37,15 +37,26 @@ export function ProjectsSection() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {project.demo && (
-                  <a
-                    className={buttonVariants({ variant: "primary", size: "sm" })}
-                    href={project.demo.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ExternalLink aria-hidden="true" />
-                    {project.demo.label}
-                  </a>
+                  <>
+                    <a
+                      className={buttonVariants({ variant: "primary", size: "sm" })}
+                      href={project.demo.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink aria-hidden="true" />
+                      {project.demo.label}
+                    </a>
+                    <a
+                      className={buttonVariants({ variant: "outline", size: "sm" })}
+                      href={project.demo.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink aria-hidden="true" />
+                      Open Demo
+                    </a>
+                  </>
                 )}
                 {project.github && (
                   <a

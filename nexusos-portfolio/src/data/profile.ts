@@ -19,8 +19,14 @@ export const profile = {
   liveApp: {
     url: "https://nexuops.com/login",
     host: "nexuops.com",
-    note: "Opens the sign-in page of the live NexusOS app. No demo account or credentials are provided.",
+    note: "Opens the sign-in page of the live NexusOS app.",
   },
+  /**
+   * Company portfolio identifier supplied for NexusOS. It is an identifier,
+   * not a URL and not a sign-in name. The live demos section shows this text
+   * and links the company portfolio page separately.
+   */
+  companyPortfolioId: "el-nagdi-s-portfolio",
 };
 
 export const approach = [

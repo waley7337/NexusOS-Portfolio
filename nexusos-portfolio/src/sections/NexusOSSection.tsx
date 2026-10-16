@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Github, LogIn } from "lucide-react";
+import { ExternalLink, FileText, Github, LogIn } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -42,7 +42,7 @@ export function NexusOSSection() {
         </div>
       }
     >
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <div className="space-y-4">
           <p className="text-h3 font-medium leading-snug">{nexusos.subtitle}</p>
           {nexusos.summary.map((p) => (
@@ -78,6 +78,15 @@ export function NexusOSSection() {
                 rel="noreferrer"
               >
                 {profile.liveApp.host}/login
+              </a>
+              <a
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+                href={profile.liveApp.url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <ExternalLink aria-hidden="true" />
+                Open Demo
               </a>
               <p className="text-small text-muted-foreground" data-testid="live-app-note">
                 {profile.liveApp.note}

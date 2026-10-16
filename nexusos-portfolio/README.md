@@ -65,7 +65,7 @@ Planned slots that don't have material yet: `public/videos/nexusos/` (demo video
 
 ### Live app
 
-`profile.liveApp` (`https://nexuops.com/login`) is the sign-in page of the live NexusOS deployment. It is linked from the NexusOS section and the Contact section with a note that no demo account or credentials are provided. Never add credentials here.
+`profile.liveApp` (`https://nexuops.com/login`) is the sign-in page of the live NexusOS deployment. It stays linked from the NexusOS section and the Contact section. The Live demos & access section shows the company-given identifier as text, links the company portfolio page, opens the live application at `https://nexuops.com`, and lists the demo email and password supplied for NexusOS and for Ghost Protocol. Those two accounts are not interchangeable.
 
 ## Deploying to Vercel
 
