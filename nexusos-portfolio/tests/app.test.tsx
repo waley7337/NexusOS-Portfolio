@@ -10,6 +10,7 @@ import {
   companyPortfolioLink,
   ghostDemoAccount,
   nexusDemoAccount,
+  nexusGithub,
   nexusLiveApplication,
 } from "~/data/demoAccess";
 import { nexusos } from "~/data/nexusos";
@@ -211,6 +212,9 @@ describe("App", () => {
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-live-application")).toHaveAttribute("href", "https://nexuops.com");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("href", "https://nexuops.com");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-open-live")).toHaveAttribute("target", "_blank");
+    expect(nexusGithub).toBe("https://github.com/waley7337/NexusOS-Portfolio");
+    expect(within(nexusCard as HTMLElement).getByRole("link", { name: "GitHub" })).toHaveAttribute("href", nexusGithub);
+    expect(within(nexusCard as HTMLElement).getByRole("link", { name: "GitHub" })).toHaveAttribute("target", "_blank");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-demo-email")).toHaveTextContent("waleyelnagdi7@gmail.com");
     expect(within(nexusCard as HTMLElement).getByTestId("nexusos-demo-password")).toHaveTextContent("COMPANYcomp170106@");
     expect(nexusCard).not.toHaveTextContent("nagdi9697@gmail.com");

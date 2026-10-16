@@ -8,6 +8,7 @@ import {
   companyPortfolioLink,
   ghostDemoAccount,
   nexusDemoAccount,
+  nexusGithub,
   nexusLiveApplication,
 } from "~/data/demoAccess";
 import { nexusos } from "~/data/nexusos";
@@ -198,7 +199,7 @@ export function DemoAccessSection() {
             testId="nexusos-demo-password"
           />
 
-          <div className="mt-auto">
+          <div className="mt-auto flex flex-wrap gap-2">
             <a
               className={buttonVariants({ variant: "primary", size: "sm" })}
               href={nexusLiveApplication}
@@ -209,6 +210,15 @@ export function DemoAccessSection() {
             >
               <LogIn aria-hidden="true" />
               Open live application
+            </a>
+            <a
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+              href={nexusGithub}
+              target="_blank"
+              rel="noreferrer"
+              data-testid="nexusos-github"
+            >
+              GitHub
             </a>
           </div>
         </Card>
