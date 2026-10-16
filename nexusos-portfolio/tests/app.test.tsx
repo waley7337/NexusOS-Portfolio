@@ -15,7 +15,7 @@ import {
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
-import { transparencyDetail, transparencyOpening, transparencyTitle } from "~/data/transparency";
+import { transparencyDetail, transparencyOpening, transparencyTitle, verificationWorkflow } from "~/data/transparency";
 import { SECTIONS } from "~/sections/registry";
 
 describe("App", () => {
@@ -315,7 +315,10 @@ describe("App", () => {
     expect(overview).not.toHaveTextContent(transparencyOpening.de);
 
     const tab = screen.getByRole("region", { name: transparencyTitle.en });
-    expect(within(tab).queryByRole("heading", { level: 3 })).not.toBeInTheDocument();
+    expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.title })).toBeInTheDocument();
+    for (const paragraph of verificationWorkflow.paragraphs) {
+      expect(tab).toHaveTextContent(paragraph);
+    }
     expect(tab).not.toHaveTextContent(transparencyDetail.de[0].paragraphs[0]);
     expect(document.documentElement).toHaveAttribute("lang", "en");
   });
@@ -328,6 +331,7 @@ describe("App", () => {
     expect(screen.getByRole("region", { name: "Overview" })).toHaveTextContent(transparencyOpening.de);
     expect(screen.getByRole("region", { name: "Overview" })).not.toHaveTextContent(transparencyOpening.en);
     const tab = screen.getByRole("region", { name: transparencyTitle.de });
+    expect(tab).not.toHaveTextContent(verificationWorkflow.paragraphs[0]);
     for (const part of transparencyDetail.de) {
       expect(within(tab).getByRole("heading", { level: 3, name: part.heading })).toBeInTheDocument();
       for (const paragraph of part.paragraphs) {

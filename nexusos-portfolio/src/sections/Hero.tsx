@@ -41,7 +41,9 @@ export function Hero() {
         </div>
       </div>
 
-      <p className="max-w-3xl border-l border-rail pl-4 text-sm leading-relaxed text-muted-foreground">{transparencyOpening[language]}</p>
+      <Card className="p-5 sm:p-6">
+        <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">{transparencyOpening[language]}</p>
+      </Card>
 
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -58,10 +60,10 @@ export function Hero() {
 
       <div className="grid gap-3 lg:grid-cols-3">
         {approach.map((a) => (
-          <div key={a.title} className="border-l border-rail pl-4">
+          <Card key={a.title} className="p-5">
             <p className="text-h4">{a.title}</p>
-            <p className="mt-1 text-small leading-relaxed text-muted-foreground">{a.body}</p>
-          </div>
+            <p className="mt-2 text-small leading-relaxed text-muted-foreground">{a.body}</p>
+          </Card>
         ))}
       </div>
     </section>

@@ -15,6 +15,19 @@ export const transparencyTitle = {
   de: "Transparenz & Entwicklungsansatz",
 } as const;
 
+/** Supplied in English only. It is not shown in the German view. */
+export const verificationWorkflow = {
+  title: "My workflow",
+  paragraphs: [
+    "My workflow is to implement the change, verify it locally, review the code, and then move through the Git and deployment process.",
+    "First, I run the relevant automated tests, type checks, linting and build. I also run the application locally and test the actual user flow, including error handling and edge cases.",
+    "Before committing, I inspect the Git status and diff to make sure I'm committing only the intended changes, without secrets or unrelated modifications. I use pre-commit checks where they're configured.",
+    "After committing, I push the feature branch and review the CI results and code changes. Before production, I prefer to validate the application in a staging environment, including API integration, database compatibility, configuration and health checks.",
+    "After deployment, I check logs, application health and critical user flows. I also consider how to roll back if the deployment introduces a regression.",
+    "I don't assume that one successful test means everything is correct. I use several layers of verification, and I distinguish between what I've actually tested and what still needs testing.",
+  ],
+} as const;
+
 export const transparencyDetail = {
   en: null,
   de: [
