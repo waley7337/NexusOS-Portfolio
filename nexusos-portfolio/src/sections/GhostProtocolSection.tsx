@@ -5,9 +5,15 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Row, RowGroup } from "@/components/ui/structure";
 import { cn } from "@/lib/utils";
-import { ghostProtocol, ghostProtocolShots } from "~/data/ghost-protocol";
+import {
+  ghostProtocol,
+  ghostProtocolArchitecture,
+  ghostProtocolShots,
+  ghostProtocolWorkflow,
+} from "~/data/ghost-protocol";
 import type { Asset } from "~/data/assets";
 import { AssetPreviewDialog } from "~/components/AssetPreviewDialog";
+import { ImageCarousel } from "~/components/ImageCarousel";
 import { Section } from "~/sections/Section";
 
 type TabId = "overview" | "workflow" | "architecture";
@@ -144,36 +150,26 @@ export function GhostProtocolSection() {
       )}
 
       {tab === "workflow" && (
-        <div id="gp-panel-workflow" role="tabpanel" aria-labelledby="gp-tab-workflow">
-          <TabPlaceholder
-            eyebrow="Workflow"
-            title="Workflow write-up in progress"
-            body="The build process, mission authoring and release workflow for Ghost Protocol will be documented here."
-          />
+        <div id="gp-panel-workflow" role="tabpanel" aria-labelledby="gp-tab-workflow" className="space-y-3">
+          <p className="eyebrow">Workflow</p>
+          <ImageCarousel items={ghostProtocolWorkflow} label="Ghost Protocol workflow" onOpen={setPreview} />
+          <p className="text-small text-muted-foreground">
+            The engineering case study and the development roadmap — the story of how Ghost Protocol was built and where it goes next.
+          </p>
         </div>
       )}
 
       {tab === "architecture" && (
-        <div id="gp-panel-architecture" role="tabpanel" aria-labelledby="gp-tab-architecture">
-          <TabPlaceholder
-            eyebrow="Architecture"
-            title="Architecture diagrams in progress"
-            body="Diagrams of the two-client model and the API-only database boundary will be added here."
-          />
+        <div id="gp-panel-architecture" role="tabpanel" aria-labelledby="gp-tab-architecture" className="space-y-3">
+          <p className="eyebrow">Architecture</p>
+          <ImageCarousel items={ghostProtocolArchitecture} label="Ghost Protocol architecture" onOpen={setPreview} />
+          <p className="text-small text-muted-foreground">
+            Diagrams derived from the implemented Ghost Protocol codebase. Click to inspect at full resolution.
+          </p>
         </div>
       )}
 
       <AssetPreviewDialog asset={preview} onClose={() => setPreview(null)} />
     </Section>
-  );
-}
-
-function TabPlaceholder({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
-  return (
-    <Card className="flex flex-col items-center gap-2 px-6 py-16 text-center">
-      <p className="eyebrow">{eyebrow}</p>
-      <p className="text-h4">{title}</p>
-      <p className="max-w-md text-small text-muted-foreground">{body}</p>
-    </Card>
   );
 }

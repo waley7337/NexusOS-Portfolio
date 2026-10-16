@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { useUiStore } from "@/stores/ui";
 import App from "~/App";
@@ -68,6 +68,24 @@ describe("App", () => {
       "href",
       "https://github.com/waley7337/Ghost-Protocol",
     );
+  });
+
+  it("shows the architecture and workflow carousels inside the Ghost Protocol tabs", () => {
+    window.history.replaceState(null, "", "/#ghost-protocol");
+    render(<App />);
+    const ghost = screen.getByRole("region", { name: "Ghost Protocol" });
+
+    fireEvent.click(within(ghost).getByRole("tab", { name: "Architecture" }));
+    const arch = within(ghost).getByRole("group", { name: "Ghost Protocol architecture" });
+    expect(within(arch).getByRole("heading", { name: "System Architecture" })).toBeInTheDocument();
+    fireEvent.click(within(arch).getByRole("button", { name: "Next" }));
+    expect(within(arch).getByRole("heading", { name: "Security Architecture" })).toBeInTheDocument();
+
+    fireEvent.click(within(ghost).getByRole("tab", { name: "Workflow" }));
+    const flow = within(ghost).getByRole("group", { name: "Ghost Protocol workflow" });
+    expect(within(flow).getByRole("heading", { name: "Development Roadmap" })).toBeInTheDocument();
+    fireEvent.click(within(flow).getByRole("button", { name: "Next" }));
+    expect(within(flow).getByRole("heading", { name: "Engineering Case Study" })).toBeInTheDocument();
   });
 
   it("links the live app's sign-in page without implying demo credentials", () => {

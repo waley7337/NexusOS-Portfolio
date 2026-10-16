@@ -76,6 +76,49 @@ const shot = (name: string, title: string, description: string): Asset => ({
   meta: "PNG · 3599×2080 · web client",
 });
 
+const diagram = (name: string, title: string, description: string, meta: string): Asset => ({
+  id: `gp-${name}`,
+  title,
+  description,
+  kind: "image",
+  status: "published",
+  src: `/images/${GP}/${name}.png`,
+  preview: `/images/${GP}/${name}.preview.webp`,
+  meta,
+});
+
+/** Architecture diagrams, derived from the implemented Ghost Protocol codebase. */
+export const ghostProtocolArchitecture: Asset[] = [
+  diagram(
+    "system-architecture",
+    "System Architecture",
+    "Four layers from the untrusted Electron renderer and web client, through the trust boundary, to the token-authenticated API and Railway PostgreSQL — with implementation status and documented limits.",
+    "PNG · 3600×2082",
+  ),
+  diagram(
+    "security-architecture",
+    "Security Architecture",
+    "Defense in depth across the renderer, bridge, credential and backend layers — the controls live today and the residual risks that remain honest.",
+    "PNG · 3600×2082",
+  ),
+];
+
+/** Workflow artefacts: the engineering story and the development roadmap. */
+export const ghostProtocolWorkflow: Asset[] = [
+  diagram(
+    "development-roadmap",
+    "Development Roadmap",
+    "From secure scaffold to live production: core product verified, the security audit underway, and the release and portfolio phases next.",
+    "PNG · 3600×2082",
+  ),
+  diagram(
+    "case-study",
+    "Engineering Case Study",
+    "The one-page case study: the challenge, the solution, before/after, key security decisions, results and honest scope.",
+    "PNG · 2480×3508 · portrait",
+  ),
+];
+
 /** Interface screenshots, ordered as a short product tour. */
 export const ghostProtocolShots: Asset[] = [
   shot("01-boot-sequence", "Boot sequence", "The initialization screen — Ghost Protocol systems coming online before the operations center loads."),
