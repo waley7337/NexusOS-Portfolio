@@ -21,7 +21,7 @@ describe("App", () => {
     window.history.replaceState(null, "", "/#cv");
     render(<App />);
     expect(screen.getByTestId("portfolio-shell")).toBeInTheDocument();
-    for (const name of ["NexusOS", "Architecture", "Library", "CV", "Education", "Contact"]) {
+    for (const name of ["NexusOS", "Architecture", "Ghost Protocol", "Library", "CV", "Education", "Contact"]) {
       expect(screen.getByRole("region", { name })).toBeInTheDocument();
     }
     const degree = within(screen.getByTestId("degree-download"));
@@ -37,23 +37,37 @@ describe("App", () => {
     expect(screen.getByRole("link", { name: "+43 676 5119613" })).toHaveAttribute("href", "tel:+436765119613");
   });
 
-  it("lists the verified other projects and no unverified names", () => {
+  it("keeps only the Pentest tool under Other projects; Ghost Protocol is not there", () => {
     window.history.replaceState(null, "", "/#projects");
     render(<App />);
     const projects = screen.getByRole("region", { name: "Other projects" });
-    expect(projects).toHaveTextContent("Ghost Protocol");
     expect(projects).toHaveTextContent("Pentest Report Generator (v1)");
-    expect(projects).toHaveTextContent("In progress");
     expect(projects).toHaveTextContent("Prototype · local only");
-    const ghost = within(projects).getByRole("link", { name: "Live web app" });
-    expect(ghost).toHaveAttribute("href", "https://ghost-protocol-pi.vercel.app");
+    expect(projects).not.toHaveTextContent("Ghost Protocol");
     const repos = within(projects).getAllByRole("link", { name: "GitHub" });
     expect(repos.map((a) => a.getAttribute("href"))).toEqual([
-      "https://github.com/waley7337/Ghost-Protocol",
       "https://github.com/waley7337/pentest-report-tool",
     ]);
     expect(projects).not.toHaveTextContent(/PermissionGraph|Contract Sentinel|Client Portal/i);
     expect(projects.textContent).not.toMatch(/github\.com\/waley7337\/nexusos/i);
+  });
+
+  it("gives Ghost Protocol its own section with its tabs and the moved project card", () => {
+    window.history.replaceState(null, "", "/#ghost-protocol");
+    render(<App />);
+    const ghost = screen.getByRole("region", { name: "Ghost Protocol" });
+    expect(within(ghost).getByRole("tab", { name: "Ghost Protocol" })).toBeInTheDocument();
+    expect(within(ghost).getByRole("tab", { name: "Workflow" })).toBeInTheDocument();
+    expect(within(ghost).getByRole("tab", { name: "Architecture" })).toBeInTheDocument();
+    expect(within(ghost).getByTestId("ghost-protocol-status")).toBeInTheDocument();
+    expect(within(ghost).getByRole("link", { name: "Live web app" })).toHaveAttribute(
+      "href",
+      "https://ghost-protocol-pi.vercel.app",
+    );
+    expect(within(ghost).getByRole("link", { name: "GitHub" })).toHaveAttribute(
+      "href",
+      "https://github.com/waley7337/Ghost-Protocol",
+    );
   });
 
   it("links the live app's sign-in page without implying demo credentials", () => {

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit } from "lucide-react";
+import { BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit, Skull } from "lucide-react";
 
 export interface SectionEntry {
   id: string;
@@ -11,6 +11,7 @@ export const SECTIONS: SectionEntry[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "nexusos", label: "NexusOS", icon: Orbit },
   { id: "architecture", label: "Architecture", icon: Network },
+  { id: "ghost-protocol", label: "Ghost Protocol", icon: Skull },
   { id: "library", label: "Library", icon: FolderOpen },
   { id: "cv", label: "CV", icon: FileText },
   { id: "education", label: "Education", icon: GraduationCap },

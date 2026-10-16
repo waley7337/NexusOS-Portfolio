@@ -1,6 +1,7 @@
 import { Hero } from "~/sections/Hero";
 import { NexusOSSection } from "~/sections/NexusOSSection";
 import { ArchitectureSection } from "~/sections/ArchitectureSection";
+import { GhostProtocolSection } from "~/sections/GhostProtocolSection";
 import { LibrarySection } from "~/sections/LibrarySection";
 import { CvSection } from "~/sections/CvSection";
 import { EducationSection } from "~/sections/EducationSection";
@@ -13,6 +14,7 @@ export function Portfolio() {
       <Hero />
       <NexusOSSection />
       <ArchitectureSection />
+      <GhostProtocolSection />
       <LibrarySection />
       <CvSection />
       <EducationSection />

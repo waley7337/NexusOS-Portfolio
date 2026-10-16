@@ -23,28 +23,6 @@ export interface OtherProject {
 
 export const otherProjects: OtherProject[] = [
   {
-    name: "Ghost Protocol",
-    status: "in-progress",
-    statusLabel: "In progress",
-    summary:
-      "Cybersecurity learning platform: an Electron desktop app and a static web client, with a Node.js API for authentication, profile and progress. The web client is deployed. Password reset, signed public desktop builds and conflict-safe multi-device sync are not.",
-    stack: ["Electron 37", "Static web", "Node.js", "PostgreSQL", "Argon2id", "JWT"],
-    features: [
-      "Dashboard, missions, quizzes and XP in both the desktop app and the web client.",
-      "API routes for register, login, refresh, logout and Google sign-in, plus profile and progress read/write.",
-      "Browser tokens stay in memory. Electron can store the refresh token with safeStorage.",
-      "Password reset is visible in the UI and not available. Public desktop signing is not configured.",
-    ],
-    decisions: [
-      "Neither client talks to PostgreSQL. The API is the only database client.",
-      "The supabase/ directory is legacy and unused at runtime.",
-      "Concurrent edits from two devices are last-write-wins. Conflict-safe sync is not claimed.",
-    ],
-    github: "https://github.com/waley7337/Ghost-Protocol",
-    demo: { href: "https://ghost-protocol-pi.vercel.app", label: "Live web app" },
-    prominent: true,
-  },
-  {
     name: "Pentest Report Generator (v1)",
     status: "prototype",
     statusLabel: "Prototype · local only",
