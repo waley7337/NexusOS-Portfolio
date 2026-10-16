@@ -63,9 +63,12 @@
 
 /* Ambient network behind the scrolling content (see NeuralBackground).
    The chassis fill from globals.css is opaque and covers a stage-level
-   canvas, so this layer is the first child of the chassis. isolation on
-   the chassis keeps z-index:-1 above that fill and under the nav and page.
-   isolation here contains the scanlines' z-index:6 inside the network.
+   canvas, so this layer is the first child of the chassis. The chassis
+   does not scroll — main does — so an inset layer here stays viewport-wide
+   while the library moves. isolation on the chassis keeps z-index:-1 above
+   that fill and under the nav and page; a negative index without that
+   isolation would disappear behind the document background. isolation here
+   contains the scanlines' z-index:6 inside the network.
    Atmosphere stays the globals.css wash; this rule does not repaint it. */
 .app-shell-frame > .chassis {
   position: relative;
@@ -78,6 +81,14 @@
   overflow: hidden;
   pointer-events: none;
   isolation: isolate;
+}
+/* Product reveal wash: a blue radial band on every section (globals.css
+   .reveal-section::before, height 55%). It paints over the network and
+   ends in a hard horizontal edge. The portfolio keeps the section reveal
+   and drops the wash so the field stays continuous behind every section. */
+.portfolio-main .reveal-section::before {
+  content: none;
+  background: none;
 }
 .neural-background-canvas {
   position: absolute;
