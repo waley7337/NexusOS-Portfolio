@@ -34,9 +34,9 @@ export function Hero() {
             <FileText aria-hidden="true" />
             View CV
           </a>
-          <a className={buttonVariants({ variant: "outline", size: "lg" })} href="#library">
+          <a className={buttonVariants({ variant: "outline", size: "lg" })} href="#nexusos-library">
             <FolderOpen aria-hidden="true" />
-            Open the library
+            NexusOS library
           </a>
         </div>
       </div>

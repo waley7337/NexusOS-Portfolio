@@ -84,7 +84,7 @@ export const caseStudy: Asset = {
   meta: "PDF · 11 pages · 49 KB",
 };
 
-const portfolioSummary: Asset = {
+export const portfolioSummary: Asset = {
   id: "nexusos-portfolio-summary",
   title: "NexusOS — Portfolio Summary",
   description: "Two-page overview of the platform, its engineering highlights and current status.",
@@ -231,21 +231,23 @@ export const ghostProtocolTour: Asset[] = [
   ghostAsset("12-payload-editor", "Payload editor", "The payload editor and server-response pane where operators build and fire a crafted request.", "PNG · 3599×2080 · web client"),
 ];
 
-/** Architecture diagrams derived from the implemented Ghost Protocol codebase. */
-export const ghostProtocolArchitecture: Asset[] = [
-  ghostAsset(
-    "system-architecture",
-    "System Architecture",
-    "Four layers from the untrusted Electron renderer and web client, through the trust boundary, to the token-authenticated API and Railway PostgreSQL — with implementation status and documented limits.",
-    "PNG · 3600×2082",
-  ),
-  ghostAsset(
-    "security-architecture",
-    "Security Architecture",
-    "Defense in depth across the renderer, bridge, credential and backend layers — the controls live today and the residual risks that remain honest.",
-    "PNG · 3600×2082",
-  ),
-];
+/** Supplied Ghost Protocol system-architecture diagram (public/images/ghost-protocol/system-architecture.png). */
+export const ghostProtocolSystemArchitecture = ghostAsset(
+  "system-architecture",
+  "System Architecture",
+  "Four layers — client, trust boundary, backend API, and data and platform — for the Electron desktop app, the web client, the token-authenticated API and Railway PostgreSQL. The status panel separates implemented controls from documented limits and items marked planned.",
+  "PNG · 3600×2082",
+);
+
+export const ghostProtocolSecurityArchitecture = ghostAsset(
+  "security-architecture",
+  "Security Architecture",
+  "Defense in depth across the renderer, bridge, credential and backend layers — the controls live today and the residual risks that remain honest.",
+  "PNG · 3600×2082",
+);
+
+/** Architecture carousel items. One diagram today; append more without a new component. */
+export const ghostProtocolArchitecture: Asset[] = [ghostProtocolSystemArchitecture];
 
 /** Workflow artefacts: the engineering story and the development roadmap. */
 export const ghostProtocolWorkflow: Asset[] = [
@@ -261,6 +263,63 @@ export const ghostProtocolWorkflow: Asset[] = [
     "The one-page case study: the challenge, the solution, before/after, key security decisions, results and honest scope.",
     "PNG · 2480×3508 · portrait",
   ),
+];
+
+export interface GalleryGroup {
+  id: string;
+  label: string;
+  description: string;
+  assets: Asset[];
+}
+
+/** NexusOS screenshots, diagrams and case-study documents. No Ghost Protocol files. */
+export const nexusLibraryGroups: GalleryGroup[] = [
+  {
+    id: "interface",
+    label: "System & interface",
+    description: "Current-design screenshots of the running NexusOS application, including the shell, sign-in and the design system.",
+    assets: currentDesignShots,
+  },
+  {
+    id: "architecture",
+    label: "Architecture",
+    description: "System, security and multi-tenant request diagrams derived from the NexusOS codebase.",
+    assets: [systemArchitecture, securityArchitecture, multiTenantFlow],
+  },
+  {
+    id: "case-study",
+    label: "Case study",
+    description: "Engineering case study and the NexusOS project summaries published with this portfolio.",
+    assets: [caseStudy, portfolioSummary, projectSummaryRedacted, portfolio2026Redacted],
+  },
+];
+
+/** Every Ghost Protocol image under public/images/ghost-protocol. No NexusOS screenshots. */
+export const ghostLibraryGroups: GalleryGroup[] = [
+  {
+    id: "live-client",
+    label: "Live web client",
+    description: "Operations, mission lab and ranks, captured from the deployed web client.",
+    assets: ghostProtocolShots,
+  },
+  {
+    id: "interface",
+    label: "Interface",
+    description: "Interface shots 01–12: boot, operations, missions, intel, ranks, profile and the payload editor.",
+    assets: ghostProtocolTour,
+  },
+  {
+    id: "architecture",
+    label: "Architecture",
+    description: "System and security architecture diagrams. The system diagram is also the Ghost Protocol Architecture carousel.",
+    assets: [ghostProtocolSystemArchitecture, ghostProtocolSecurityArchitecture],
+  },
+  {
+    id: "workflow",
+    label: "Workflow",
+    description: "Development roadmap and the engineering case study. A roadmap phase is not a claim that later work is operational.",
+    assets: ghostProtocolWorkflow,
+  },
 ];
 
 export const folders: Folder[] = [
@@ -325,6 +384,6 @@ export const folders: Folder[] = [
     label: "Ghost Protocol",
     description: "Screenshots, architecture diagrams and workflow artefacts for Ghost Protocol.",
     group: "Images",
-    assets: [...ghostProtocolShots, ...ghostProtocolTour, ...ghostProtocolArchitecture, ...ghostProtocolWorkflow],
+    assets: ghostLibraryGroups.flatMap((group) => group.assets),
   },
 ];

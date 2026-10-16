@@ -9,6 +9,9 @@ import {
   cv,
   degree,
   folders,
+  ghostLibraryGroups,
+  ghostProtocolArchitecture,
+  nexusLibraryGroups,
   portfolio2026Redacted,
   projectSummaryRedacted,
 } from "~/data/assets";
@@ -103,6 +106,36 @@ describe("links and screenshots", () => {
       // Redacted PDFs still must not contain that path. nexusos.com stays unpublished.
       expect(text, f).not.toMatch(/nexusos\.com/i);
     }
+  });
+
+  it("keeps each library on its own images and pins the Ghost Protocol architecture diagram", () => {
+    const nexusSrcs = nexusLibraryGroups.flatMap((group) => group.assets.map((asset) => asset.src));
+    const ghostSrcs = ghostLibraryGroups.flatMap((group) => group.assets.map((asset) => asset.src));
+    expect(nexusSrcs.some((src) => src.includes("ghost-protocol"))).toBe(false);
+    expect(ghostSrcs.some((src) => src.includes("/images/screenshots/") || src.includes("/images/architecture/"))).toBe(false);
+    expect(ghostProtocolArchitecture.map((asset) => asset.src)).toEqual(["/images/ghost-protocol/system-architecture.png"]);
+    const pngs = fs
+      .readdirSync(path.join(publicDir, "images/ghost-protocol"))
+      .filter((name) => name.endsWith(".png"))
+      .sort();
+    expect(pngs).toHaveLength(19);
+    expect(ghostSrcs.map((src) => src.split("/").pop()).sort()).toEqual(pngs);
+    const bytes = fs.readFileSync(path.join(publicDir, "images/ghost-protocol/system-architecture.png"));
+    expect(crypto.createHash("sha256").update(bytes).digest("hex")).toBe(
+      "26d18cc9ea19383df38c9eb3f706977daaf9d76759a0741e0cde0878998c52dd",
+    );
+    expect(onDisk("/images/ghost-protocol/system-architecture.preview.webp")).toBe(true);
+    expect(nexusLibraryGroups.map((group) => [group.label, group.assets.length])).toEqual([
+      ["System & interface", 15],
+      ["Architecture", 3],
+      ["Case study", 4],
+    ]);
+    expect(ghostLibraryGroups.map((group) => [group.label, group.assets.length])).toEqual([
+      ["Live web client", 3],
+      ["Interface", 12],
+      ["Architecture", 2],
+      ["Workflow", 2],
+    ]);
   });
 
   it("shows current-design screenshots only; legacy originals are not served", () => {

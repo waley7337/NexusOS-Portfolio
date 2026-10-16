@@ -40,6 +40,17 @@
   min-height: 2.25rem;
   transition-timing-function: var(--ease-premium);
 }
+.portfolio-nav > .portfolio-nav-group {
+  padding: 0.85rem 0.75rem 0.15rem;
+}
+.portfolio-nav > .portfolio-nav-item-nested {
+  margin-left: 0.7rem;
+}
+.portfolio-nav-scroll > .portfolio-nav-group {
+  align-self: center;
+  padding: 0 0.35rem 0 0.65rem;
+  white-space: nowrap;
+}
 .portfolio-nav-scroll {
   padding-inline: 1.25rem;
 }

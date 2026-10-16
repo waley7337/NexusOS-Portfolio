@@ -46,3 +46,11 @@ export const ghostDocs: GhostDoc[] = [
 
 export const ghostScreenshotNote =
   "Captured from the deployed web client at ghost-protocol-pi.vercel.app. Click a panel to inspect it.";
+
+/**
+ * Explanation of the Ghost Protocol system-architecture diagram.
+ * Only systems and states drawn on that diagram are described here.
+ * Planned items stay planned.
+ */
+export const ghostArchitectureCopy =
+  "Electron desktop, the web SPA and Google sign-in are the client. The trust boundary keeps the renderer untrusted, with a narrow preload bridge into the privileged main process. The backend API authenticates with Argon2id and short-lived JWTs, rotates hashed refresh tokens, and scopes profile and progress to the authenticated user. Railway PostgreSQL is the system of record; clients do not talk to it directly. The status panel marks email and Google auth, profile and progress, Electron credential hardening, the Vercel web client, and the Railway API and database as implemented. Documented limits include last-write-wins multi-device sync and a desktop build that is not signed or notarized. Cloudflare edge and password reset are marked planned, not implemented.";

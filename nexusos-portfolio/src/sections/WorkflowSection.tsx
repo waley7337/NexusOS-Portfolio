@@ -2,11 +2,12 @@ import { Card } from "@/components/ui/card";
 import { usePortfolioLanguage } from "~/i18n/language";
 import { workflowCycle, workflowDe, workflowIntro, workflowRelationship, workflowStack, workflowSteps } from "~/data/workflow";
 import { Section } from "~/sections/Section";
+import { sectionTitle } from "~/sections/registry";
 
 export function WorkflowSection() {
   const { language } = usePortfolioLanguage();
   const german = language === "de";
-  const title = german ? workflowDe.title : "NexusOS workflow";
+  const title = sectionTitle("workflow", language);
   const intro = german ? workflowDe.intro : workflowIntro;
   const steps = german ? workflowDe.steps : workflowSteps;
   const cycle = german ? workflowDe.cycle : workflowCycle;

@@ -1,13 +1,23 @@
 import { createEvent, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { multiTenantFlow, securityArchitecture, systemArchitecture } from "~/data/assets";
+import { LanguageProvider } from "~/i18n/language";
 import { nexusos } from "~/data/nexusos";
 import { ArchitectureSection } from "~/sections/ArchitectureSection";
 
+function renderArchitecture() {
+  window.localStorage.clear();
+  return render(
+    <LanguageProvider>
+      <ArchitectureSection />
+    </LanguageProvider>,
+  );
+}
+
 describe("architecture carousel", () => {
   it("exposes every diagram as a button and keeps the existing copy", () => {
-    render(<ArchitectureSection />);
-    const region = screen.getByRole("region", { name: "Architecture" });
+    renderArchitecture();
+    const region = screen.getByRole("region", { name: "NexusOS Architecture" });
     expect(region).toHaveTextContent("Click to inspect at full size.");
     for (const title of ["System Architecture", "Security Architecture", "Multi-Tenant Request Flow"]) {
       expect(screen.getByRole("button", { name: `Inspect ${title}` })).toBeInTheDocument();
@@ -21,7 +31,7 @@ describe("architecture carousel", () => {
   });
 
   it("opens a zoomed diagram and returns focus on Escape", () => {
-    render(<ArchitectureSection />);
+    renderArchitecture();
     const card = screen.getByRole("button", { name: "Inspect System Architecture" });
     fireEvent.click(card);
     const dialog = screen.getByRole("dialog", { name: "System Architecture" });
@@ -41,7 +51,7 @@ describe("architecture carousel", () => {
     const main = document.createElement("main");
     main.id = "main";
     document.body.appendChild(main);
-    render(<ArchitectureSection />);
+    renderArchitecture();
     const card = screen.getByRole("button", { name: "Inspect System Architecture" });
     const track = card.parentElement as HTMLElement;
     const capture = vi.fn();
@@ -65,7 +75,7 @@ describe("architecture carousel", () => {
   });
 
   it("captures the pointer only after a drag starts", () => {
-    render(<ArchitectureSection />);
+    renderArchitecture();
     const card = screen.getByRole("button", { name: "Inspect Security Architecture" });
     const track = card.parentElement as HTMLElement;
     const capture = vi.fn();
@@ -78,7 +88,7 @@ describe("architecture carousel", () => {
   });
 
   it("moves to the neighbouring diagram from the zoomed view", () => {
-    render(<ArchitectureSection />);
+    renderArchitecture();
     fireEvent.click(screen.getByRole("button", { name: "Inspect Security Architecture" }));
     fireEvent.click(screen.getByRole("button", { name: "Next diagram" }));
     expect(screen.getByRole("dialog", { name: "Multi-Tenant Request Flow" })).toBeInTheDocument();
@@ -89,7 +99,7 @@ describe("architecture carousel", () => {
   it("does not advance until commanded", () => {
     vi.useFakeTimers();
     try {
-      render(<ArchitectureSection />);
+      renderArchitecture();
       const system = screen.getByRole("button", { name: "Inspect System Architecture" });
       expect(system).toHaveAttribute("aria-current", "true");
       expect(screen.getByRole("heading", { name: "System Architecture" })).toBeInTheDocument();
@@ -101,7 +111,7 @@ describe("architecture carousel", () => {
       const security = screen.getByRole("button", { name: "Inspect Security Architecture" });
       expect(security).toHaveAttribute("aria-current", "true");
       expect(screen.getByRole("heading", { name: "Security Architecture" })).toHaveTextContent("Security Architecture");
-      expect(screen.getByRole("region", { name: "Architecture" })).toHaveTextContent(nexusos.architecture.security);
+      expect(screen.getByRole("region", { name: "NexusOS Architecture" })).toHaveTextContent(nexusos.architecture.security);
 
       fireEvent.keyDown(screen.getByRole("button", { name: "Next architecture diagram" }), { key: "ArrowRight" });
       expect(screen.getByRole("button", { name: "Inspect Multi-Tenant Request Flow" })).toHaveAttribute("aria-current", "true");
@@ -115,7 +125,7 @@ describe("architecture carousel", () => {
   });
 
   it("opens the original image for viewing and does not offer a download", () => {
-    render(<ArchitectureSection />);
+    renderArchitecture();
     const card = screen.getByRole("button", { name: "Inspect System Architecture" });
     expect(card).toHaveAttribute("data-preview-guard", "true");
     const menu = createEvent.contextMenu(card);
@@ -153,11 +163,14 @@ describe("architecture carousel", () => {
   });
 
   it("does not publish demo passwords or secrets", () => {
-    const { container } = render(<ArchitectureSection />);
+    const { container } = renderArchitecture();
     fireEvent.click(screen.getByRole("button", { name: "Inspect System Architecture" }));
     expect(container.textContent).not.toMatch(/demo (login|password|user)|password:|test@|nexusos\.com/i);
     expect(container.textContent).not.toContain("COMPANYcomp170106@");
     expect(container.textContent).not.toContain("COMPcomp170106@");
+    expect(systemArchitecture.src).not.toContain("ghost-protocol");
+    expect(securityArchitecture.src).not.toContain("ghost-protocol");
+    expect(multiTenantFlow.src).not.toContain("ghost-protocol");
     expect(container.textContent).not.toMatch(/sk-|api[_-]?key|ghp_|AKIA/i);
     expect(container.querySelectorAll('input[type="password"], textarea')).toHaveLength(0);
     expect(screen.queryByRole("button", { name: /copy/i })).not.toBeInTheDocument();

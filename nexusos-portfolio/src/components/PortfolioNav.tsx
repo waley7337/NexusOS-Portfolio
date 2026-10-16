@@ -5,13 +5,67 @@
  * (.nav-active-glow on bg-primary/10), same icon treatment — over in-page
  * sections instead of routes.
  */
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LanguageSwitch } from "~/components/LanguageSwitch";
-import { usePortfolioLanguage } from "~/i18n/language";
+import { usePortfolioLanguage, type PortfolioLanguage } from "~/i18n/language";
 import { SECTIONS, sectionLabel } from "~/sections/registry";
 import { profile } from "~/data/profile";
+
+function NavEntries({
+  active,
+  onNavigate,
+  language,
+  itemClass,
+  showIcon,
+  nested,
+}: {
+  active: string;
+  onNavigate: (id: string) => void;
+  language: PortfolioLanguage;
+  itemClass: (isActive: boolean) => string;
+  showIcon: boolean;
+  nested: boolean;
+}) {
+  let previousGroup: string | undefined;
+  return SECTIONS.map((section) => {
+    const showGroup = Boolean(section.group) && section.group !== previousGroup;
+    previousGroup = section.group;
+    const { id, icon: Icon } = section;
+    const label = sectionLabel(section, language);
+    const isActive = active === id;
+    const groupLabel = section.group ? (section.groupLabels?.[language] ?? section.group) : null;
+    return (
+      <Fragment key={id}>
+        {showGroup && groupLabel ? (
+          <p className="portfolio-nav-group text-machine" data-nav-group={section.group}>
+            {groupLabel}
+          </p>
+        ) : null}
+        <a
+          href={`#${id}`}
+          aria-current={isActive ? "location" : undefined}
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate(id);
+          }}
+          className={cn(itemClass(isActive), nested && section.group && "portfolio-nav-item-nested")}
+        >
+          {showIcon ? (
+            <Icon
+              className={cn(
+                "h-4 w-4 shrink-0 transition-colors duration-fast",
+                isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+              )}
+            />
+          ) : null}
+          <span className="min-w-0 truncate">{label}</span>
+        </a>
+      </Fragment>
+    );
+  });
+}
 
 interface NavProps {
   active: string;
@@ -73,34 +127,19 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
       </div>
       <nav ref={navRef} className="portfolio-nav relative flex-1 space-y-0.5 overflow-y-auto overflow-x-clip p-3 pr-4">
         <span ref={indicatorRef} className="portfolio-nav-indicator" aria-hidden="true" />
-        {SECTIONS.map((section) => {
-          const { id, icon: Icon } = section;
-          const label = sectionLabel(section, language);
-          const isActive = active === id;
-          return (
-            <a
-              key={id}
-              href={`#${id}`}
-              aria-current={isActive ? "location" : undefined}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate(id);
-              }}
-              className={cn(
-                "portfolio-nav-item focus-ring group relative z-[1] flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-fast",
-                isActive ? "font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
-              )}
-            >
-              <Icon
-                className={cn(
-                  "h-4 w-4 shrink-0 transition-colors duration-fast",
-                  isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
-                )}
-              />
-              <span className="min-w-0 truncate">{label}</span>
-            </a>
-          );
-        })}
+        <NavEntries
+          active={active}
+          onNavigate={onNavigate}
+          language={language}
+          showIcon
+          nested
+          itemClass={(isActive) =>
+            cn(
+              "portfolio-nav-item focus-ring group relative z-[1] flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors duration-fast",
+              isActive ? "font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3 hover:text-foreground",
+            )
+          }
+        />
       </nav>
       <div className="shrink-0 border-t border-line-soft p-3">
         <button
@@ -140,27 +179,19 @@ export function MobileNav({ active, onNavigate }: NavProps) {
         className="portfolio-nav-scroll flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft py-2 md:hidden"
         aria-label="Portfolio sections"
       >
-        {SECTIONS.map((section) => {
-          const { id } = section;
-          const label = sectionLabel(section, language);
-          return (
-            <a
-              key={id}
-              href={`#${id}`}
-              aria-current={active === id ? "location" : undefined}
-              onClick={(e) => {
-                e.preventDefault();
-                onNavigate(id);
-              }}
-              className={cn(
-                "portfolio-nav-item focus-ring inline-flex shrink-0 items-center rounded-control px-3 text-xs transition-colors duration-fast",
-                active === id ? "bg-primary/10 font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3",
-              )}
-            >
-              {label}
-            </a>
-          );
-        })}
+        <NavEntries
+          active={active}
+          onNavigate={onNavigate}
+          language={language}
+          showIcon={false}
+          nested={false}
+          itemClass={(isActive) =>
+            cn(
+              "portfolio-nav-item focus-ring inline-flex shrink-0 items-center rounded-control px-3 text-xs transition-colors duration-fast",
+              isActive ? "bg-primary/10 font-medium text-foreground" : "text-muted-foreground hover:bg-surface-3",
+            )
+          }
+        />
       </nav>
       <div className="border-b border-line-soft px-5 py-2 md:hidden">
         <LanguageSwitch />

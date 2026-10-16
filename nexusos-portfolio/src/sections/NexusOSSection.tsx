@@ -7,6 +7,7 @@ import { Row, RowGroup } from "@/components/ui/structure";
 import { caseStudy, interfaceShots, type Asset } from "~/data/assets";
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
+import { NexusCompanyDemoCard } from "~/components/DemoAccessCards";
 import { AssetPreviewDialog } from "~/components/AssetPreviewDialog";
 import { ProjectProgress } from "~/components/ProjectProgress";
 import { Section } from "~/sections/Section";
@@ -100,6 +101,8 @@ export function NexusOSSection() {
           <p className="text-machine mt-3">{nexusos.status.asOf}</p>
         </Card>
       </div>
+
+      <NexusCompanyDemoCard idSuffix="-overview" />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {nexusos.highlights.map((h) => (

@@ -53,7 +53,21 @@ describe("App", () => {
     window.history.replaceState(null, "", "/#cv");
     render(<App />);
     expect(screen.getByTestId("portfolio-shell")).toBeInTheDocument();
-    for (const name of ["NexusOS", "Architecture", "Library", "CV", "Education", "Other projects", "Live demos & access", "Contact"]) {
+    for (const name of [
+      "NexusOS",
+      "NexusOS Workflow",
+      "NexusOS Architecture",
+      "NexusOS Library",
+      "Ghost Protocol",
+      "Ghost Protocol Workflow",
+      "Ghost Protocol Architecture",
+      "Ghost Protocol Library",
+      "CV",
+      "Education",
+      "Other projects",
+      "Live demos & access",
+      "Contact",
+    ]) {
       expect(screen.getByRole("region", { name })).toBeInTheDocument();
     }
     for (const label of SECTIONS.map((section) => section.label)) {
@@ -126,7 +140,8 @@ describe("App", () => {
     expect(within(contact).getByRole("link", { name: "+43 676 5119613" })).toHaveAttribute("href", "tel:+436765119613");
     expect(within(contact).getByRole("link", { name: "github.com/waley7337" })).toHaveAttribute("href", profile.github);
     expect(within(contact).getByRole("link", { name: "nexuops.com/login" })).toHaveAttribute("href", "https://nexuops.com/login");
-    expect(within(screen.getByRole("region", { name: "Architecture" })).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "NexusOS Architecture" })).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("region", { name: "Ghost Protocol Architecture" })).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
   });
 
   it("lists the verified other projects and no unverified names", () => {
@@ -162,12 +177,18 @@ describe("App", () => {
     const { container } = render(<App />);
     const nexus = screen.getByRole("region", { name: "NexusOS" });
     const nexusLinks = [...nexus.querySelectorAll<HTMLAnchorElement>('a[href*="nexuops"]')];
-    expect(nexusLinks.length).toBeGreaterThanOrEqual(3);
-    for (const a of nexusLinks) expect(a.getAttribute("href")).toBe("https://nexuops.com/login");
+    const loginLinksInNexus = nexusLinks.filter((anchor) => anchor.getAttribute("href") === "https://nexuops.com/login");
+    const liveLinksInNexus = nexusLinks.filter((anchor) => anchor.getAttribute("href") === "https://nexuops.com");
+    expect(loginLinksInNexus.length).toBeGreaterThanOrEqual(3);
+    expect(liveLinksInNexus.map((anchor) => anchor.getAttribute("data-testid"))).toEqual([
+      "nexusos-live-application-overview",
+      "nexusos-open-live-overview",
+    ]);
     expect(screen.getByTestId("live-app-link")).toHaveTextContent("Live app · sign in");
     expect(screen.getByTestId("live-app-note")).toHaveTextContent("Opens the sign-in page of the live NexusOS app.");
     expect(screen.getByTestId("live-app-note")).not.toHaveTextContent("No demo account");
     expect(within(nexus).getByRole("link", { name: "Open Demo" })).toHaveAttribute("href", "https://nexuops.com/login");
+    expect(within(nexus).getByRole("progressbar", { name: "NexusOS completion" })).toHaveAttribute("aria-valuenow", "82");
     expect(container.querySelectorAll('input[type="password"]')).toHaveLength(0);
     expect(container.textContent).not.toMatch(/nexusos\.com|sk-|api[_-]?key|ghp_|AKIA/i);
   });
@@ -256,9 +277,17 @@ describe("App", () => {
     const liveLinks = [...container.querySelectorAll<HTMLAnchorElement>('a[href="https://nexuops.com"]')];
     expect(loginLinks.length).toBeGreaterThanOrEqual(3);
     expect(liveLinks.map((anchor) => anchor.getAttribute("data-testid"))).toEqual([
+      "nexusos-live-application-overview",
+      "nexusos-open-live-overview",
       "nexusos-live-application",
       "nexusos-open-live",
     ]);
+    const nexusOverview = screen.getByRole("region", { name: "NexusOS" });
+    expect(within(nexusOverview).getByTestId("nexusos-demo-email-overview")).toHaveTextContent(nexusDemoAccount.email);
+    expect(within(nexusOverview).getByTestId("nexusos-demo-password-overview")).toHaveTextContent(nexusDemoAccount.password);
+    const ghostOverview = screen.getByRole("region", { name: "Ghost Protocol" });
+    expect(within(ghostOverview).getByTestId("ghost-demo-email-overview")).toHaveTextContent(ghostDemoAccount.email);
+    expect(within(ghostOverview).getByTestId("ghost-demo-password-overview")).toHaveTextContent(ghostDemoAccount.password);
 
     const nexusEmail = within(nexusCard as HTMLElement).getByRole("button", { name: "Copy Email for NexusOS" });
     const nexusPassword = within(nexusCard as HTMLElement).getByRole("button", { name: "Copy Password for NexusOS" });
@@ -306,10 +335,42 @@ describe("App", () => {
     expect(ids.indexOf("demos")).toBeLessThan(ids.indexOf("contact"));
     expect(ids.indexOf("overview")).toBeLessThan(ids.indexOf("transparency"));
     expect(ids.indexOf("transparency")).toBeLessThan(ids.indexOf("cv"));
-    expect(ids.indexOf("nexusos")).toBeLessThan(ids.indexOf("workflow"));
-    expect(ids.indexOf("workflow")).toBeLessThan(ids.indexOf("architecture"));
-    expect(ids.indexOf("architecture")).toBeLessThan(ids.indexOf("ghost-protocol"));
-    expect(ids.indexOf("ghost-protocol")).toBeLessThan(ids.indexOf("library"));
+    const projectIds = [
+      "nexusos",
+      "workflow",
+      "architecture",
+      "nexusos-library",
+      "ghost-protocol",
+      "ghost-protocol-workflow",
+      "ghost-protocol-architecture",
+      "ghost-protocol-library",
+    ];
+    expect(ids.slice(ids.indexOf("nexusos"), ids.indexOf("nexusos") + projectIds.length)).toEqual(projectIds);
+    expect(ids.indexOf("ghost-protocol-library")).toBeLessThan(ids.indexOf("projects"));
+    const labels = [...document.querySelectorAll("aside nav a")].map((link) => link.textContent);
+    const eight = [
+      "NexusOS",
+      "NexusOS Workflow",
+      "NexusOS Architecture",
+      "NexusOS Library",
+      "Ghost Protocol",
+      "Ghost Protocol Workflow",
+      "Ghost Protocol Architecture",
+      "Ghost Protocol Library",
+    ];
+    expect(labels.slice(labels.indexOf("NexusOS"), labels.indexOf("NexusOS") + eight.length)).toEqual(eight);
+    expect(labels.filter((label) => label === "NexusOS")).toEqual(["NexusOS"]);
+    const groups = [...document.querySelectorAll("[data-nav-group]")].map((node) => ({
+      tag: node.tagName,
+      text: node.textContent,
+    }));
+    expect(groups).toEqual([
+      { tag: "P", text: "NexusOS" },
+      { tag: "P", text: "Ghost Protocol" },
+      { tag: "P", text: "NexusOS" },
+      { tag: "P", text: "Ghost Protocol" },
+    ]);
+    expect(document.querySelector("[data-nav-group] button, [data-nav-group] a")).toBeNull();
   });
 
   it("shows Ghost Protocol with the same carousel and documentation cards", () => {
@@ -319,17 +380,18 @@ describe("App", () => {
     expect(within(region).getByTestId("ghost-project-status")).toHaveTextContent(
       "In progress. The web client is deployed. Password reset, signed public desktop builds and conflict-safe multi-device sync are not.",
     );
+    expect(within(region).getByRole("progressbar", { name: "Ghost Protocol completion" })).toHaveAttribute("aria-valuenow", "78");
+    expect(within(region).queryByRole("tablist")).not.toBeInTheDocument();
     expect(within(region).getByRole("button", { name: "Previous Ghost Protocol screenshot" })).toBeInTheDocument();
     expect(within(region).getByRole("button", { name: "Next Ghost Protocol screenshot" })).toBeInTheDocument();
     for (const title of ["Operations", "Mission lab", "Ranks"]) {
       const card = within(region).getByRole("button", { name: `Inspect ${title}` });
-      expect(card.querySelector("img")?.getAttribute("src")).toMatch(/\.preview\.webp$/);
+      expect(card.querySelector("img")?.getAttribute("src")).toMatch(/ghost-protocol\/.+\.preview\.webp$/);
     }
-    expect(within(region).getByRole("tab", { name: "Ghost Protocol" })).toHaveAttribute("aria-selected", "true");
-    expect(within(region).getByRole("tab", { name: "Workflow" })).toHaveAttribute("aria-selected", "false");
-    expect(within(region).getByRole("tab", { name: "Architecture" })).toHaveAttribute("aria-selected", "false");
-    expect(within(region).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
-    expect(within(region).getAllByRole("link", { name: /^Open / })).toHaveLength(ghostDocs.length);
+    expect(within(region).queryByRole("button", { name: "Boot sequence" })).not.toBeInTheDocument();
+    const library = screen.getByRole("region", { name: "Ghost Protocol Library" });
+    expect(within(library).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
+    expect(within(region).getAllByRole("link", { name: /^Open / })).toHaveLength(ghostDocs.length + 1);
     for (const entry of ghostDocs) {
       expect(within(region).getByRole("link", { name: `Open ${entry.title}` })).toHaveAttribute("href", entry.href);
     }
@@ -384,6 +446,18 @@ describe("App", () => {
     }
     expect(screen.getAllByRole("link", { name: transparencyTitle.de }).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByRole("link", { name: transparencyTitle.en })).not.toBeInTheDocument();
+    for (const label of [
+      "NexusOS-Arbeitsablauf",
+      "NexusOS-Architektur",
+      "NexusOS-Bibliothek",
+      "Ghost-Protocol-Arbeitsablauf",
+      "Ghost-Protocol-Architektur",
+      "Ghost-Protocol-Bibliothek",
+    ]) {
+      expect(screen.getAllByRole("link", { name: label }).length).toBeGreaterThanOrEqual(1);
+    }
+    expect(screen.queryByRole("link", { name: "NexusOS Workflow" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Ghost Protocol Workflow" })).not.toBeInTheDocument();
     expect(document.documentElement).toHaveAttribute("lang", "de");
     expect(window.localStorage.getItem("nexusos-portfolio:language")).toBe("de");
 
@@ -397,7 +471,7 @@ describe("App", () => {
   it("shows the NexusOS workflow without a floating motion", () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
-    const workflow = screen.getByRole("region", { name: "NexusOS workflow" });
+    const workflow = screen.getByRole("region", { name: "NexusOS Workflow" });
     expect(workflow).toHaveTextContent(
       "NexusOS is developed using an iterative, modular full-stack development workflow designed to maintain clear separation of concerns, scalability, and maintainability.",
     );
@@ -405,7 +479,7 @@ describe("App", () => {
     expect(within(workflow).getByText("Deployment & Production")).toBeInTheDocument();
     expect(workflow).toHaveTextContent("Architecture → Implementation → Integration → Testing → Refinement → Deployment");
     expect(workflow).toHaveTextContent("React · TypeScript · FastAPI · PostgreSQL · Redis · Git · GitHub · Vercel · Railway · Cloudflare");
-    fireEvent.click(screen.getAllByRole("link", { name: "NexusOS workflow" })[0]);
+    fireEvent.click(screen.getAllByRole("link", { name: "NexusOS Workflow" })[0]);
     expect(workflow.dataset.spatial).toBeUndefined();
     expect(window.location.hash).toBe("#workflow");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -426,5 +500,69 @@ describe("App", () => {
       "href",
       "https://ghost-protocol-pi.vercel.app",
     );
+  });
+
+  it("keeps architecture carousels and libraries specific to each project", () => {
+    window.history.replaceState(null, "", "/#architecture");
+    render(<App />);
+    const nexusArch = screen.getByRole("region", { name: "NexusOS Architecture" });
+    for (const img of nexusArch.querySelectorAll("img")) {
+      expect(img.getAttribute("src") ?? "").not.toContain("ghost-protocol");
+    }
+    expect(within(nexusArch).getByRole("button", { name: "Inspect System Architecture" }).querySelector("img")).toHaveAttribute(
+      "src",
+      "/images/architecture/system-architecture.preview.webp",
+    );
+    expect(nexusArch.querySelector("[role='progressbar']")).toBeNull();
+
+    const ghostArch = screen.getByRole("region", { name: "Ghost Protocol Architecture" });
+    const ghostDiagram = within(ghostArch).getByRole("button", { name: "Inspect System Architecture" });
+    expect(ghostDiagram.querySelector("img")).toHaveAttribute("src", "/images/ghost-protocol/system-architecture.preview.webp");
+    for (const img of ghostArch.querySelectorAll("img")) {
+      const src = img.getAttribute("src") ?? "";
+      expect(src).toContain("/images/ghost-protocol/");
+      expect(src).not.toContain("/images/architecture/");
+      expect(src).not.toContain("/images/screenshots/");
+    }
+    expect(ghostArch).toHaveTextContent("preload bridge");
+    expect(ghostArch).not.toHaveTextContent("Routers stay thin");
+    expect(within(ghostArch).getAllByRole("button", { name: /Inspect / })).toHaveLength(1);
+    fireEvent.click(ghostDiagram);
+    const dialog = screen.getByRole("dialog", { name: "System Architecture" });
+    expect(within(dialog).getByRole("img", { name: "System Architecture" })).toHaveAttribute(
+      "src",
+      "/images/ghost-protocol/system-architecture.png",
+    );
+    expect(within(dialog).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute(
+      "href",
+      "/images/ghost-protocol/system-architecture.png",
+    );
+    expect(within(dialog).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+
+    const nexusLib = screen.getByRole("region", { name: "NexusOS Library" });
+    const ghostLib = screen.getByRole("region", { name: "Ghost Protocol Library" });
+    for (const img of nexusLib.querySelectorAll("img")) {
+      expect(img.getAttribute("src") ?? "").not.toContain("ghost-protocol");
+    }
+    for (const img of ghostLib.querySelectorAll("img")) {
+      const src = img.getAttribute("src") ?? "";
+      expect(src).toContain("/images/ghost-protocol/");
+      expect(src).not.toContain("/images/screenshots/");
+      expect(src).not.toContain("/images/architecture/");
+    }
+    expect(within(nexusLib).getByRole("button", { name: "Mission Control — dark" })).toBeInTheDocument();
+    expect(within(nexusLib).getByRole("button", { name: "NexusOS — Engineering Case Study" })).toBeInTheDocument();
+    expect(within(nexusLib).queryByRole("button", { name: "Boot sequence" })).not.toBeInTheDocument();
+    expect(within(ghostLib).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
+    expect(within(ghostLib).getByRole("button", { name: "Development Roadmap" })).toBeInTheDocument();
+    expect(within(ghostLib).queryByRole("button", { name: "Mission Control — dark" })).not.toBeInTheDocument();
+
+    const ghostWorkflow = screen.getByRole("region", { name: "Ghost Protocol Workflow" });
+    expect(within(ghostWorkflow).getByRole("button", { name: "Inspect Development Roadmap" })).toBeInTheDocument();
+    expect(within(ghostWorkflow).getByRole("button", { name: "Inspect Engineering Case Study" })).toBeInTheDocument();
+    expect(ghostWorkflow).toHaveTextContent("A roadmap is not a claim that later phases are operational.");
+    expect(ghostWorkflow).not.toHaveTextContent("FastAPI");
+    const nexusWorkflow = screen.getByRole("region", { name: "NexusOS Workflow" });
+    expect(nexusWorkflow).not.toHaveTextContent("Development Roadmap");
   });
 });
