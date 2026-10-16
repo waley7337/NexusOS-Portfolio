@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { createEvent, fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { multiTenantFlow, securityArchitecture, systemArchitecture } from "~/data/assets";
@@ -160,6 +162,22 @@ describe("architecture carousel", () => {
     expect(within(tenancy).getByText(nexusos.architecture.tenancy.en)).toBeInTheDocument();
     expect(within(tenancy).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute("href", multiTenantFlow.src);
     expect(within(tenancy).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
+  });
+
+  it("keeps the selected preview on the quiet surface edge and the focus ring on the control", () => {
+    const css = readFileSync(path.resolve(__dirname, "../src/styles/portfolio.css"), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+    const face = css.match(/\.arch-face\s*\{[^}]*\}/)?.[0] ?? "";
+    expect(face).toMatch(/border:\s*1px solid var\(--line-soft\)/);
+    expect(face).not.toMatch(/border-color:\s*hsl\(var\(--primary\)\)/);
+    expect(css).not.toMatch(/\.arch-(?:card|face)[^{]*\{[^}]*border-color:\s*hsl\(var\(--primary\)\)/);
+
+    renderArchitecture();
+    for (const title of ["System Architecture", "Security Architecture", "Multi-Tenant Request Flow"]) {
+      const card = screen.getByRole("button", { name: `Inspect ${title}` });
+      expect(card).toHaveClass("arch-card", "focus-ring");
+      expect(card.querySelector(".arch-face")).not.toBeNull();
+    }
+    expect(screen.getByRole("button", { name: "Inspect System Architecture" })).toHaveAttribute("aria-current", "true");
   });
 
   it("does not publish demo passwords or secrets", () => {
