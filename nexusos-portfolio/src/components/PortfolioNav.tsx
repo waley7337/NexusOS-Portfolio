@@ -60,7 +60,7 @@ function NavEntries({
               )}
             />
           ) : null}
-          <span className="min-w-0 truncate">{label}</span>
+          <span className="min-w-0 whitespace-normal leading-snug">{label}</span>
         </a>
       </Fragment>
     );
