@@ -10,12 +10,60 @@
   .portfolio-main { scroll-behavior: auto; }
 }
 
+/* One content measure and one vertical interval. Section headings keep
+   scroll-margin so they clear the top of the scroller under the nav. */
+.portfolio-sheet {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 2rem 1.25rem max(4rem, calc(100dvh - 18rem));
+}
+@media (min-width: 640px) {
+  .portfolio-sheet { padding-inline: 2rem; }
+}
+@media (min-width: 1024px) {
+  .portfolio-sheet {
+    padding-top: 3rem;
+    padding-inline: 2.5rem;
+  }
+}
+.portfolio-sheet > .portfolio-section + .portfolio-section {
+  margin-top: 5rem;
+}
+.portfolio-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  scroll-margin-top: 1.5rem;
+}
+.portfolio-nav-item {
+  min-height: 2.25rem;
+  transition-timing-function: var(--ease-premium);
+}
+.portfolio-nav-scroll {
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) {
+  .portfolio-nav-scroll { padding-inline: 2rem; }
+}
+.portfolio-nav-scroll .portfolio-nav-item {
+  min-height: 2rem;
+}
+
 /* Ambient network behind the scrolling content (see NeuralBackground).
-   isolation contains the scanlines' z-index:6 inside this layer, so it sits
-   above the network but never above the content painted after it. */
+   The chassis fill from globals.css is opaque and covers a stage-level
+   canvas, so this layer is the first child of the chassis. isolation on
+   the chassis keeps z-index:-1 above that fill and under the nav and page.
+   isolation here contains the scanlines' z-index:6 inside the network.
+   Atmosphere stays the globals.css wash; this rule does not repaint it. */
+.app-shell-frame > .chassis {
+  position: relative;
+  isolation: isolate;
+}
 .neural-background {
   position: absolute;
   inset: 0;
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
   isolation: isolate;
@@ -28,6 +76,301 @@
   height: 100%;
 }
 .scanlines{position:absolute;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(to bottom,transparent,transparent 3px,rgba(0,0,0,.07) 3px,rgba(0,0,0,.07) 4px);opacity:.35}
+
+/* Shared motion. 200ms sits in the 150–250ms range. Only transform and opacity
+   travel; reduced motion drops the travel and keeps controls in place. */
+@media (prefers-reduced-motion: no-preference) {
+  .portfolio-nav-indicator {
+    transition: transform 200ms var(--ease-premium), opacity 200ms var(--ease-premium);
+  }
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header h2,
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header p,
+  .portfolio-main .reveal-section:not([data-visible="true"]) .portfolio-header > :last-child:not(:first-child) {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header h2 {
+    animation: portfolio-rise 220ms var(--ease-premium) both;
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header p {
+    animation: portfolio-rise 220ms var(--ease-premium) 70ms both;
+  }
+  .portfolio-main .reveal-section[data-visible="true"] .portfolio-header > :last-child:not(:first-child) {
+    animation: portfolio-rise 220ms var(--ease-premium) 120ms both;
+  }
+  .portfolio-lift {
+    transition: transform 200ms var(--ease-premium), box-shadow 200ms var(--ease-premium), border-color 200ms var(--ease-premium);
+  }
+  .app-stage :is(a, button).rounded-btn,
+  .app-stage .portfolio-press {
+    transition-duration: 180ms;
+    transition-timing-function: var(--ease-premium);
+  }
+}
+.portfolio-nav-indicator {
+  position: absolute;
+  z-index: 0;
+  left: 0.75rem;
+  right: 1rem;
+  top: 0;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--primary) / 0.1);
+  box-shadow: inset 0 0 0 1px hsl(var(--primary) / 0.22);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .portfolio-main .portfolio-lift:hover {
+    transform: translateY(-2px);
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-lift);
+  }
+  .app-stage :is(a, button).rounded-btn:active,
+  .app-stage .portfolio-press:active {
+    transform: scale(0.97);
+  }
+}
+.app-stage :is(a, button).rounded-btn,
+.app-stage .portfolio-press {
+  position: relative;
+  overflow: hidden;
+}
+.app-stage :is(a, button).rounded-btn::after,
+.app-stage .portfolio-press::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(105deg, transparent 32%, rgb(255 255 255 / 0.045) 50%, transparent 68%);
+  transform: translateX(-130%);
+  opacity: 0;
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .app-stage :is(a, button).rounded-btn:hover::after,
+  .app-stage .portfolio-press:hover::after {
+    opacity: 1;
+    transform: translateX(130%);
+    transition: transform 220ms var(--ease-premium), opacity 220ms var(--ease-premium);
+  }
+}
+@keyframes portfolio-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-nav-indicator,
+  .portfolio-lift,
+  .contact-cta,
+  .contact-note,
+  .app-stage :is(a, button).rounded-btn,
+  .app-stage .portfolio-press,
+  .app-stage :is(a, button).rounded-btn::after,
+  .app-stage .portfolio-press::after {
+    transition: none;
+    animation: none;
+  }
+  .contact-cta,
+  .contact-note {
+    opacity: 1;
+    transform: none;
+  }
+  .portfolio-main .portfolio-lift:hover,
+  .app-stage :is(a, button).rounded-btn:active,
+  .app-stage .portfolio-press:active {
+    transform: none;
+  }
+}
+
+/* Linear architecture carousel. Card offsets are written inline.
+   The scrim exists only while a diagram is open. */
+.arch-linear {
+  position: relative;
+  width: 100%;
+  /* Same ratio as the diagrams. The card is 92% wide, so it sits inside
+     this box with a small even margin and does not stretch the section. */
+  aspect-ratio: 3600 / 2082;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.arch-card {
+  position: absolute;
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  width: 92%;
+  aspect-ratio: 3600 / 2082;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  cursor: pointer;
+  transform-origin: center center;
+}
+.arch-face {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-surface);
+  background: hsl(var(--surface-2));
+}
+.arch-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+/* One document, same face as an architecture card. 910/1287 is the CV preview.
+   The inline shot stays a page card. Clicking it still opens the full image. */
+.doc-shot {
+  display: block;
+  width: 100%;
+  max-width: 17rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  aspect-ratio: 910 / 1287;
+  cursor: pointer;
+  overflow: hidden;
+  justify-self: start;
+}
+.doc-shot .arch-face {
+  height: 100%;
+}
+.doc-shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+.arch-captions { display: grid; }
+.arch-caption {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 280ms var(--ease-premium);
+}
+.arch-caption[data-active="true"] { opacity: 1; }
+.arch-inspect {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  perspective: 1400px;
+}
+.arch-scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-scrim);
+  backdrop-filter: blur(var(--overlay-blur));
+}
+.arch-inspect[data-lite="true"] .arch-scrim {
+  backdrop-filter: none;
+}
+.arch-flight {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  width: min(1680px, calc(100vw - 48px));
+  height: calc(100dvh - 48px);
+  max-height: calc(100dvh - 48px);
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-surface);
+  background: hsl(var(--surface-1));
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+.arch-inspect[data-reduced="true"] .arch-flight {
+  animation: arch-fade 200ms var(--ease-premium) both;
+}
+@keyframes arch-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.arch-flight-bar,
+.arch-flight-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.arch-flight-bar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: hsl(var(--surface-1));
+}
+.arch-flight-foot p { flex: 1; text-align: center; }
+@media (max-width: 767px) {
+  .arch-flight-foot { flex-wrap: wrap; }
+  .arch-flight-foot p { flex: 1 0 100%; order: -1; }
+}
+.arch-zoom {
+  display: flex;
+  min-height: 0;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: hsl(var(--surface-0));
+  touch-action: none;
+}
+.arch-zoom img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+}
+.arch-flight-copy {
+  flex: 0 1 auto;
+  max-height: 4.75rem;
+  overflow: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arch-caption,
+  .arch-linear .arch-card,
+  .arch-flight { transition: none; animation: none; }
+}
+
+/* Selection is off for the whole portfolio, including the intro. A real
+   text field stays selectable (the copy fallback uses a textarea). */
+html {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+html :is(input, textarea, select, [contenteditable="true"]) {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Drag deterrents stay on protected document previews and architecture
+   screenshots. Context menu and selection are handled for the whole page. */
+.preview-guard {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.preview-guard :is(img, object) {
+  -webkit-user-drag: none;
+  user-select: none;
+}
 
 /* The shell sits on the dark ladder; the body behind the frame matches it
    so overscroll never flashes a lighter colour. */

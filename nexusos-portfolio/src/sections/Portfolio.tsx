@@ -1,22 +1,30 @@
 import { Hero } from "~/sections/Hero";
+import { TransparencySection } from "~/sections/TransparencySection";
 import { NexusOSSection } from "~/sections/NexusOSSection";
+import { WorkflowSection } from "~/sections/WorkflowSection";
 import { ArchitectureSection } from "~/sections/ArchitectureSection";
+import { GhostProtocolSection } from "~/sections/GhostProtocolSection";
 import { LibrarySection } from "~/sections/LibrarySection";
 import { CvSection } from "~/sections/CvSection";
 import { EducationSection } from "~/sections/EducationSection";
 import { ProjectsSection } from "~/sections/ProjectsSection";
+import { DemoAccessSection } from "~/sections/DemoAccessSection";
 import { ContactSection } from "~/sections/ContactSection";
 
 export function Portfolio() {
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-20 px-5 pb-16 pt-8 sm:px-8 lg:px-10 lg:pt-12">
+    <div className="portfolio-sheet">
       <Hero />
-      <NexusOSSection />
-      <ArchitectureSection />
-      <LibrarySection />
+      <TransparencySection />
       <CvSection />
       <EducationSection />
+      <NexusOSSection />
+      <WorkflowSection />
+      <ArchitectureSection />
+      <GhostProtocolSection />
+      <LibrarySection />
       <ProjectsSection />
+      <DemoAccessSection />
       <ContactSection />
     </div>
   );

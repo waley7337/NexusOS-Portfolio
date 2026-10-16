@@ -1,27 +1,34 @@
 import { useEffect, useState, type RefObject } from "react";
 
-/** Scroll-spy over the shell's own scroll container (not the window). */
+/**
+ * Scroll-spy over the shell's own scroll container (not the window).
+ * The current section is the last one whose top has crossed the anchor
+ * line, so a short section at the end of the page can still own the tab.
+ */
 export function useActiveSection(rootRef: RefObject<HTMLElement | null>, ids: string[]) {
   const [active, setActive] = useState(ids[0]);
   const key = ids.join("|");
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root || typeof IntersectionObserver === "undefined") return;
-    const visible = new Map<string, number>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) visible.set(entry.target.id, entry.isIntersecting ? entry.intersectionRatio : 0);
-        const best = ids.find((id) => (visible.get(id) ?? 0) > 0);
-        if (best) setActive(best);
-      },
-      { root, rootMargin: "-10% 0px -55% 0px", threshold: [0, 0.01, 0.25] },
-    );
-    for (const id of ids) {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    }
-    return () => io.disconnect();
+    if (!root) return;
+    const pick = () => {
+      const line = root.getBoundingClientRect().top + 48;
+      let current = ids[0];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el || el.getBoundingClientRect().height === 0) continue;
+        if (el.getBoundingClientRect().top <= line) current = id;
+      }
+      setActive((prev) => (prev === current ? prev : current));
+    };
+    pick();
+    root.addEventListener("scroll", pick, { passive: true });
+    window.addEventListener("resize", pick);
+    return () => {
+      root.removeEventListener("scroll", pick);
+      window.removeEventListener("resize", pick);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rootRef, key]);
 

@@ -4,8 +4,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Asset } from "~/data/assets";
+import { cv, type Asset } from "~/data/assets";
 import { profile } from "~/data/profile";
+import { blockPreviewGesture, shouldGuardPreview } from "~/components/previewGuard";
 
 /** Preview for any registry asset: image, PDF, or a withheld placeholder. */
 export function AssetPreviewDialog({ asset, onClose }: { asset: Asset | null; onClose: () => void }) {
@@ -28,7 +29,15 @@ export function AssetPreviewDialog({ asset, onClose }: { asset: Asset | null; on
           </div>
 
           {!asset.notice && (
-            <div className="min-h-0 flex-1 overflow-auto rounded-plane border border-line-soft bg-surface-1">
+            <div
+              className={cn(
+                "min-h-0 flex-1 overflow-auto rounded-plane border border-line-soft bg-surface-1",
+                shouldGuardPreview(asset) && "preview-guard",
+              )}
+              data-preview-guard={shouldGuardPreview(asset) ? "true" : undefined}
+              onContextMenu={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+              onDragStart={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+            >
               <AssetBody asset={asset} />
             </div>
           )}
@@ -51,7 +60,14 @@ function AssetBody({ asset }: { asset: Asset }) {
     );
   }
   if (asset.kind === "image") {
-    return <img src={asset.preview ?? asset.src} alt={asset.title} className="block h-auto w-full" />;
+    return (
+      <img
+        src={asset.preview ?? asset.src}
+        alt={asset.title}
+        draggable={shouldGuardPreview(asset) ? false : undefined}
+        className="block h-auto w-full"
+      />
+    );
   }
   return (
     <>
@@ -103,12 +119,14 @@ export function AssetActions({ asset, className }: { asset: Asset; className?: s
           aria-describedby={noticeId}
         >
           <ExternalLink aria-hidden="true" />
-          {asset.kind === "image" ? "Open full resolution" : "View PDF"}
+          {asset.kind === "image" ? "Open in Full Resolution" : "View PDF"}
         </a>
-        <a className={buttonVariants({ variant: "secondary" })} href={asset.src} download={filename} aria-describedby={noticeId}>
-          <Download aria-hidden="true" />
-          Download
-        </a>
+        {asset.id === cv.id && (
+          <a className={buttonVariants({ variant: "secondary" })} href={asset.src} download={filename} aria-describedby={noticeId}>
+            <Download aria-hidden="true" />
+            Download
+          </a>
+        )}
       </div>
     </div>
   );
