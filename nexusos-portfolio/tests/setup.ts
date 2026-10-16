@@ -28,3 +28,7 @@ if (!("ResizeObserver" in window)) {
 }
 
 HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement["getContext"];
+
+if (typeof HTMLElement.prototype.scrollIntoView !== "function") {
+  HTMLElement.prototype.scrollIntoView = () => {};
+}

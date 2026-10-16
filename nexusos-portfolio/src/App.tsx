@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SpaceField } from "@/components/space-field";
 import { useUiStore } from "@/stores/ui";
 import { StarEntry } from "~/animations/StarEntry";
 import { PortfolioShell } from "~/components/PortfolioShell";
+import { LanguageProvider } from "~/i18n/language";
+import { blockDocumentContextMenu } from "~/components/previewGuard";
 import { Portfolio } from "~/sections/Portfolio";
 
 const ENTERED_KEY = "nexusos-portfolio:entered";
@@ -27,6 +29,11 @@ function shouldShowIntro(): boolean {
 export default function App() {
   const [phase, setPhase] = useState<"intro" | "portfolio">(() => (shouldShowIntro() ? "intro" : "portfolio"));
 
+  useEffect(() => {
+    document.addEventListener("contextmenu", blockDocumentContextMenu);
+    return () => document.removeEventListener("contextmenu", blockDocumentContextMenu);
+  }, []);
+
   const enter = () => {
     try {
       window.sessionStorage.setItem(ENTERED_KEY, "1");
@@ -43,7 +50,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <LanguageProvider>
       {/* Before the content in DOM order, as in NexusOS App.tsx: at rest the
           space sits behind the door; it lifts itself above the shell only
           during the cinematic. */}
@@ -55,6 +62,6 @@ export default function App() {
           <Portfolio />
         </PortfolioShell>
       )}
-    </>
+    </LanguageProvider>
   );
 }

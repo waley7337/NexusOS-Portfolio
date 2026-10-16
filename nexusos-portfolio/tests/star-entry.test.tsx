@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CINEMATIC_CARD_EXIT_MS } from "@/lib/auth-cinematic";
 import { useUiStore } from "@/stores/ui";
 import { StarEntry } from "~/animations/StarEntry";
+import { LanguageProvider } from "~/i18n/language";
 
 describe("StarEntry drives the real NexusOS cinematic", () => {
   beforeEach(() => {
@@ -12,13 +13,21 @@ describe("StarEntry drives the real NexusOS cinematic", () => {
   afterEach(() => vi.useRealTimers());
 
   it("claims the space as idle on mount", () => {
-    render(<StarEntry onEnter={() => {}} />);
+    render(
+      <LanguageProvider>
+        <StarEntry onEnter={() => {}} />
+      </LanguageProvider>,
+    );
     expect(useUiStore.getState().spaceStage).toBe("idle");
   });
 
   it("arms travel immediately and swaps after the card exit", () => {
     const onEnter = vi.fn();
-    render(<StarEntry onEnter={onEnter} />);
+    render(
+      <LanguageProvider>
+        <StarEntry onEnter={onEnter} />
+      </LanguageProvider>,
+    );
     fireEvent.click(screen.getByRole("button", { name: /enter portfolio/i }));
 
     expect(useUiStore.getState().spaceStage).toBe("travel");

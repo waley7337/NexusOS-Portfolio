@@ -11,8 +11,12 @@ import { Ticks } from "@/components/ui/structure";
 import { useSpotlight } from "@/hooks/useSpotlight";
 import type { Asset, Folder } from "~/data/assets";
 import { AssetPreviewDialog } from "~/components/AssetPreviewDialog";
+import { blockPreviewGesture, shouldGuardPreview } from "~/components/previewGuard";
+import { usePick } from "~/i18n/language";
+import { ui } from "~/i18n/ui";
 
 export function FolderExplorer({ folders }: { folders: Folder[] }) {
+  const t = usePick();
   const [openId, setOpenId] = useState<string | null>(null);
   const [preview, setPreview] = useState<Asset | null>(null);
   const open = folders.find((f) => f.id === openId) ?? null;
@@ -20,22 +24,22 @@ export function FolderExplorer({ folders }: { folders: Folder[] }) {
 
   return (
     <div className="space-y-5" data-testid="folder-explorer">
-      <nav aria-label="Library location" className="text-machine flex items-center gap-1.5">
+      <nav aria-label={t(ui.libraryLocation)} className="text-machine flex flex-wrap items-center gap-1.5">
         <button
           type="button"
           className="focus-ring rounded-control px-1 hover:text-foreground disabled:hover:text-muted-foreground"
           onClick={() => setOpenId(null)}
           disabled={!open}
         >
-          Library
+          {t(ui.library)}
         </button>
         {open && (
           <>
             <ChevronRight className="h-3 w-3" aria-hidden="true" />
-            <span className="text-foreground">{open.group}</span>
+            <span className="text-foreground">{open.group === "Documents" ? t(ui.documents) : t(ui.images)}</span>
             <ChevronRight className="h-3 w-3" aria-hidden="true" />
             <span className="text-foreground" aria-current="page">
-              {open.label}
+              {t(open.label)}
             </span>
           </>
         )}
@@ -47,12 +51,12 @@ export function FolderExplorer({ folders }: { folders: Folder[] }) {
             <div className="flex items-center gap-2.5">
               <FolderOpen className="h-[var(--icon-md)] w-[var(--icon-md)] text-primary" aria-hidden="true" />
               <div>
-                <h3 className="text-h3">{open.label}</h3>
-                <p className="text-small text-muted-foreground">{open.description}</p>
+                <h3 className="text-h3">{t(open.label)}</h3>
+                <p className="text-small text-muted-foreground">{t(open.description)}</p>
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={() => setOpenId(null)}>
-              Back to library
+              {t(ui.backToLibrary)}
             </Button>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -64,7 +68,7 @@ export function FolderExplorer({ folders }: { folders: Folder[] }) {
       ) : (
         groups.map((group) => (
           <div key={group} className="space-y-3">
-            <p className="eyebrow">{group}</p>
+            <p className="eyebrow">{group === "Documents" ? t(ui.documents) : t(ui.images)}</p>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {folders
                 .filter((f) => f.group === group)
@@ -82,6 +86,7 @@ export function FolderExplorer({ folders }: { folders: Folder[] }) {
 }
 
 function FolderTile({ folder, onOpen }: { folder: Folder; onOpen: () => void }) {
+  const t = usePick();
   const ref = useSpotlight<HTMLButtonElement>();
   const published = folder.assets.filter((a) => a.status === "published").length;
   return (
@@ -89,7 +94,7 @@ function FolderTile({ folder, onOpen }: { folder: Folder; onOpen: () => void }) 
       ref={ref}
       type="button"
       onClick={onOpen}
-      className="surface card-lift spotlight focus-edge group relative flex w-full flex-col gap-3 p-4 text-left"
+      className="portfolio-lift surface card-lift spotlight focus-edge group relative flex w-full flex-col gap-3 p-4 text-left"
       data-folder={folder.id}
     >
       <Ticks />
@@ -99,16 +104,16 @@ function FolderTile({ folder, onOpen }: { folder: Folder; onOpen: () => void }) 
           aria-hidden="true"
         />
         <span className="text-machine num">
-          {folder.assets.length} {folder.assets.length === 1 ? "item" : "items"}
+          {folder.assets.length} {folder.assets.length === 1 ? t(ui.item) : t(ui.items)}
         </span>
       </span>
       <span>
-        <span className="block text-h4">{folder.label}</span>
-        <span className="mt-0.5 block text-small text-muted-foreground">{folder.description}</span>
+        <span className="block text-h4">{t(folder.label)}</span>
+        <span className="mt-0.5 block text-small text-muted-foreground">{t(folder.description)}</span>
       </span>
       {published < folder.assets.length && (
         <span className="text-machine flex items-center gap-1.5">
-          <Lock className="h-3 w-3" aria-hidden="true" /> on request
+          <Lock className="h-3 w-3" aria-hidden="true" /> {t(ui.onRequest)}
         </span>
       )}
     </button>
@@ -116,17 +121,28 @@ function FolderTile({ folder, onOpen }: { folder: Folder; onOpen: () => void }) 
 }
 
 function AssetTile({ asset, onOpen }: { asset: Asset; onOpen: () => void }) {
+  const t = usePick();
   const Icon = asset.status === "withheld" ? Lock : asset.kind === "image" ? ImageIcon : FileText;
   return (
     <Card interactive className="overflow-hidden">
-      <button type="button" onClick={onOpen} className="focus-ring block w-full text-left" data-asset={asset.id}>
+      <button type="button" onClick={onOpen} className="focus-ring block w-full text-left" aria-label={t(asset.title)} data-asset={asset.id}>
         <div className="aspect-[16/10] overflow-hidden border-b border-line-soft bg-surface-1">
           {asset.preview && asset.status === "published" && !asset.notice ? (
             <img
               src={asset.preview}
               alt=""
               loading="lazy"
-              className={asset.kind === "pdf" ? "h-full w-full object-cover object-top" : "h-full w-full object-cover"}
+              draggable={shouldGuardPreview(asset) ? false : undefined}
+              data-preview-guard={shouldGuardPreview(asset) ? "true" : undefined}
+              onContextMenu={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+              onDragStart={shouldGuardPreview(asset) ? blockPreviewGesture : undefined}
+              className={
+                asset.kind === "pdf"
+                  ? "preview-guard h-full w-full object-cover object-top"
+                  : shouldGuardPreview(asset)
+                    ? "preview-guard h-full w-full object-cover"
+                    : "h-full w-full object-cover"
+              }
             />
           ) : (
             <div className="flex h-full items-center justify-center">
@@ -136,17 +152,17 @@ function AssetTile({ asset, onOpen }: { asset: Asset; onOpen: () => void }) {
         </div>
         <div className="space-y-2 p-4">
           <div className="flex items-start justify-between gap-2">
-            <span className="text-h4">{asset.title}</span>
+            <span className="text-h4">{t(asset.title)}</span>
             <Icon className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           </div>
-          <p className="line-clamp-2 text-small text-muted-foreground">{asset.description}</p>
+          <p className="line-clamp-2 text-small text-muted-foreground">{t(asset.description)}</p>
           <div className="flex flex-wrap gap-1.5">
             <Badge variant={asset.status === "withheld" ? "warning" : "default"}>
-              {asset.status === "withheld" ? "On request" : asset.meta}
+              {asset.status === "withheld" ? t(ui.onRequest) : t(asset.meta)}
             </Badge>
-            {asset.label && <Badge variant={asset.notice ? "warning" : "accent"}>{asset.label}</Badge>}
+            {asset.label && <Badge variant={asset.notice ? "warning" : "accent"}>{t(asset.label)}</Badge>}
           </div>
-          {asset.notice && <p className="text-small text-muted-foreground">{asset.notice}</p>}
+          {asset.notice && <p className="text-small text-muted-foreground">{t(asset.notice)}</p>}
         </div>
       </button>
     </Card>
