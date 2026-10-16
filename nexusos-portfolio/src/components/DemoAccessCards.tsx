@@ -13,6 +13,8 @@ import {
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import { copyForName, ui } from "~/i18n/ui";
 
 const ghost = otherProjects.find((project) => project.name === "Ghost Protocol");
 
@@ -52,11 +54,13 @@ function CopyControl({
   idSuffix,
 }: {
   value: string;
-  idleLabel: "Copy Email" | "Copy Password";
+  idleLabel: string;
   project: string;
   kind: "email" | "password";
   idSuffix: string;
 }) {
+  const { language } = usePortfolioLanguage();
+  const t = usePick();
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
   const timer = useRef<number | null>(null);
 
@@ -74,7 +78,7 @@ function CopyControl({
     timer.current = window.setTimeout(() => setState("idle"), 2000);
   };
 
-  const feedback = state === "copied" ? "Copied" : state === "failed" ? "Copy failed" : "";
+  const feedback = state === "copied" ? t(ui.copied) : state === "failed" ? t(ui.copyFailed) : "";
   const slug = project === "NexusOS" ? "nexusos" : "ghost";
 
   return (
@@ -82,7 +86,7 @@ function CopyControl({
       <button
         type="button"
         className={buttonVariants({ variant: "outline", size: "sm" })}
-        aria-label={`${idleLabel} for ${project}`}
+        aria-label={copyForName(kind, project, language)}
         data-testid={`${slug}-copy-${kind}${idSuffix}`}
         onClick={() => void onCopy()}
       >
@@ -112,7 +116,7 @@ function Credential({
 }: {
   label: string;
   value: string;
-  copyLabel: "Copy Email" | "Copy Password";
+  copyLabel: string;
   project: string;
   kind: "email" | "password";
   testId: string;
@@ -135,25 +139,26 @@ function Credential({
  * Credentials come from demoAccess — this module does not declare them.
  */
 export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
+  const t = usePick();
   return (
     <Card className="flex flex-col gap-4 p-5" data-demo="NexusOS">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-h3">NexusOS — Company Demo Access</h3>
-          <Badge variant="accent">Live application</Badge>
+          <h3 className="text-h3">{t(ui.nexusDemoHeading)}</h3>
+          <Badge variant="accent">{t(ui.liveApplication)}</Badge>
         </div>
-        <p className="text-body text-muted-foreground">{nexusos.subtitle}</p>
+        <p className="text-body text-muted-foreground">{t(nexusos.subtitle)}</p>
       </div>
 
       <div className="space-y-1">
-        <p className="text-small font-medium text-foreground">Company-given URL:</p>
+        <p className="text-small font-medium text-foreground">{t(ui.companyUrl)}</p>
         <p className="text-machine-value break-all" data-testid={`company-portfolio-id${idSuffix}`}>
           {profile.companyPortfolioId}
         </p>
       </div>
 
       <div className="space-y-1">
-        <p className="text-small font-medium text-foreground">Company portfolio link:</p>
+        <p className="text-small font-medium text-foreground">{t(ui.companyPortfolioLink)}</p>
         <a
           className="focus-ring break-all rounded-control text-sm font-medium text-primary hover:underline"
           href={companyPortfolioLink}
@@ -166,7 +171,7 @@ export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
       </div>
 
       <div className="space-y-1">
-        <p className="text-small font-medium text-foreground">Open live application:</p>
+        <p className="text-small font-medium text-foreground">{t(ui.openLiveApplicationLabel)}</p>
         <a
           className="focus-ring break-all rounded-control text-sm font-medium text-primary hover:underline"
           href={nexusLiveApplication}
@@ -179,18 +184,18 @@ export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
       </div>
 
       <Credential
-        label="Demo email:"
+        label={t(ui.demoEmail)}
         value={nexusDemoAccount.email}
-        copyLabel="Copy Email"
+        copyLabel={t(ui.copyEmail)}
         project="NexusOS"
         kind="email"
         testId={`nexusos-demo-email${idSuffix}`}
         idSuffix={idSuffix}
       />
       <Credential
-        label="Demo password:"
+        label={t(ui.demoPassword)}
         value={nexusDemoAccount.password}
-        copyLabel="Copy Password"
+        copyLabel={t(ui.copyPassword)}
         project="NexusOS"
         kind="password"
         testId={`nexusos-demo-password${idSuffix}`}
@@ -207,7 +212,7 @@ export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
           data-testid={`nexusos-open-live${idSuffix}`}
         >
           <LogIn aria-hidden="true" />
-          Open live application
+          {t(ui.openLiveApplication)}
         </a>
         <a
           className={buttonVariants({ variant: "outline", size: "sm" })}
@@ -216,7 +221,7 @@ export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
           rel="noreferrer"
           data-testid={`nexusos-github${idSuffix}`}
         >
-          GitHub
+          {t(ui.github)}
         </a>
       </div>
     </Card>
@@ -224,20 +229,21 @@ export function NexusCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
 }
 
 export function GhostCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
+  const t = usePick();
   if (!ghost?.demo) return null;
   return (
     <Card className="flex flex-col gap-4 p-5" data-demo="Ghost Protocol">
       <div className="space-y-2">
         <div className="flex flex-wrap items-center gap-2">
-          <h3 className="text-h3">Ghost Protocol — Company Demo Access</h3>
-          <Badge variant="info">{ghost.statusLabel}</Badge>
+          <h3 className="text-h3">{t(ui.ghostDemoHeading)}</h3>
+          <Badge variant="info">{t(ghost.statusLabel)}</Badge>
         </div>
-        <p className="text-body text-muted-foreground">{ghost.summary}</p>
+        <p className="text-body text-muted-foreground">{t(ghost.summary)}</p>
         <p className="text-machine">{ghost.stack.join("  ·  ")}</p>
       </div>
 
       <div className="space-y-1">
-        <p className="text-small font-medium text-foreground">Project demo:</p>
+        <p className="text-small font-medium text-foreground">{t(ui.projectDemo)}</p>
         <a
           className="focus-ring break-all rounded-control text-sm font-medium text-primary hover:underline"
           href={ghost.demo.href}
@@ -250,18 +256,18 @@ export function GhostCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
       </div>
 
       <Credential
-        label="Demo email:"
+        label={t(ui.demoEmail)}
         value={ghostDemoAccount.email}
-        copyLabel="Copy Email"
+        copyLabel={t(ui.copyEmail)}
         project="Ghost Protocol"
         kind="email"
         testId={`ghost-demo-email${idSuffix}`}
         idSuffix={idSuffix}
       />
       <Credential
-        label="Demo password:"
+        label={t(ui.demoPassword)}
         value={ghostDemoAccount.password}
-        copyLabel="Copy Password"
+        copyLabel={t(ui.copyPassword)}
         project="Ghost Protocol"
         kind="password"
         testId={`ghost-demo-password${idSuffix}`}
@@ -278,11 +284,11 @@ export function GhostCompanyDemoCard({ idSuffix = "" }: { idSuffix?: string }) {
           data-testid={`ghost-open-live${idSuffix}`}
         >
           <ExternalLink aria-hidden="true" />
-          Open Ghost Protocol Demo
+          {t(ui.openGhostDemo)}
         </a>
         {ghost.github && (
           <a className={buttonVariants({ variant: "outline", size: "sm" })} href={ghost.github} target="_blank" rel="noreferrer">
-            GitHub
+            {t(ui.github)}
           </a>
         )}
       </div>

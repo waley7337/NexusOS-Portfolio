@@ -85,6 +85,7 @@ describe("project progress", () => {
     expect(bar).toHaveAttribute("aria-valuetext", "82%");
     expect(bar.querySelector(".project-progress-fill")).toHaveStyle({ width: "82%" });
     expect(screen.getByText("82%")).toBeInTheDocument();
+    expect(screen.getByText("NexusOS").closest("p")).toHaveTextContent("NexusOS — 82%");
     expect(screen.getByText("In Progress")).toBeInTheDocument();
     expect(screen.getByText("Assessed 16 October 2026")).toBeInTheDocument();
   });
@@ -100,6 +101,7 @@ describe("project progress", () => {
     const bar = screen.getByRole("progressbar", { name: "Ghost Protocol completion" });
     expect(bar).toHaveAttribute("aria-valuenow", "78");
     expect(screen.getByText("78%")).toBeInTheDocument();
+    expect(screen.getByText("Ghost Protocol").closest("p")).toHaveTextContent("Ghost Protocol — 78%");
     expect(bar.querySelector(".project-progress-fill")).toHaveStyle({ width: "78%" });
   });
 

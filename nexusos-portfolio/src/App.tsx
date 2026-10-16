@@ -50,7 +50,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <LanguageProvider>
       {/* Before the content in DOM order, as in NexusOS App.tsx: at rest the
           space sits behind the door; it lifts itself above the shell only
           during the cinematic. */}
@@ -58,12 +58,10 @@ export default function App() {
       {phase === "intro" ? (
         <StarEntry onEnter={enter} />
       ) : (
-        <LanguageProvider>
-          <PortfolioShell onReplayIntro={replay}>
-            <Portfolio />
-          </PortfolioShell>
-        </LanguageProvider>
+        <PortfolioShell onReplayIntro={replay}>
+          <Portfolio />
+        </PortfolioShell>
       )}
-    </>
+    </LanguageProvider>
   );
 }

@@ -6,6 +6,8 @@ import { buttonVariants } from "@/components/ui/button";
 import type { Asset } from "~/data/assets";
 import { AssetActions } from "~/components/AssetPreviewDialog";
 import { blockPreviewGesture } from "~/components/previewGuard";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import { inspectName, ui } from "~/i18n/ui";
 
 /**
  * On-page document shot. Same face and inspect viewer as the architecture
@@ -16,6 +18,8 @@ export function DocumentPreview({ asset }: { asset: Asset }) {
   const preview = asset.preview;
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { language } = usePortfolioLanguage();
+  const t = usePick();
 
   if (!preview) return null;
 
@@ -27,7 +31,7 @@ export function DocumentPreview({ asset }: { asset: Asset }) {
         className="doc-shot preview-guard focus-ring"
         data-testid={`preview-${asset.id}`}
         data-preview-guard="true"
-        aria-label={`Inspect ${asset.title}`}
+        aria-label={inspectName(t(asset.title), language)}
         onClick={() => setOpen(true)}
         onContextMenu={blockPreviewGesture}
         onDragStart={blockPreviewGesture}
@@ -51,6 +55,7 @@ export function DocumentPreview({ asset }: { asset: Asset }) {
 }
 
 function DocumentInspect({ asset, src, onClose }: { asset: Asset; src: string; onClose: () => void }) {
+  const t = usePick();
   const rootRef = useRef<HTMLDivElement>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
@@ -105,15 +110,15 @@ function DocumentInspect({ asset, src, onClose }: { asset: Asset; src: string; o
   return createPortal(
     <div ref={rootRef} className="arch-inspect">
       <div className="arch-scrim" data-testid="cv-lightbox-scrim" onClick={() => onCloseRef.current()} />
-      <div className="arch-flight" role="dialog" aria-modal="true" aria-label={asset.title}>
+      <div className="arch-flight" role="dialog" aria-modal="true" aria-label={t(asset.title)}>
         <div className="arch-flight-bar">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <p className="text-h4">{asset.title}</p>
-            <Badge>{asset.meta}</Badge>
+            <p className="text-h4">{t(asset.title)}</p>
+            <Badge>{t(asset.meta)}</Badge>
           </div>
           <button type="button" className={buttonVariants({ variant: "secondary", size: "sm" })} onClick={() => onCloseRef.current()}>
             <X aria-hidden="true" />
-            Close
+            {t(ui.close)}
           </button>
         </div>
         <div
@@ -122,9 +127,9 @@ function DocumentInspect({ asset, src, onClose }: { asset: Asset; src: string; o
           onContextMenu={blockPreviewGesture}
           onDragStart={blockPreviewGesture}
         >
-          <img src={src} alt={asset.title} draggable={false} />
+          <img src={src} alt={t(asset.title)} draggable={false} />
         </div>
-        <p className="arch-flight-copy text-sm text-muted-foreground">{asset.description}</p>
+        <p className="arch-flight-copy text-sm text-muted-foreground">{t(asset.description)}</p>
         <AssetActions asset={asset} className="shrink-0" />
       </div>
     </div>,

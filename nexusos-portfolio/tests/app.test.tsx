@@ -74,10 +74,10 @@ describe("App", () => {
       expect(screen.getAllByRole("link", { name: label }).length).toBeGreaterThanOrEqual(1);
     }
     const degree = within(screen.getByTestId("degree-download"));
-    expect(degree.getByTestId("privacy-notice")).toHaveTextContent(DEGREE_PRIVACY_NOTICE);
+    expect(degree.getByTestId("privacy-notice")).toHaveTextContent(DEGREE_PRIVACY_NOTICE.en);
     const view = degree.getByRole("link", { name: "View PDF" });
     expect(view).toHaveAttribute("href", "/documents/education/licence-etudes-anglophones-strasbourg-2020.pdf");
-    expect(view).toHaveAccessibleDescription(DEGREE_PRIVACY_NOTICE);
+    expect(view).toHaveAccessibleDescription(DEGREE_PRIVACY_NOTICE.en);
     expect(degree.queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
     const downloads = screen.getAllByRole("link", { name: "Download" });
     expect(downloads).toHaveLength(1);
@@ -110,7 +110,7 @@ describe("App", () => {
     render(<App />);
     const cvRegion = screen.getByRole("region", { name: "CV" });
     expect(cvRegion.querySelector("object, embed, iframe")).toBeNull();
-    const shot = within(cvRegion).getByRole("button", { name: `Inspect ${cv.title}` });
+    const shot = within(cvRegion).getByRole("button", { name: `Inspect ${cv.title.en}` });
     expect(shot).toHaveAttribute("data-preview-guard", "true");
     const preview = shot.querySelector("img");
     expect(preview).not.toBeNull();
@@ -123,9 +123,9 @@ describe("App", () => {
     expect(screen.getAllByRole("link", { name: "Download" })).toHaveLength(1);
 
     fireEvent.click(shot);
-    const dialog = screen.getByRole("dialog", { name: cv.title });
+    const dialog = screen.getByRole("dialog", { name: cv.title.en });
     expect(dialog.querySelector("object, embed, iframe")).toBeNull();
-    expect(within(dialog).getByRole("img", { name: cv.title })).toHaveAttribute("src", cv.preview);
+    expect(within(dialog).getByRole("img", { name: cv.title.en })).toHaveAttribute("src", cv.preview);
     expect(within(dialog).getByRole("link", { name: "View PDF" })).toHaveAttribute("href", cv.src);
     expect(within(dialog).getByRole("link", { name: "Download" })).toHaveAttribute("href", cv.src);
     fireEvent.click(screen.getByTestId("cv-lightbox-scrim"));
@@ -148,26 +148,17 @@ describe("App", () => {
     window.history.replaceState(null, "", "/#projects");
     render(<App />);
     const projects = screen.getByRole("region", { name: "Other projects" });
-    expect(projects).toHaveTextContent("Ghost Protocol");
+    expect(projects).not.toHaveTextContent("Ghost Protocol");
     expect(projects).toHaveTextContent("Pentest Report Generator (v1)");
-    expect(projects).toHaveTextContent("In progress");
     expect(projects).toHaveTextContent("Prototype · local only");
-    const ghost = within(projects).getByRole("link", { name: "Live web app" });
-    expect(ghost).toHaveAttribute("href", "https://ghost-protocol-pi.vercel.app");
-    const ghostCard = projects.querySelector<HTMLElement>('[data-project="Ghost Protocol"]');
-    expect(ghostCard).not.toBeNull();
-    expect(within(ghostCard as HTMLElement).getByRole("link", { name: "Open Demo" })).toHaveAttribute(
-      "href",
-      "https://ghost-protocol-pi.vercel.app",
-    );
+    expect(within(projects).queryByRole("link", { name: "Live web app" })).not.toBeInTheDocument();
+    expect(projects.querySelector('[data-project="Ghost Protocol"]')).toBeNull();
     const pentest = projects.querySelector<HTMLElement>('[data-project="Pentest Report Generator (v1)"]');
     expect(pentest).not.toBeNull();
+    expect(pentest).toHaveAttribute("data-layout", "horizontal");
     expect(within(pentest as HTMLElement).queryByRole("link", { name: /demo/i })).not.toBeInTheDocument();
     const repos = within(projects).getAllByRole("link", { name: "GitHub" });
-    expect(repos.map((a) => a.getAttribute("href"))).toEqual([
-      "https://github.com/waley7337/Ghost-Protocol",
-      "https://github.com/waley7337/pentest-report-tool",
-    ]);
+    expect(repos.map((a) => a.getAttribute("href"))).toEqual(["https://github.com/waley7337/pentest-report-tool"]);
     expect(projects).not.toHaveTextContent(/PermissionGraph|Contract Sentinel|Client Portal/i);
     expect(projects.textContent).not.toMatch(/github\.com\/waley7337\/nexusos/i);
   });
@@ -227,7 +218,7 @@ describe("App", () => {
     );
 
     expect(within(nexusCard as HTMLElement).getByRole("heading", { name: "NexusOS — Company Demo Access" })).toBeInTheDocument();
-    expect(nexusCard).toHaveTextContent(nexusos.subtitle);
+    expect(nexusCard).toHaveTextContent(nexusos.subtitle.en);
     expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-id")).toHaveTextContent("el-nagdi-s-portfolio");
     expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-id").closest("a")).toBeNull();
     expect(within(nexusCard as HTMLElement).getByTestId("company-portfolio-link")).toHaveAttribute("href", companyPortfolioLink);
@@ -244,7 +235,7 @@ describe("App", () => {
     expect(nexusCard).not.toHaveTextContent("/login");
 
     expect(within(ghostCard as HTMLElement).getByRole("heading", { name: "Ghost Protocol — Company Demo Access" })).toBeInTheDocument();
-    expect(ghostCard).toHaveTextContent(ghost!.summary);
+    expect(ghostCard).toHaveTextContent(ghost!.summary.en);
     expect(within(ghostCard as HTMLElement).getByTestId("ghost-live-application")).toHaveAttribute(
       "href",
       "https://ghost-protocol-pi.vercel.app",
@@ -382,18 +373,19 @@ describe("App", () => {
     );
     expect(within(region).getByRole("progressbar", { name: "Ghost Protocol completion" })).toHaveAttribute("aria-valuenow", "78");
     expect(within(region).queryByRole("tablist")).not.toBeInTheDocument();
-    expect(within(region).getByRole("button", { name: "Previous Ghost Protocol screenshot" })).toBeInTheDocument();
-    expect(within(region).getByRole("button", { name: "Next Ghost Protocol screenshot" })).toBeInTheDocument();
+    expect(within(region).queryByRole("button", { name: "Previous Ghost Protocol screenshot" })).not.toBeInTheDocument();
+    expect(within(region).queryByRole("button", { name: "Next Ghost Protocol screenshot" })).not.toBeInTheDocument();
     for (const title of ["Operations", "Mission lab", "Ranks"]) {
-      const card = within(region).getByRole("button", { name: `Inspect ${title}` });
-      expect(card.querySelector("img")?.getAttribute("src")).toMatch(/ghost-protocol\/.+\.preview\.webp$/);
+      expect(within(region).queryByRole("button", { name: `Inspect ${title}` })).not.toBeInTheDocument();
     }
     expect(within(region).queryByRole("button", { name: "Boot sequence" })).not.toBeInTheDocument();
+    expect(region.querySelector('[data-layout="horizontal"]')).not.toBeNull();
     const library = screen.getByRole("region", { name: "Ghost Protocol Library" });
+    fireEvent.click(within(library).getByRole("button", { name: /Interface/ }));
     expect(within(library).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
     expect(within(region).getAllByRole("link", { name: /^Open / })).toHaveLength(ghostDocs.length + 1);
     for (const entry of ghostDocs) {
-      expect(within(region).getByRole("link", { name: `Open ${entry.title}` })).toHaveAttribute("href", entry.href);
+      expect(within(region).getByRole("link", { name: `Open ${entry.title.en}` })).toHaveAttribute("href", entry.href);
     }
     expect(region).not.toHaveTextContent("waleyelnagdi7@gmail.com");
     expect(region).not.toHaveTextContent("COMPANYcomp170106@");
@@ -412,8 +404,8 @@ describe("App", () => {
     expect(overview).not.toHaveTextContent(transparencyOpening.de.body);
 
     const tab = screen.getByRole("region", { name: transparencyTitle.en });
-    expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.title })).toBeInTheDocument();
-    for (const paragraph of verificationWorkflow.paragraphs) {
+    expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.en.title })).toBeInTheDocument();
+    for (const paragraph of verificationWorkflow.en.paragraphs) {
       expect(tab).toHaveTextContent(paragraph);
     }
     expect(tab).not.toHaveTextContent(transparencyDetail.de[0].paragraphs[0]);
@@ -429,13 +421,17 @@ describe("App", () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "Deutsch" })[0]);
 
-    const overviewDe = screen.getByRole("region", { name: "Overview" });
+    const overviewDe = screen.getByRole("region", { name: "Überblick" });
     expect(overviewDe).toHaveTextContent(transparencyOpening.de.label);
     expect(overviewDe).toHaveTextContent(transparencyOpening.de.body);
     expect(within(overviewDe).getByText(transparencyOpening.de.label)).toHaveClass("text-foreground");
     expect(overviewDe).not.toHaveTextContent(transparencyOpening.en.body);
     const tab = screen.getByRole("region", { name: transparencyTitle.de });
-    expect(tab).not.toHaveTextContent(verificationWorkflow.paragraphs[0]);
+    expect(tab).not.toHaveTextContent(verificationWorkflow.en.paragraphs[0]);
+    expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.de.title })).toBeInTheDocument();
+    for (const paragraph of verificationWorkflow.de.paragraphs) {
+      expect(tab).toHaveTextContent(paragraph);
+    }
     expect(tab).toHaveTextContent(transparencyWorkflowLink.de);
     expect(tab).not.toHaveTextContent(transparencyDetail.en[0].heading);
     for (const part of transparencyDetail.de) {
@@ -526,7 +522,11 @@ describe("App", () => {
     }
     expect(ghostArch).toHaveTextContent("preload bridge");
     expect(ghostArch).not.toHaveTextContent("Routers stay thin");
-    expect(within(ghostArch).getAllByRole("button", { name: /Inspect / })).toHaveLength(1);
+    expect(within(ghostArch).getByRole("button", { name: "Inspect Security Architecture" }).querySelector("img")).toHaveAttribute(
+      "src",
+      "/images/ghost-protocol/security-architecture.preview.webp",
+    );
+    expect(within(ghostArch).getAllByRole("button", { name: /Inspect / })).toHaveLength(2);
     fireEvent.click(ghostDiagram);
     const dialog = screen.getByRole("dialog", { name: "System Architecture" });
     expect(within(dialog).getByRole("img", { name: "System Architecture" })).toHaveAttribute(
@@ -550,10 +550,16 @@ describe("App", () => {
       expect(src).not.toContain("/images/screenshots/");
       expect(src).not.toContain("/images/architecture/");
     }
+    fireEvent.click(within(nexusLib).getByRole("button", { name: /System & interface/ }));
     expect(within(nexusLib).getByRole("button", { name: "Mission Control — dark" })).toBeInTheDocument();
-    expect(within(nexusLib).getByRole("button", { name: "NexusOS — Engineering Case Study" })).toBeInTheDocument();
+    fireEvent.click(within(nexusLib).getByRole("button", { name: "Back to library" }));
+    const caseStudy = within(nexusLib).getByTestId("nexus-case-study");
+    expect(within(caseStudy).getByRole("button", { name: "NexusOS — Engineering Case Study" })).toBeInTheDocument();
+    expect(within(caseStudy).getByRole("button", { name: "NexusOS — Project Summary (redacted copy)" })).toBeInTheDocument();
+    expect(within(caseStudy).getByRole("button", { name: "Software Developer Portfolio 2026 (redacted copy)" })).toBeInTheDocument();
+    expect(within(caseStudy).queryByRole("button", { name: /Portfolio Summary/ })).not.toBeInTheDocument();
     expect(within(nexusLib).queryByRole("button", { name: "Boot sequence" })).not.toBeInTheDocument();
-    expect(within(ghostLib).getByRole("button", { name: "Boot sequence" })).toBeInTheDocument();
+    fireEvent.click(within(ghostLib).getByRole("button", { name: /Workflow/ }));
     expect(within(ghostLib).getByRole("button", { name: "Development Roadmap" })).toBeInTheDocument();
     expect(within(ghostLib).queryByRole("button", { name: "Mission Control — dark" })).not.toBeInTheDocument();
 

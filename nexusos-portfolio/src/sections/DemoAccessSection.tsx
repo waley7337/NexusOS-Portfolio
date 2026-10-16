@@ -1,5 +1,7 @@
 import { GhostCompanyDemoCard, NexusCompanyDemoCard } from "~/components/DemoAccessCards";
-import { DEMO_ACCESS_NOTE } from "~/data/demoAccess";
+import { demoAccessNote } from "~/data/demoAccess";
+import { usePick } from "~/i18n/language";
+import { ui } from "~/i18n/ui";
 import { Section } from "~/sections/Section";
 
 /**
@@ -8,18 +10,15 @@ import { Section } from "~/sections/Section";
  * separate cards. The same cards also render on each project overview.
  */
 export function DemoAccessSection() {
+  const t = usePick();
   return (
-    <Section
-      id="demos"
-      title="Live demos & access"
-      subtitle="Verified destinations for the live NexusOS application and the Ghost Protocol web client."
-    >
+    <Section id="demos" title={t(ui.demosTitle)} subtitle={t(ui.demosSubtitle)}>
       <div className="grid gap-3 lg:grid-cols-2">
         <NexusCompanyDemoCard />
         <GhostCompanyDemoCard />
       </div>
       <p className="text-small text-muted-foreground" id="demo-access-note" data-testid="demo-access-footer">
-        {DEMO_ACCESS_NOTE}
+        {t(demoAccessNote)}
       </p>
     </Section>
   );

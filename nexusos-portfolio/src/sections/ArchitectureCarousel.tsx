@@ -6,6 +6,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { AssetActions } from "~/components/AssetPreviewDialog";
 import { blockPreviewGesture } from "~/components/previewGuard";
 import type { Asset } from "~/data/assets";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import { inspectName, nextControlName, previousControlName, ui } from "~/i18n/ui";
 
 export interface ArchitectureDiagram {
   asset: Asset;
@@ -67,6 +69,8 @@ export function ArchitectureCarousel({
   /** Accessible name for the previous and next controls. Defaults keep the architecture tests stable. */
   controlLabel?: string;
 }) {
+  const { language } = usePortfolioLanguage();
+  const t = usePick();
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
   const mobile = useMedia("(max-width: 767px)");
   const count = diagrams.length;
@@ -177,7 +181,7 @@ export function ArchitectureCarousel({
               className="arch-card preview-guard focus-ring"
               data-tilt={String(tilt)}
               data-preview-guard="true"
-              aria-label={`Inspect ${diagram.asset.title}`}
+              aria-label={inspectName(t(diagram.asset.title), language)}
               aria-current={i === index ? "true" : undefined}
               onContextMenu={blockPreviewGesture}
               onDragStart={blockPreviewGesture}
@@ -203,7 +207,7 @@ export function ArchitectureCarousel({
             return (
               <div key={diagram.asset.id} className="arch-caption space-y-2" data-active={active ? "true" : "false"} aria-hidden={active ? undefined : true}>
                 <p className="eyebrow">{diagram.label}</p>
-                <h3 className="text-h2">{diagram.asset.title}</h3>
+                <h3 className="text-h2">{t(diagram.asset.title)}</h3>
                 <p className="text-body text-muted-foreground">{diagram.copy}</p>
               </div>
             );
@@ -213,18 +217,18 @@ export function ArchitectureCarousel({
           <button
             type="button"
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            aria-label={`Previous ${controlLabel}`}
+            aria-label={previousControlName(controlLabel, language)}
             onClick={() => goTo(index - 1)}
           >
-            Previous
+            {t(ui.previous)}
           </button>
           <button
             type="button"
             className={buttonVariants({ variant: "outline", size: "sm" })}
-            aria-label={`Next ${controlLabel}`}
+            aria-label={nextControlName(controlLabel, language)}
             onClick={() => goTo(index + 1)}
           >
-            Next
+            {t(ui.next)}
           </button>
         </div>
       </div>
@@ -264,6 +268,7 @@ function InspectView({
   onClose: () => void;
   onStep: (dir: number) => void;
 }) {
+  const t = usePick();
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const canFly = !reduced && typeof requestAnimationFrame === "function";
@@ -437,17 +442,17 @@ function InspectView({
         className="arch-flight"
         role="dialog"
         aria-modal="true"
-        aria-label={diagram.asset.title}
+        aria-label={t(diagram.asset.title)}
         data-phase={phase}
       >
         <div className="arch-flight-bar">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <p className="text-h4">{diagram.asset.title}</p>
-            <Badge>{diagram.asset.meta}</Badge>
+            <p className="text-h4">{t(diagram.asset.title)}</p>
+            <Badge>{t(diagram.asset.meta)}</Badge>
           </div>
           <button type="button" className={buttonVariants({ variant: "secondary", size: "sm" })} onClick={requestClose}>
             <X aria-hidden="true" />
-            Close
+            {t(ui.close)}
           </button>
         </div>
         <div
@@ -463,22 +468,22 @@ function InspectView({
         >
           <img
             src={src}
-            alt={diagram.asset.title}
+            alt={t(diagram.asset.title)}
             draggable={false}
             style={{ transform: `translate(${view.x}px, ${view.y}px) scale(${view.scale})` }}
           />
         </div>
         <div className="arch-flight-copy space-y-1">
-          <p className="text-sm text-muted-foreground">{diagram.asset.description}</p>
+          <p className="text-sm text-muted-foreground">{t(diagram.asset.description)}</p>
           <p className="text-small text-muted-foreground">{diagram.copy}</p>
         </div>
         <AssetActions asset={diagram.asset} className="shrink-0" />
         <div className="arch-flight-foot">
           <button type="button" className={buttonVariants({ variant: "outline", size: "sm" })} onClick={() => onStep(-1)}>
-            Previous diagram
+            {t(ui.previousDiagram)}
           </button>
           <button type="button" className={buttonVariants({ variant: "outline", size: "sm" })} onClick={() => onStep(1)}>
-            Next diagram
+            {t(ui.nextDiagram)}
           </button>
         </div>
       </div>

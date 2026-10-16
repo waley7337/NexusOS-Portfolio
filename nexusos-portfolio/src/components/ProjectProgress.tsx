@@ -98,13 +98,25 @@ export function ProjectProgress({ id }: { id: string }) {
       data-reduced={reduced ? "true" : "false"}
       data-visible={visible ? "true" : "false"}
     >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm font-medium text-foreground">{entry.name}</p>
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <p className="min-w-0 text-sm font-medium text-foreground">
+          <span>{entry.name}</span>
+          {percent !== null ? (
+            <>
+              <span aria-hidden="true"> — </span>
+              <span className="num font-mono text-[28px] font-semibold leading-none" aria-hidden="true">
+                {shown}%
+              </span>
+            </>
+          ) : null}
+        </p>
         <Badge variant={STATUS_VARIANT[entry.status]}>{statusLabel}</Badge>
       </div>
-      <p className="num font-mono text-[28px] font-semibold leading-none text-foreground" aria-hidden="true">
-        {percent === null ? chrome.notAssessed : `${shown}%`}
-      </p>
+      {percent === null ? (
+        <p className="num font-mono text-[28px] font-semibold leading-none text-foreground" aria-hidden="true">
+          {chrome.notAssessed}
+        </p>
+      ) : null}
       <div
         className="project-progress-track"
         role="progressbar"

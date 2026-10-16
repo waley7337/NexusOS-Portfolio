@@ -22,9 +22,9 @@ describe("architecture carousel", () => {
     for (const title of ["System Architecture", "Security Architecture", "Multi-Tenant Request Flow"]) {
       expect(screen.getByRole("button", { name: `Inspect ${title}` })).toBeInTheDocument();
     }
-    expect(region).toHaveTextContent(nexusos.architecture.system);
-    expect(region).toHaveTextContent(nexusos.architecture.security);
-    expect(region).toHaveTextContent(nexusos.architecture.tenancy);
+    expect(region).toHaveTextContent(nexusos.architecture.system.en);
+    expect(region).toHaveTextContent(nexusos.architecture.security.en);
+    expect(region).toHaveTextContent(nexusos.architecture.tenancy.en);
     expect(region).toHaveTextContent("System Architecture");
     expect(region).toHaveTextContent("Security Architecture");
     expect(region).toHaveTextContent("Multi-Tenant Request Flow");
@@ -111,7 +111,7 @@ describe("architecture carousel", () => {
       const security = screen.getByRole("button", { name: "Inspect Security Architecture" });
       expect(security).toHaveAttribute("aria-current", "true");
       expect(screen.getByRole("heading", { name: "Security Architecture" })).toHaveTextContent("Security Architecture");
-      expect(screen.getByRole("region", { name: "NexusOS Architecture" })).toHaveTextContent(nexusos.architecture.security);
+      expect(screen.getByRole("region", { name: "NexusOS Architecture" })).toHaveTextContent(nexusos.architecture.security.en);
 
       fireEvent.keyDown(screen.getByRole("button", { name: "Next architecture diagram" }), { key: "ArrowRight" });
       expect(screen.getByRole("button", { name: "Inspect Multi-Tenant Request Flow" })).toHaveAttribute("aria-current", "true");
@@ -137,9 +137,9 @@ describe("architecture carousel", () => {
 
     fireEvent.click(card);
     const dialog = screen.getByRole("dialog", { name: "System Architecture" });
-    expect(within(dialog).getByText(systemArchitecture.meta)).toBeInTheDocument();
-    expect(within(dialog).getByText(systemArchitecture.description)).toBeInTheDocument();
-    expect(within(dialog).getByText(nexusos.architecture.system)).toBeInTheDocument();
+    expect(within(dialog).getByText(systemArchitecture.meta.en)).toBeInTheDocument();
+    expect(within(dialog).getByText(systemArchitecture.description.en)).toBeInTheDocument();
+    expect(within(dialog).getByText(nexusos.architecture.system.en)).toBeInTheDocument();
     const full = within(dialog).getByRole("link", { name: "Open in Full Resolution" });
     expect(full).toHaveAttribute("href", systemArchitecture.src);
     expect(full).toHaveAttribute("target", "_blank");
@@ -150,14 +150,14 @@ describe("architecture carousel", () => {
 
     fireEvent.click(within(dialog).getByRole("button", { name: "Next diagram" }));
     const security = screen.getByRole("dialog", { name: "Security Architecture" });
-    expect(within(security).getByText(securityArchitecture.meta)).toBeInTheDocument();
+    expect(within(security).getByText(securityArchitecture.meta.en)).toBeInTheDocument();
     expect(within(security).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
     expect(within(security).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute("href", securityArchitecture.src);
 
     fireEvent.click(within(security).getByRole("button", { name: "Next diagram" }));
     const tenancy = screen.getByRole("dialog", { name: "Multi-Tenant Request Flow" });
-    expect(within(tenancy).getByText(multiTenantFlow.meta)).toBeInTheDocument();
-    expect(within(tenancy).getByText(nexusos.architecture.tenancy)).toBeInTheDocument();
+    expect(within(tenancy).getByText(multiTenantFlow.meta.en)).toBeInTheDocument();
+    expect(within(tenancy).getByText(nexusos.architecture.tenancy.en)).toBeInTheDocument();
     expect(within(tenancy).getByRole("link", { name: "Open in Full Resolution" })).toHaveAttribute("href", multiTenantFlow.src);
     expect(within(tenancy).queryByRole("link", { name: "Download" })).not.toBeInTheDocument();
   });

@@ -9,16 +9,21 @@ import {
   cv,
   degree,
   folders,
-  ghostLibraryGroups,
+  ghostLibraryFolders,
   ghostProtocolArchitecture,
-  nexusLibraryGroups,
+  nexusCaseStudyPreviews,
+  nexusLibraryFolders,
   portfolio2026Redacted,
   projectSummaryRedacted,
 } from "~/data/assets";
 
 const root = path.resolve(__dirname, "..");
 const publicDir = path.join(root, "public");
-const all = [...new Map(folders.flatMap((f) => f.assets).map((a) => [a.id, a])).values()];
+const all = [
+  ...new Map(
+    [...folders.flatMap((f) => f.assets), ...nexusCaseStudyPreviews].map((a) => [a.id, a]),
+  ).values(),
+];
 const onDisk = (p: string) => fs.existsSync(path.join(publicDir, p));
 const served = (p: string) => fs.readFileSync(path.join(publicDir, p));
 
@@ -78,15 +83,15 @@ describe("personal documents", () => {
   });
 
   it("shows the exact privacy notice and no preview that would reveal the certificate", () => {
-    expect(degree.notice).toBe(
+    expect(degree.notice?.en).toBe(
       "Privacy notice: This original degree certificate contains personal information, including date and place of birth, a diploma number, and signatures. Opening or downloading it will reveal these details.",
     );
     expect(degree.notice).toBe(DEGREE_PRIVACY_NOTICE);
     expect(degree.preview).toBeUndefined();
   });
 
-  it.each([portfolio2026Redacted, projectSummaryRedacted])("$title has the removed values gone from every layer", (asset) => {
-    expect(asset.label).toBe("Redacted copy");
+  it.each([portfolio2026Redacted, projectSummaryRedacted])("$id has the removed values gone from every layer", (asset) => {
+    expect(asset.label?.en).toBe("Redacted copy");
     expect(asset.src).toMatch(/-redacted\.pdf$/);
     const plain = pdfPlainBytes(served(asset.src));
     expect(plain).toContain("REDACTED COPY");
@@ -109,11 +114,15 @@ describe("links and screenshots", () => {
   });
 
   it("keeps each library on its own images and pins the Ghost Protocol architecture diagram", () => {
-    const nexusSrcs = nexusLibraryGroups.flatMap((group) => group.assets.map((asset) => asset.src));
-    const ghostSrcs = ghostLibraryGroups.flatMap((group) => group.assets.map((asset) => asset.src));
+    const nexusSrcs = nexusLibraryFolders.flatMap((folder) => folder.assets.map((asset) => asset.src));
+    const ghostSrcs = ghostLibraryFolders.flatMap((folder) => folder.assets.map((asset) => asset.src));
     expect(nexusSrcs.some((src) => src.includes("ghost-protocol"))).toBe(false);
     expect(ghostSrcs.some((src) => src.includes("/images/screenshots/") || src.includes("/images/architecture/"))).toBe(false);
-    expect(ghostProtocolArchitecture.map((asset) => asset.src)).toEqual(["/images/ghost-protocol/system-architecture.png"]);
+    expect(new Set(ghostSrcs).size).toBe(ghostSrcs.length);
+    expect(ghostProtocolArchitecture.map((asset) => asset.src)).toEqual([
+      "/images/ghost-protocol/system-architecture.png",
+      "/images/ghost-protocol/security-architecture.png",
+    ]);
     const pngs = fs
       .readdirSync(path.join(publicDir, "images/ghost-protocol"))
       .filter((name) => name.endsWith(".png"))
@@ -125,17 +134,27 @@ describe("links and screenshots", () => {
       "26d18cc9ea19383df38c9eb3f706977daaf9d76759a0741e0cde0878998c52dd",
     );
     expect(onDisk("/images/ghost-protocol/system-architecture.preview.webp")).toBe(true);
-    expect(nexusLibraryGroups.map((group) => [group.label, group.assets.length])).toEqual([
+    expect(nexusLibraryFolders.map((folder) => [folder.label.en, folder.assets.length])).toEqual([
+      ["Architecture & System Design", 2],
+      ["Security & Access Control", 1],
       ["System & interface", 15],
-      ["Architecture", 3],
-      ["Case study", 4],
+      ["Project Documentation", 1],
     ]);
-    expect(ghostLibraryGroups.map((group) => [group.label, group.assets.length])).toEqual([
-      ["Live web client", 3],
-      ["Interface", 12],
-      ["Architecture", 2],
+    expect(nexusLibraryFolders.every((folder) => folder.assets.length > 0)).toBe(true);
+    expect(nexusCaseStudyPreviews.map((asset) => asset.title.en)).toEqual([
+      "NexusOS — Engineering Case Study",
+      "NexusOS — Project Summary (redacted copy)",
+      "Software Developer Portfolio 2026 (redacted copy)",
+    ]);
+    expect(nexusCaseStudyPreviews.some((asset) => asset.id === "nexusos-portfolio-summary")).toBe(false);
+    expect(ghostLibraryFolders.map((folder) => [folder.label.en, folder.assets.length])).toEqual([
+      ["Architecture & System Design", 1],
+      ["Security & Access Control", 1],
       ["Workflow", 2],
+      ["Web client", 3],
+      ["Interface", 12],
     ]);
+    expect(ghostLibraryFolders.every((folder) => folder.assets.length > 0)).toBe(true);
   });
 
   it("shows current-design screenshots only; legacy originals are not served", () => {

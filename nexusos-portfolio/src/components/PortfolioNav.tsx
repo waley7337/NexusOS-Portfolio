@@ -9,7 +9,9 @@ import { Fragment, useEffect, useRef } from "react";
 import { RotateCcw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { LanguageSwitch } from "~/components/LanguageSwitch";
-import { usePortfolioLanguage, type PortfolioLanguage } from "~/i18n/language";
+import { usePick, usePortfolioLanguage, type PortfolioLanguage } from "~/i18n/language";
+import { pick } from "~/i18n/l10n";
+import { ui } from "~/i18n/ui";
 import { SECTIONS, sectionLabel } from "~/sections/registry";
 import { profile } from "~/data/profile";
 
@@ -35,7 +37,7 @@ function NavEntries({
     const { id, icon: Icon } = section;
     const label = sectionLabel(section, language);
     const isActive = active === id;
-    const groupLabel = section.group ? (section.groupLabels?.[language] ?? section.group) : null;
+    const groupLabel = section.groupLabels ? pick(section.groupLabels, language) : null;
     return (
       <Fragment key={id}>
         {showGroup && groupLabel ? (
@@ -74,6 +76,7 @@ interface NavProps {
 
 export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & { onReplayIntro: () => void }) {
   const { language } = usePortfolioLanguage();
+  const t = usePick();
   const navRef = useRef<HTMLElement>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
   const seen = useRef(false);
@@ -107,7 +110,7 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
   }, [active]);
 
   return (
-    <aside className="hidden h-full min-h-0 flex-col md:flex" aria-label="Portfolio sections">
+    <aside className="hidden h-full min-h-0 flex-col md:flex" aria-label={t(ui.portfolioSections)}>
       <div className="flex h-shell-header shrink-0 items-center px-5">
         <img
           className="nexusos-wordmark-img h-auto w-[132px]"
@@ -120,7 +123,7 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
       </div>
       <div className="px-5 pb-3">
         <p className="text-h4">{profile.name}</p>
-        <p className="text-small text-muted-foreground">{profile.role}</p>
+        <p className="text-small text-muted-foreground">{t(profile.role)}</p>
         <div className="mt-3">
           <LanguageSwitch />
         </div>
@@ -148,7 +151,7 @@ export function PortfolioNav({ active, onNavigate, onReplayIntro }: NavProps & {
           className="portfolio-press focus-ring text-machine flex w-full items-center gap-2 rounded-control px-3 py-2 transition-colors duration-fast hover:bg-surface-3 hover:text-foreground"
         >
           <RotateCcw className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-          <span className="flex-1 text-left">Replay star entry</span>
+          <span className="min-w-0 flex-1 text-left leading-snug">{t(ui.replayStarEntry)}</span>
         </button>
       </div>
     </aside>
@@ -177,7 +180,7 @@ export function MobileNav({ active, onNavigate }: NavProps) {
       <nav
         ref={navRef}
         className="portfolio-nav-scroll flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft py-2 md:hidden"
-        aria-label="Portfolio sections"
+        aria-label={pick(ui.portfolioSections, language)}
       >
         <NavEntries
           active={active}

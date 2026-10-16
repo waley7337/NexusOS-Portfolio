@@ -51,6 +51,7 @@ export const workflowStack = "React · TypeScript · FastAPI · PostgreSQL · Re
 export const workflowRelationship = {
   en: "These steps describe how NexusOS is developed. A workflow description is not evidence that a feature is operational. What is implemented, what is verified and what is only planned is stated separately under Transparency & Development Approach and on each project.",
   de: "Diese Schritte beschreiben, wie NexusOS entwickelt wird. Eine Beschreibung des Arbeitsablaufs ist kein Nachweis, dass eine Funktion betriebsbereit ist. Was umgesetzt, was überprüft und was nur geplant ist, steht getrennt unter Transparenz & Entwicklungsansatz und bei jedem Projekt.",
+  fr: "Ces étapes décrivent comment NexusOS est développé. Une description du processus ne prouve pas qu'une fonction est opérationnelle. Ce qui est implémenté, ce qui est vérifié et ce qui est seulement prévu est indiqué séparément sous Transparence et démarche de développement, et sur chaque projet.",
 } as const;
 
 export const workflowDe = {
@@ -98,4 +99,81 @@ export const workflowDe = {
   stack: workflowStack,
   cycleLabel: "Entwicklungszyklus",
   stackLabel: "Technologie",
+} as const;
+
+export const workflowFr = {
+  title: "Processus NexusOS",
+  intro:
+    "NexusOS est développé selon un processus full-stack itératif et modulaire. Le processus sépare clairement les responsabilités et vise la capacité à monter en charge ainsi que la maintenabilité.",
+  steps: [
+    {
+      index: "01",
+      title: "Architecture et structure de la base de code",
+      body: "L'architecture de l'application a été définie et la base de code organisée en composants frontend modulaires, services backend, configuration et infrastructure de soutien.",
+    },
+    {
+      index: "02",
+      title: "Développement frontend",
+      body: "L'interface a été construite avec React et TypeScript, avec des composants réutilisables, des mises en page structurées et des éléments interactifs pour une expérience d'application cohérente.",
+    },
+    {
+      index: "03",
+      title: "Développement backend et intégration des API",
+      body: "Les fonctions backend ont été implémentées avec FastAPI. Les composants frontend sont reliés à la logique métier côté serveur par des API HTTP et un échange de données structuré.",
+    },
+    {
+      index: "04",
+      title: "Base de données et gestion des données",
+      body: "PostgreSQL assure le stockage persistant. Les accès aux données soutiennent les modules métier, les fonctions CRM et les exigences d'une application multi-tenant.",
+    },
+    {
+      index: "05",
+      title: "Tests et assurance qualité",
+      body: "Des tests automatisés, le contrôle des types, la validation du build et un débogage itératif servent à trouver les défauts, vérifier les fonctions et limiter les régressions pendant le développement.",
+    },
+    {
+      index: "06",
+      title: "Gestion de version et itération",
+      body: "Le code source est géré avec Git et GitHub. Les commits et les branches isolées rendent les changements traçables et séparent le travail sur l'application du travail sur le portfolio.",
+    },
+    {
+      index: "07",
+      title: "Déploiement et production",
+      body: "Le déploiement s'appuie sur Vercel pour le frontend, Railway pour les services backend et Cloudflare pour l'infrastructure de domaine, avec une vérification en production pour valider l'application déployée.",
+    },
+  ],
+  cycle: "Architecture → Implémentation → Intégration → Test → Affinage → Déploiement",
+  stack: workflowStack,
+  cycleLabel: "Cycle de développement",
+  stackLabel: "Pile technologique",
+} as const;
+
+export const workflowByLanguage = {
+  en: {
+    intro: workflowIntro,
+    steps: workflowSteps,
+    cycle: workflowCycle,
+    stack: workflowStack,
+    cycleLabel: "Development Cycle",
+    stackLabel: "Technology Stack",
+    relationship: workflowRelationship.en,
+  },
+  de: {
+    intro: workflowDe.intro,
+    steps: workflowDe.steps,
+    cycle: workflowDe.cycle,
+    stack: workflowDe.stack,
+    cycleLabel: workflowDe.cycleLabel,
+    stackLabel: workflowDe.stackLabel,
+    relationship: workflowRelationship.de,
+  },
+  fr: {
+    intro: workflowFr.intro,
+    steps: workflowFr.steps,
+    cycle: workflowFr.cycle,
+    stack: workflowFr.stack,
+    cycleLabel: workflowFr.cycleLabel,
+    stackLabel: workflowFr.stackLabel,
+    relationship: workflowRelationship.fr,
+  },
 } as const;

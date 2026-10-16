@@ -23,7 +23,7 @@
  * configurable and unscored (`PENTEST_COMPLETION_PERCENT`) rather than a guess.
  */
 
-import type { PortfolioLanguage } from "~/i18n/language";
+import type { PortfolioLanguage } from "~/i18n/l10n";
 
 export type DeliverableState =
   /** Live and working in production. */
@@ -212,10 +212,11 @@ export const projectProgress: ProjectProgress[] = [
     percent: nexusPercent,
     status: "in-progress",
     updatedAt: nexusosAssessment.asOf,
-    updatedLabel: { en: nexusosAssessment.asOfLabel, de: "16. Oktober 2026" },
+    updatedLabel: { en: nexusosAssessment.asOfLabel, de: "16. Oktober 2026", fr: "16 octobre 2026" },
     scope: {
       en: "Weighted completion of backend, modules, deployment and remaining integrations. Core implementation counts twice as much as production and integration readiness. This is not test coverage, and a deployment is not treated as fully operational.",
       de: "Gewichteter Umsetzungsstand von Backend, Modulen, Bereitstellung und offenen Integrationen. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Integrationsreife. Das ist keine Testabdeckung, und eine Bereitstellung gilt damit nicht als vollständig betriebsbereit.",
+      fr: "Avancement pondéré du backend, des modules, du déploiement et des intégrations restantes. L'implémentation centrale compte deux fois plus que la maturité de production et d'intégration. Ce n'est pas une couverture de tests, et un déploiement n'est pas traité comme pleinement opérationnel.",
     },
   },
   {
@@ -224,10 +225,11 @@ export const projectProgress: ProjectProgress[] = [
     percent: ghostPercent,
     status: "in-progress",
     updatedAt: ghostProtocolAssessment.asOf,
-    updatedLabel: { en: ghostProtocolAssessment.asOfLabel, de: "16. Oktober 2026" },
+    updatedLabel: { en: ghostProtocolAssessment.asOfLabel, de: "16. Oktober 2026", fr: "16 octobre 2026" },
     scope: {
       en: "Weighted completion of the web app, Electron desktop, authentication, API and release hardening. Core implementation counts twice as much as production and release readiness. This is not test coverage, and a deployed URL is not treated as a finished release.",
       de: "Gewichteter Umsetzungsstand von Web-App, Electron-Desktop, Authentifizierung, API und Release-Härtung. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Releasereife. Das ist keine Testabdeckung, und eine bereitgestellte URL gilt damit nicht als abgeschlossenes Release.",
+      fr: "Avancement pondéré de l'application web, du bureau Electron, de l'authentification, de l'API et du durcissement de la release. L'implémentation centrale compte deux fois plus que la maturité de production et de release. Ce n'est pas une couverture de tests, et une URL déployée n'est pas traitée comme une release terminée.",
     },
   },
   {
@@ -238,6 +240,7 @@ export const projectProgress: ProjectProgress[] = [
     scope: {
       en: "Local Nessus-to-PDF prototype. No completion percentage was recovered, so none is shown. The tool runs locally; there is no hosted demo.",
       de: "Lokaler Prototyp, der ein Nessus-XML in einen PDF-Bericht überführt. Ein Fertigstellungsgrad wurde nicht wiederhergestellt und wird daher nicht angezeigt. Das Werkzeug läuft lokal; es gibt keine gehostete Demo.",
+      fr: "Prototype local qui transforme un XML Nessus en rapport PDF. Aucun pourcentage d'achèvement n'a été retrouvé, donc aucun n'est affiché. L'outil s'exécute en local ; il n'y a pas de démo hébergée.",
     },
   },
 ];
@@ -245,11 +248,13 @@ export const projectProgress: ProjectProgress[] = [
 export const progressStatusLabel: Record<PortfolioLanguage, Record<ProgressStatus, string>> = {
   en: { "in-progress": "In Progress", completed: "Completed", planned: "Planned" },
   de: { "in-progress": "In Entwicklung", completed: "Abgeschlossen", planned: "Geplant" },
+  fr: { "in-progress": "En cours", completed: "Terminé", planned: "Prévu" },
 };
 
 export const progressChrome = {
   en: { notAssessed: "Not assessed", assessed: "Assessed", completion: "completion" },
   de: { notAssessed: "Nicht bewertet", assessed: "Bewertet am", completion: "Fertigstellungsgrad" },
+  fr: { notAssessed: "Non évalué", assessed: "Évalué le", completion: "avancement" },
 } as const;
 
 export function progressById(id: string): ProjectProgress | undefined {

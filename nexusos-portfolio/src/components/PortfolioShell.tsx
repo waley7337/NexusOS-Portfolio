@@ -9,12 +9,13 @@
  * behaviour: data-reveal="cinematic" is set only when this shell mounted
  * during the cinematic, and removed once it settles.
  */
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Atmosphere } from "@/components/atmosphere";
 import { useUiStore } from "@/stores/ui";
 import { NeuralBackground } from "~/animations/NeuralBackground";
 import { PortfolioNav, MobileNav } from "~/components/PortfolioNav";
 import { useActiveSection } from "~/components/useActiveSection";
+import { usePortfolioLanguage } from "~/i18n/language";
 import { SECTIONS } from "~/sections/registry";
 
 export function PortfolioShell({ children, onReplayIntro }: { children: ReactNode; onReplayIntro: () => void }) {
@@ -24,6 +25,37 @@ export function PortfolioShell({ children, onReplayIntro }: { children: ReactNod
   const revealFromCinematic = useRef(useUiStore.getState().isAuthEntryActive);
   const active = useActiveSection(mainRef, SECTIONS.map((s) => s.id));
   const smoothNav = useRef<string | null>(null);
+  const { language } = usePortfolioLanguage();
+  const languageSeen = useRef(language);
+  const activeRef = useRef(active);
+  activeRef.current = active;
+  /** Where the current section sat before the latest language change. */
+  const sectionAnchor = useRef<{ id: string; top: number } | null>(null);
+
+  useEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+    const remember = () => {
+      const id = activeRef.current;
+      const el = document.getElementById(id);
+      if (!el) return;
+      sectionAnchor.current = { id, top: el.getBoundingClientRect().top };
+    };
+    remember();
+    main.addEventListener("scroll", remember, { passive: true });
+    return () => main.removeEventListener("scroll", remember);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (languageSeen.current === language) return;
+    languageSeen.current = language;
+    const saved = sectionAnchor.current;
+    const main = mainRef.current;
+    if (!saved || !main) return;
+    const el = document.getElementById(saved.id);
+    if (!el) return;
+    main.scrollTop += el.getBoundingClientRect().top - saved.top;
+  }, [language]);
 
   useEffect(() => {
     const el = stageRef.current;

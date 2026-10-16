@@ -2,9 +2,11 @@ import { ExternalLink, Github } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { ProjectProgress } from "~/components/ProjectProgress";
 import { otherProjects, type ProjectStatus } from "~/data/projects";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import { ui } from "~/i18n/ui";
+import { sectionTitle } from "~/sections/registry";
 import { Section } from "~/sections/Section";
 
 const PROGRESS_ID: Record<string, string> = {
@@ -20,28 +22,35 @@ const STATUS_VARIANT: Record<ProjectStatus, "success" | "info" | "warning" | "de
 };
 
 export function ProjectsSection() {
+  const { language } = usePortfolioLanguage();
+  const t = usePick();
   return (
     <Section
       id="projects"
-      title="Other projects"
-      subtitle="Personal, self-directed projects listed in the CV — not employment as a developer. NexusOS remains the flagship above."
+      title={sectionTitle("projects", language)}
+      subtitle={t(ui.otherProjectsSubtitle)}
     >
-      <div className="grid gap-3 lg:grid-cols-2">
-        {otherProjects.map((project) => (
+      <div className="grid gap-3">
+        {otherProjects
+          .filter((project) => project.name !== "Ghost Protocol")
+          .map((project) => (
           <Card
             key={project.name}
-            className={cn("portfolio-lift flex flex-col gap-4 p-5", project.prominent && "lg:col-span-2")}
+            className="p-5 sm:p-6"
+            data-layout="horizontal"
             data-project={project.name}
           >
-            <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="project-band">
               <div className="min-w-0 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-h3">{project.name}</h3>
-                  <Badge variant={STATUS_VARIANT[project.status]}>{project.statusLabel}</Badge>
+                  <Badge variant={STATUS_VARIANT[project.status]}>{t(project.statusLabel)}</Badge>
                 </div>
                 <p className="text-machine">{project.stack.join("  ·  ")}</p>
+                <p className="text-body text-muted-foreground">{t(project.summary)}</p>
               </div>
-              <div className="flex flex-wrap gap-2">
+              {PROGRESS_ID[project.name] ? <ProjectProgress id={PROGRESS_ID[project.name]} /> : <div />}
+              <div className="flex min-w-0 flex-wrap content-start gap-2">
                 {project.demo && (
                   <>
                     <a
@@ -51,7 +60,7 @@ export function ProjectsSection() {
                       rel="noreferrer"
                     >
                       <ExternalLink aria-hidden="true" />
-                      {project.demo.label}
+                      {t(project.demo.label)}
                     </a>
                     <a
                       className={buttonVariants({ variant: "outline", size: "sm" })}
@@ -60,7 +69,7 @@ export function ProjectsSection() {
                       rel="noreferrer"
                     >
                       <ExternalLink aria-hidden="true" />
-                      Open Demo
+                      {t(ui.openDemo)}
                     </a>
                   </>
                 )}
@@ -72,32 +81,29 @@ export function ProjectsSection() {
                     rel="noreferrer"
                   >
                     <Github aria-hidden="true" />
-                    GitHub
+                    {t(ui.github)}
                   </a>
                 )}
               </div>
             </div>
 
-            <p className="text-body text-muted-foreground">{project.summary}</p>
-            {PROGRESS_ID[project.name] ? <ProjectProgress id={PROGRESS_ID[project.name]} /> : null}
-
-            <div className={cn("grid gap-4", project.prominent && "md:grid-cols-2")}>
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <p className="eyebrow">Implemented</p>
+                <p className="eyebrow">{t(ui.implemented)}</p>
                 <ul className="space-y-1.5">
                   {project.features.map((feature) => (
-                    <li key={feature} className="text-small leading-relaxed text-muted-foreground">
-                      {feature}
+                    <li key={feature.en} className="text-small leading-relaxed text-muted-foreground">
+                      {t(feature)}
                     </li>
                   ))}
                 </ul>
               </div>
               <div className="space-y-2">
-                <p className="eyebrow">Decisions</p>
+                <p className="eyebrow">{t(ui.decisions)}</p>
                 <ul className="space-y-1.5">
                   {project.decisions.map((decision) => (
-                    <li key={decision} className="text-small leading-relaxed text-muted-foreground">
-                      {decision}
+                    <li key={decision.en} className="text-small leading-relaxed text-muted-foreground">
+                      {t(decision)}
                     </li>
                   ))}
                 </ul>
