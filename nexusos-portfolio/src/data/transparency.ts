@@ -6,8 +6,14 @@
  */
 
 export const transparencyOpening = {
-  en: "[TRANSPARENCY NOTE — These projects are works in progress, not claims of professional mastery. I build to learn, use LLMs as development tools, and take responsibility for my architectural decisions, system design and governance. I am continuously learning, actively seeking deeper professional knowledge through the LAB, and motivated by the engineering work still ahead.]",
-  de: "[TRANSPARENZHINWEIS — Diese Projekte befinden sich in Entwicklung und sind kein Anspruch auf umfassende professionelle Expertise. Ich lerne durch praktisches Entwickeln, nutze LLMs als Entwicklungswerkzeuge und übernehme Verantwortung für meine Architekturentscheidungen, mein Systemdesign und die technischen Rahmenbedingungen. Ich lerne kontinuierlich weiter, möchte durch das LAB fundiertes professionelles Wissen aufbauen und sehe die noch vor mir liegenden technischen Herausforderungen als Antrieb.]",
+  en: {
+    label: "TRANSPARENCY NOTE",
+    body: "These projects are works in progress, not claims of professional mastery. I build to learn, use LLMs as development tools, and take responsibility for my architectural decisions, system design and governance. I am continuously learning, actively seeking deeper professional knowledge through the LAB, and motivated by the engineering work still ahead.",
+  },
+  de: {
+    label: "TRANSPARENZHINWEIS",
+    body: "Diese Projekte befinden sich in Entwicklung und sind kein Anspruch auf umfassende professionelle Expertise. Ich lerne durch praktisches Entwickeln, nutze LLMs als Entwicklungswerkzeuge und übernehme Verantwortung für meine Architekturentscheidungen, mein Systemdesign und die technischen Rahmenbedingungen. Ich lerne kontinuierlich weiter, möchte durch das LAB fundiertes professionelles Wissen aufbauen und sehe die noch vor mir liegenden technischen Herausforderungen als Antrieb.",
+  },
 } as const;
 
 export const transparencyTitle = {

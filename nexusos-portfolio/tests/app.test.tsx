@@ -313,10 +313,13 @@ describe("App", () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
     const overview = screen.getByRole("region", { name: "Overview" });
-    const note = within(overview).getByText(transparencyOpening.en);
+    const note = within(overview).getByText(transparencyOpening.en.body, { exact: false });
+    const label = within(overview).getByText(transparencyOpening.en.label);
+    expect(label).toHaveClass("text-foreground");
+    expect(note.textContent).not.toMatch(/[[\]]/);
     const figures = within(overview).getByText("NexusOS figures, from the project documentation");
     expect(note.compareDocumentPosition(figures) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(overview).not.toHaveTextContent(transparencyOpening.de);
+    expect(overview).not.toHaveTextContent(transparencyOpening.de.body);
 
     const tab = screen.getByRole("region", { name: transparencyTitle.en });
     expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.title })).toBeInTheDocument();
@@ -332,8 +335,11 @@ describe("App", () => {
     render(<App />);
     fireEvent.click(screen.getAllByRole("button", { name: "Deutsch" })[0]);
 
-    expect(screen.getByRole("region", { name: "Overview" })).toHaveTextContent(transparencyOpening.de);
-    expect(screen.getByRole("region", { name: "Overview" })).not.toHaveTextContent(transparencyOpening.en);
+    const overviewDe = screen.getByRole("region", { name: "Overview" });
+    expect(overviewDe).toHaveTextContent(transparencyOpening.de.label);
+    expect(overviewDe).toHaveTextContent(transparencyOpening.de.body);
+    expect(within(overviewDe).getByText(transparencyOpening.de.label)).toHaveClass("text-foreground");
+    expect(overviewDe).not.toHaveTextContent(transparencyOpening.en.body);
     const tab = screen.getByRole("region", { name: transparencyTitle.de });
     expect(tab).not.toHaveTextContent(verificationWorkflow.paragraphs[0]);
     for (const part of transparencyDetail.de) {

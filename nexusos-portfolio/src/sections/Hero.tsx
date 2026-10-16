@@ -42,7 +42,11 @@ export function Hero() {
       </div>
 
       <Card className="p-5 sm:p-6">
-        <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">{transparencyOpening[language]}</p>
+        <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          <span className="font-medium text-foreground">{transparencyOpening[language].label}</span>
+          {" — "}
+          {transparencyOpening[language].body}
+        </p>
       </Card>
 
       <div className="space-y-3">
