@@ -7,6 +7,12 @@
  * Colours come from NexusOS tokens at runtime (--muted-foreground for nodes,
  * --primary for links, --info for pulses), so the field follows the theme
  * and never introduces a colour of its own.
+ *
+ * Nodes drift a few pixels around a home point, each with its own phase, so
+ * the motion does not travel across the screen. Links fade with distance.
+ * One signal pulse starts every 1–3 seconds. Scroll can shift the field by a
+ * few pixels. The pointer is not tracked. prefers-reduced-motion draws one
+ * static frame: no drift loop, no pulses, no parallax.
  */
 
 export interface NeuralFieldHandle {
@@ -14,14 +20,19 @@ export interface NeuralFieldHandle {
 }
 
 interface Node {
+  /** Resting point. Drift is a few pixels around this, so the field never travels or loops. */
+  ox: number;
+  oy: number;
   x: number;
   y: number;
-  /** 0.35 (far) … 1 (near): scales size, brightness and drift speed. */
+  /** 0.35 (far) … 1 (near): scales size, brightness and parallax. */
   depth: number;
-  heading: number;
-  speed: number;
-  turnPhase: number;
-  turnRate: number;
+  phase: number;
+  phaseY: number;
+  freq: number;
+  freqY: number;
+  ampX: number;
+  ampY: number;
   glowPhase: number;
   glowRate: number;
 }
@@ -31,7 +42,6 @@ interface Pulse {
   to: number;
   t: number;
   duration: number;
-  hops: number;
 }
 
 type Rgb = [number, number, number];
@@ -42,9 +52,9 @@ const MAX_DPR = 2;
 
 /** Density tiers; small screens get fewer nodes, shorter links and fewer pulses. */
 function tier(width: number) {
-  if (width < 640) return { area: 26000, max: 34, link: 120, pulses: 2 };
-  if (width < 1024) return { area: 20000, max: 56, link: 145, pulses: 3 };
-  return { area: 16000, max: 88, link: 165, pulses: 4 };
+  if (width < 640) return { area: 26000, max: 34, link: 120, pulses: 1 };
+  if (width < 1024) return { area: 20000, max: 56, link: 145, pulses: 1 };
+  return { area: 16000, max: 88, link: 165, pulses: 2 };
 }
 
 function tokenRgb(name: string, fallback: Rgb): Rgb {
@@ -84,23 +94,41 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
   let last = 0;
   let acc = 0;
   let time = 0;
+  let nextPulse = 1 + rand() * 2;
   let visible = true;
   let onScreen = true;
   let resizeTimer: ReturnType<typeof setTimeout> | undefined;
+  let parallaxX = 0;
+  let parallaxY = 0;
+  let scrollShift = 0;
+  let parallaxBound = false;
+  let scroller: HTMLElement | null = null;
 
   const makeNode = (): Node => {
     const depth = 0.35 + rand() * 0.65;
+    const amp = 2.2 + rand() * 3.2;
+    const ox = rand() * width;
+    const oy = rand() * height;
     return {
-      x: rand() * width,
-      y: rand() * height,
+      ox,
+      oy,
+      x: ox,
+      y: oy,
       depth,
-      heading: rand() * Math.PI * 2,
-      speed: (3 + rand() * 5) * depth,
-      turnPhase: rand() * Math.PI * 2,
-      turnRate: 0.05 + rand() * 0.12,
+      phase: rand() * Math.PI * 2,
+      phaseY: rand() * Math.PI * 2,
+      freq: 0.03 + rand() * 0.05,
+      freqY: 0.025 + rand() * 0.045,
+      ampX: amp,
+      ampY: amp * (0.6 + rand() * 0.5),
       glowPhase: rand() * Math.PI * 2,
-      glowRate: (Math.PI * 2) / (7 + rand() * 9),
+      glowRate: (Math.PI * 2) / (8 + rand() * 10),
     };
+  };
+
+  const place = (n: Node, t: number) => {
+    n.x = n.ox + Math.sin(t * n.freq + n.phase) * n.ampX;
+    n.y = n.oy + Math.cos(t * n.freqY + n.phaseY) * n.ampY;
   };
 
   const readColors = () => {
@@ -122,8 +150,8 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     if (width && height) {
       for (const n of nodes) {
-        n.x *= w / width;
-        n.y *= h / height;
+        n.ox *= w / width;
+        n.oy *= h / height;
       }
     }
     width = w;
@@ -149,44 +177,45 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     return near.length ? near[Math.floor(rand() * near.length)] : -1;
   };
 
-  const spawnPulse = (from = Math.floor(rand() * nodes.length), hops = 0, exclude = -1) => {
-    if (!nodes.length) return;
-    const to = neighbour(from, exclude);
+  const spawnPulse = (from = Math.floor(rand() * nodes.length)) => {
+    if (!nodes.length || pulses.length >= pulseCount) return;
+    const to = neighbour(from);
     if (to < 0) return;
-    pulses.push({ from, to, t: 0, duration: 1.8 + rand() * 1.4, hops });
+    pulses.push({ from, to, t: 0, duration: 1.15 + rand() * 0.65 });
   };
 
   const step = (dt: number) => {
     time += dt;
-    const pad = 24;
-    for (const n of nodes) {
-      n.heading += Math.sin(time * n.turnRate + n.turnPhase) * 0.35 * dt;
-      n.x += Math.cos(n.heading) * n.speed * dt;
-      n.y += Math.sin(n.heading) * n.speed * dt;
-      if (n.x < -pad) n.x = width + pad;
-      else if (n.x > width + pad) n.x = -pad;
-      if (n.y < -pad) n.y = height + pad;
-      else if (n.y > height + pad) n.y = -pad;
-    }
+    for (const n of nodes) place(n, time);
+    const ease = 1 - Math.exp(-dt * 2.2);
+    const targetY = scrollShift * 4;
+    parallaxX += (0 - parallaxX) * ease;
+    parallaxY += (targetY - parallaxY) * ease;
     const next: Pulse[] = [];
     for (const p of pulses) {
       p.t += dt / p.duration;
       if (p.t < 1) next.push(p);
-      else if (p.hops < 2 && rand() < 0.55) {
-        const to = neighbour(p.to, p.from);
-        if (to >= 0) next.push({ from: p.to, to, t: 0, duration: 1.8 + rand() * 1.4, hops: p.hops + 1 });
-      }
     }
     pulses = next;
-    while (pulses.length < pulseCount && rand() < dt * 0.6) spawnPulse();
+    if (time >= nextPulse) {
+      spawnPulse();
+      nextPulse = time + 1 + rand() * 2;
+    }
+  };
+
+  const point = (n: Node) => {
+    const depthShift = motion.matches ? 0 : 0.45 + n.depth * 0.55;
+    return { x: n.x + parallaxX * depthShift, y: n.y + parallaxY * depthShift };
   };
 
   const draw = (withPulses: boolean) => {
+    for (const n of nodes) place(n, time);
     ctx.clearRect(0, 0, width, height);
     const max2 = linkDist * linkDist;
     ctx.lineWidth = 0.7;
     for (let i = 0; i < nodes.length; i++) {
       const a = nodes[i];
+      const pa = point(a);
       for (let j = i + 1; j < nodes.length; j++) {
         const b = nodes[j];
         const dx = a.x - b.x;
@@ -197,18 +226,20 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
         const flicker = 0.55 + 0.45 * Math.sin(time * 0.22 + (i * 7 + j * 13) * 0.37);
         const alpha = near ** 1.4 * Math.min(a.depth, b.depth) * flicker * 0.3;
         if (alpha < 0.004) continue;
+        const pb = point(b);
         ctx.strokeStyle = rgba(colors.link, alpha);
         ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        ctx.moveTo(pa.x, pa.y);
+        ctx.lineTo(pb.x, pb.y);
         ctx.stroke();
       }
     }
     for (const n of nodes) {
       const glow = 0.7 + 0.3 * Math.sin(time * n.glowRate + n.glowPhase);
+      const p = point(n);
       ctx.fillStyle = rgba(colors.node, (0.12 + 0.3 * n.depth) * glow);
       ctx.beginPath();
-      ctx.arc(n.x, n.y, 0.6 + n.depth * 0.9, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 0.6 + n.depth * 0.9, 0, Math.PI * 2);
       ctx.fill();
     }
     if (!withPulses) return;
@@ -217,8 +248,10 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
       const b = nodes[p.to];
       if (!a || !b) continue;
       const ease = p.t * p.t * (3 - 2 * p.t);
-      const x = a.x + (b.x - a.x) * ease;
-      const y = a.y + (b.y - a.y) * ease;
+      const pa = point(a);
+      const pb = point(b);
+      const x = pa.x + (pb.x - pa.x) * ease;
+      const y = pa.y + (pb.y - pa.y) * ease;
       const fade = Math.sin(Math.PI * p.t);
       ctx.fillStyle = rgba(colors.pulse, 0.06 * fade);
       ctx.beginPath();
@@ -253,11 +286,39 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
     window.cancelAnimationFrame(raf);
     raf = 0;
   };
+  const onScroll = () => {
+    if (!scroller) return;
+    const max = scroller.scrollHeight - scroller.clientHeight;
+    const p = max > 0 ? scroller.scrollTop / max : 0;
+    scrollShift = p - 0.5;
+  };
+  const bindParallax = () => {
+    if (parallaxBound || motion.matches) return;
+    scroller =
+      canvas.closest(".app-stage")?.querySelector<HTMLElement>(".portfolio-main") ??
+      document.querySelector<HTMLElement>(".portfolio-main");
+    scroller?.addEventListener("scroll", onScroll, { passive: true });
+    parallaxBound = true;
+  };
+  const unbindParallax = () => {
+    if (!parallaxBound) return;
+    scroller?.removeEventListener("scroll", onScroll);
+    parallaxBound = false;
+    scrollShift = 0;
+    parallaxX = 0;
+    parallaxY = 0;
+  };
+
   const sync = () => {
     if (motion.matches) {
       stop();
+      unbindParallax();
+      pulses = [];
       draw(false);
-    } else start();
+    } else {
+      bindParallax();
+      start();
+    }
   };
 
   const onVisibility = () => {
@@ -300,6 +361,7 @@ export function createNeuralField(canvas: HTMLCanvasElement, opts: { random?: ()
       io?.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       motion.removeEventListener?.("change", onMotion);
+      unbindParallax();
     },
   };
 }

@@ -21,8 +21,11 @@ import { Button } from "@/components/ui/button";
 import { CINEMATIC_CARD_EXIT_MS, prefersReducedMotion } from "@/lib/auth-cinematic";
 import { useUiStore } from "@/stores/ui";
 import { profile } from "~/data/profile";
+import { usePick } from "~/i18n/language";
+import { ui } from "~/i18n/ui";
 
 export function StarEntry({ onEnter }: { onEnter: () => void }) {
+  const t = usePick();
   const immersing = useUiStore((s) => s.isAuthEntryActive);
   const timer = useRef<number | undefined>(undefined);
 
@@ -61,21 +64,21 @@ export function StarEntry({ onEnter }: { onEnter: () => void }) {
             height={30}
             draggable={false}
           />
-          <p className="auth-tagline">Portfolio</p>
+          <p className="auth-tagline">{t(ui.portfolioWord)}</p>
         </div>
 
         <div className="auth-panel">
           <div className="auth-surface">
-            <p className="eyebrow">{profile.role}</p>
+            <p className="eyebrow">{t(profile.role)}</p>
             <h1 className="mt-3 text-h1">{profile.name}</h1>
-            <p className="mt-1.5 text-body text-muted-foreground">{profile.focus}</p>
-            <p className="mt-5 text-small leading-relaxed text-muted-foreground">{profile.pitch}</p>
+            <p className="mt-1.5 text-body text-muted-foreground">{t(profile.focus)}</p>
+            <p className="mt-5 text-small leading-relaxed text-muted-foreground">{t(profile.pitch)}</p>
             <Button className="mt-7 w-full" size="lg" onClick={enter} disabled={immersing} autoFocus>
-              Enter portfolio
+              {t(ui.enterPortfolio)}
               <ArrowRight aria-hidden="true" />
             </Button>
           </div>
-          <p className="text-machine mt-5 text-center">Built on the NexusOS design system</p>
+          <p className="text-machine mt-5 text-center">{t(ui.builtOnDesignSystem)}</p>
         </div>
       </div>
     </div>

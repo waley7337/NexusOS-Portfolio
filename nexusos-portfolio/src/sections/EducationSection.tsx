@@ -5,12 +5,17 @@ import { Row, RowGroup } from "@/components/ui/structure";
 import { degree } from "~/data/assets";
 import { education } from "~/data/profile";
 import { AssetActions } from "~/components/AssetPreviewDialog";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import { ui } from "~/i18n/ui";
+import { sectionTitle } from "~/sections/registry";
 import { Section } from "~/sections/Section";
 
 export function EducationSection() {
+  const { language } = usePortfolioLanguage();
+  const t = usePick();
   const published = degree.status === "published";
   return (
-    <Section id="education" title="Education" subtitle="As stated on the degree certificate.">
+    <Section id="education" title={sectionTitle("education", language)} subtitle={t(ui.educationSubtitle)}>
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <Card className="p-6">
           <div className="flex items-start gap-3">
@@ -22,39 +27,45 @@ export function EducationSection() {
               </h3>
               <div className="flex flex-wrap gap-2 pt-1">
                 <Badge variant="accent">{education.honours}</Badge>
-                <Badge>Année universitaire {education.academicYear}</Badge>
-                <Badge>Awarded {education.awarded}</Badge>
+                <Badge>
+                  {t(ui.academicYear)} {education.academicYear}
+                </Badge>
+                <Badge>
+                  {t(ui.awarded)} {t(ui.awardedDate)}
+                </Badge>
               </div>
             </div>
           </div>
           <RowGroup className="mt-6 border-t border-line-soft">
-            <Row register="CV wording">
+            <Row register={t(ui.cvWording)}>
               <p className="text-sm">{education.cvWording}</p>
             </Row>
             <Row register={education.further.years}>
               <p className="text-sm">{education.further.institution}</p>
-              <p className="text-small text-muted-foreground">{education.further.detail} (from the CV)</p>
+              <p className="text-small text-muted-foreground">
+                {education.further.detail} {t(ui.fromTheCv)}
+              </p>
             </Row>
           </RowGroup>
         </Card>
 
         {published ? (
-          <Card className="flex h-fit flex-col gap-3 p-6" data-testid="degree-download">
+          <Card className="portfolio-lift flex h-fit flex-col gap-3 p-6" data-testid="degree-download">
             <FileText className="h-[var(--icon-md)] w-[var(--icon-md)] text-muted-foreground" aria-hidden="true" />
             <div className="space-y-1.5">
-              <p className="text-h4">Degree certificate</p>
+              <p className="text-h4">{t(ui.degreeCertificate)}</p>
               <div className="flex flex-wrap gap-2">
-                <Badge>{degree.meta}</Badge>
-                {degree.label && <Badge variant="warning">{degree.label}</Badge>}
+                <Badge>{t(degree.meta)}</Badge>
+                {degree.label && <Badge variant="warning">{t(degree.label)}</Badge>}
               </div>
             </div>
             <AssetActions asset={degree} />
           </Card>
         ) : (
-          <Card className="flex h-fit flex-col gap-3 border-dashed p-6" data-testid="degree-on-request">
+          <Card className="portfolio-lift flex h-fit flex-col gap-3 border-dashed p-6" data-testid="degree-on-request">
             <Lock className="h-[var(--icon-md)] w-[var(--icon-md)] text-muted-foreground" aria-hidden="true" />
-            <p className="text-h4">Degree certificate — available on request</p>
-            <p className="text-small text-muted-foreground">{degree.note}</p>
+            <p className="text-h4">{t(ui.degreeOnRequest)}</p>
+            <p className="text-small text-muted-foreground">{degree.note ? t(degree.note) : null}</p>
             <AssetActions asset={degree} />
           </Card>
         )}
