@@ -7,6 +7,7 @@ import { approach, profile, stats } from "~/data/profile";
 import { transparencyOpening } from "~/data/transparency";
 import { usePick, usePortfolioLanguage } from "~/i18n/language";
 import { ui } from "~/i18n/ui";
+import { ObjectiveSection } from "~/sections/ObjectiveSection";
 import { sectionTitle } from "~/sections/registry";
 
 export function Hero() {
@@ -43,6 +44,8 @@ export function Hero() {
           </a>
         </div>
       </div>
+
+      <ObjectiveSection />
 
       <Card className="p-5 sm:p-6">
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">

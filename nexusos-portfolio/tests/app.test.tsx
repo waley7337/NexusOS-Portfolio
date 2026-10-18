@@ -314,13 +314,27 @@ describe("App", () => {
     window.history.replaceState(null, "", "/#overview");
     render(<App />);
     const ids = [...document.querySelectorAll("main section")].map((section) => section.id);
-    expect(ids).toEqual(SECTIONS.map((section) => section.id));
+    const navIds = SECTIONS.map((section) => section.id);
+    // The objective block is rendered inside the overview, between the explore
+    // button and the transparency note, so its section follows overview in the DOM.
+    expect(ids).toEqual(["overview", "objective", ...navIds.filter((id) => id !== "overview" && id !== "objective")]);
     const hrefs = (nav: Element) => [...nav.querySelectorAll("a")].map((link) => link.getAttribute("href"));
     const expected = SECTIONS.map((section) => `#${section.id}`);
     expect(hrefs(document.querySelector("aside nav") as Element)).toEqual(expected);
     expect(hrefs(document.querySelector("nav.portfolio-nav-scroll") as Element)).toEqual(expected);
-    expect(ids[0]).toBe("objective");
-    expect(ids[1]).toBe("overview");
+    expect(ids[0]).toBe("overview");
+    expect(ids[1]).toBe("objective");
+    const objectiveEl = document.getElementById("objective") as HTMLElement;
+    const explore = screen.getByRole("link", { name: "Explore NexusOS" });
+    const note = screen.getByText("TRANSPARENCY NOTE");
+    expect(document.querySelectorAll("#objective")).toHaveLength(1);
+    expect(document.getElementById("overview")?.contains(objectiveEl)).toBe(true);
+    expect(explore.compareDocumentPosition(objectiveEl) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+    expect(objectiveEl.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
     const objective = screen.getByRole("region", { name: "Engineering objective" });
     for (const paragraph of objectiveParagraphs.en) {
       expect(objective).toHaveTextContent(paragraph);
