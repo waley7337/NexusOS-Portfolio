@@ -73,10 +73,12 @@ export const approach = [
 ];
 
 export const stats = [
-  { value: "5", label: l10n("Architecture layers", "Architekturschichten", "Couches d'architecture") },
+  {
+    value: l10n("Architecture", "Architektur", "Architecture"),
+    label: l10n("System architecture", "System-Architektur", "Architecture système"),
+  },
   { value: "7", label: l10n("Security layers", "Sicherheitsschichten", "Couches de sécurité") },
   { value: "~110", label: l10n("Security tests", "Sicherheitstests", "Tests de sécurité") },
-  { value: "31", label: l10n("UI components", "UI-Komponenten", "Composants d'interface") },
 ];
 
 export const education = {

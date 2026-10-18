@@ -21,6 +21,8 @@
  *
  * Pentest Report Generator has no recovered percentage. Its entry stays
  * configurable and unscored (`PENTEST_COMPLETION_PERCENT`) rather than a guess.
+ * It also has no progress status: "In Progress" would contradict the verified
+ * prototype. The project card keeps "Prototype · local only".
  */
 
 import type { PortfolioLanguage } from "~/i18n/l10n";
@@ -194,7 +196,11 @@ export interface ProjectProgress {
   name: string;
   /** Headline 0–100 figure. Null when no percentage was recovered. */
   percent: number | null;
-  status: ProgressStatus;
+  /**
+   * Omitted when a status badge would contradict the verified state.
+   * NexusOS and Ghost Protocol keep "in-progress".
+   */
+  status?: ProgressStatus;
   /** What the percentage measures. Not test coverage and not deployment health. */
   scope: Record<PortfolioLanguage, string>;
   /** Genuine assessment date. Omitted when there is no assessment. */
@@ -214,9 +220,9 @@ export const projectProgress: ProjectProgress[] = [
     updatedAt: nexusosAssessment.asOf,
     updatedLabel: { en: nexusosAssessment.asOfLabel, de: "16. Oktober 2026", fr: "16 octobre 2026" },
     scope: {
-      en: "Weighted completion of backend, modules, deployment and remaining integrations. Core implementation counts twice as much as production and integration readiness. This is not test coverage, and a deployment is not treated as fully operational.",
-      de: "Gewichteter Umsetzungsstand von Backend, Modulen, Bereitstellung und offenen Integrationen. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Integrationsreife. Das ist keine Testabdeckung, und eine Bereitstellung gilt damit nicht als vollständig betriebsbereit.",
-      fr: "Avancement pondéré du backend, des modules, du déploiement et des intégrations restantes. L'implémentation centrale compte deux fois plus que la maturité de production et d'intégration. Ce n'est pas une couverture de tests, et un déploiement n'est pas traité comme pleinement opérationnel.",
+      en: "Weighted completion of backend, modules, deployment and remaining integrations. Core implementation counts twice as much as production and integration readiness. This is not test coverage, and a deployment is not treated as fully operational. Owner's engineering estimate, not an audited measurement.",
+      de: "Gewichteter Umsetzungsstand von Backend, Modulen, Bereitstellung und offenen Integrationen. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Integrationsreife. Das ist keine Testabdeckung, und eine Bereitstellung gilt damit nicht als vollständig betriebsbereit. Technische Schätzung des Eigentümers, keine auditierte Messung.",
+      fr: "Avancement pondéré du backend, des modules, du déploiement et des intégrations restantes. L'implémentation centrale compte deux fois plus que la maturité de production et d'intégration. Ce n'est pas une couverture de tests, et un déploiement n'est pas traité comme pleinement opérationnel. Estimation d'ingénierie du propriétaire, et non une mesure auditée.",
     },
   },
   {
@@ -227,16 +233,15 @@ export const projectProgress: ProjectProgress[] = [
     updatedAt: ghostProtocolAssessment.asOf,
     updatedLabel: { en: ghostProtocolAssessment.asOfLabel, de: "16. Oktober 2026", fr: "16 octobre 2026" },
     scope: {
-      en: "Weighted completion of the web app, Electron desktop, authentication, API and release hardening. Core implementation counts twice as much as production and release readiness. This is not test coverage, and a deployed URL is not treated as a finished release.",
-      de: "Gewichteter Umsetzungsstand von Web-App, Electron-Desktop, Authentifizierung, API und Release-Härtung. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Releasereife. Das ist keine Testabdeckung, und eine bereitgestellte URL gilt damit nicht als abgeschlossenes Release.",
-      fr: "Avancement pondéré de l'application web, du bureau Electron, de l'authentification, de l'API et du durcissement de la release. L'implémentation centrale compte deux fois plus que la maturité de production et de release. Ce n'est pas une couverture de tests, et une URL déployée n'est pas traitée comme une release terminée.",
+      en: "Weighted completion of the web app, Electron desktop, authentication, API and release hardening. Core implementation counts twice as much as production and release readiness. This is not test coverage, and a deployed URL is not treated as a finished release. Owner's engineering estimate, not an audited measurement.",
+      de: "Gewichteter Umsetzungsstand von Web-App, Electron-Desktop, Authentifizierung, API und Release-Härtung. Die Kernimplementierung zählt doppelt so stark wie die Produktions- und Releasereife. Das ist keine Testabdeckung, und eine bereitgestellte URL gilt damit nicht als abgeschlossenes Release. Technische Schätzung des Eigentümers, keine auditierte Messung.",
+      fr: "Avancement pondéré de l'application web, du bureau Electron, de l'authentification, de l'API et du durcissement de la release. L'implémentation centrale compte deux fois plus que la maturité de production et de release. Ce n'est pas une couverture de tests, et une URL déployée n'est pas traitée comme une release terminée. Estimation d'ingénierie du propriétaire, et non une mesure auditée.",
     },
   },
   {
     id: "pentest-report-generator",
     name: "Pentest Report Generator (v1)",
     percent: PENTEST_COMPLETION_PERCENT,
-    status: "in-progress",
     scope: {
       en: "Local Nessus-to-PDF prototype. No completion percentage was recovered, so none is shown. The tool runs locally; there is no hosted demo.",
       de: "Lokaler Prototyp, der ein Nessus-XML in einen PDF-Bericht überführt. Ein Fertigstellungsgrad wurde nicht wiederhergestellt und wird daher nicht angezeigt. Das Werkzeug läuft lokal; es gibt keine gehostete Demo.",

@@ -6,9 +6,14 @@ import { Ticks } from "@/components/ui/structure";
 import { approach, profile, stats } from "~/data/profile";
 import { transparencyOpening } from "~/data/transparency";
 import { usePick, usePortfolioLanguage } from "~/i18n/language";
+import type { L10n } from "~/i18n/l10n";
 import { ui } from "~/i18n/ui";
 import { ObjectiveSection } from "~/sections/ObjectiveSection";
 import { sectionTitle } from "~/sections/registry";
+
+function figureText(value: string | L10n<string>, pick: (entry: L10n<string>) => string) {
+  return typeof value === "string" ? value : pick(value);
+}
 
 export function Hero() {
   const { language } = usePortfolioLanguage();
@@ -55,13 +60,25 @@ export function Hero() {
 
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {stats.map((s) => (
-            <Card key={s.label.en} className="portfolio-lift relative p-5">
-              <Ticks />
-              <p className="num font-mono text-[28px] font-semibold leading-none text-foreground">{s.value}</p>
-              <p className="text-machine mt-3">{t(s.label)}</p>
-            </Card>
-          ))}
+          {stats.map((s) => {
+            const figure = figureText(s.value, t);
+            const numeric = /^~?\d/.test(figure);
+            return (
+              <Card key={s.label.en} className="portfolio-lift relative p-5">
+                <Ticks />
+                <p
+                  className={
+                    numeric
+                      ? "num font-mono text-[28px] font-semibold leading-none text-foreground"
+                      : "text-h2 leading-tight text-foreground"
+                  }
+                >
+                  {figure}
+                </p>
+                <p className="text-machine mt-3">{t(s.label)}</p>
+              </Card>
+            );
+          })}
         </div>
         <p className="text-machine">{t(ui.figuresCaption)}</p>
       </div>

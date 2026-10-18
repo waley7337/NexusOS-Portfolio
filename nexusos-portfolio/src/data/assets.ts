@@ -109,30 +109,53 @@ export const caseStudy: Asset = {
     "NexusOS — Étude de cas d'ingénierie",
   ),
   description: l10n(
-    "The full case study: architecture, security model, tenant isolation, decisions and trade-offs.",
-    "Die vollständige Fallstudie: Architektur, Sicherheitsmodell, Mandantenisolierung, Entscheidungen und Abwägungen.",
-    "L'étude de cas complète : architecture, modèle de sécurité, isolation des tenants, décisions et compromis.",
+    "An earlier case study of architecture, security model, tenant isolation, decisions and trade-offs. Outdated relative to main @ 1974025 (2026-10-18).",
+    "Eine frühere Fallstudie zu Architektur, Sicherheitsmodell, Mandantenisolierung, Entscheidungen und Abwägungen. Veraltet gegenüber main @ 1974025 (2026-10-18).",
+    "Une étude de cas antérieure : architecture, modèle de sécurité, isolation des tenants, décisions et compromis. Obsolète par rapport à main @ 1974025 (2026-10-18).",
   ),
   kind: "pdf",
   status: "published",
   src: "/documents/technical-documentation/nexusos-case-study.pdf",
   preview: "/documents/technical-documentation/nexusos-case-study.preview.webp",
-  meta: l10n("PDF · 11 pages · 49 KB", "PDF · 11 Seiten · 49 KB", "PDF · 11 pages · 49 KB"),
+  meta: l10n(
+    "PDF · 3 pages · 202 KB · outdated relative to main @ 1974025 (2026-10-18)",
+    "PDF · 3 Seiten · 202 KB · veraltet gegenüber main @ 1974025 (2026-10-18)",
+    "PDF · 3 pages · 202 KB · obsolète par rapport à main @ 1974025 (2026-10-18)",
+  ),
 };
 
 export const portfolioSummary: Asset = {
   id: "nexusos-portfolio-summary",
   title: l10n("NexusOS — Portfolio Summary", "NexusOS — Portfolio-Überblick", "NexusOS — Synthèse du portfolio"),
   description: l10n(
-    "Two-page overview of the platform, its engineering highlights and current status.",
-    "Zweiseitiger Überblick über die Plattform, die technischen Schwerpunkte und den aktuellen Stand.",
-    "Synthèse de deux pages sur la plateforme, ses points d'ingénierie et son état actuel.",
+    "Two-page summary from the 2026-10-18 documentation: platform controls and modules that have routers and pages. Production is unverified.",
+    "Zweiseitige Zusammenfassung zum Dokumentationsstand vom 2026-10-18: Plattformkontrollen und Module mit Routern und Seiten. Die Produktion ist nicht geprüft.",
+    "Synthèse de deux pages au niveau de la documentation du 2026-10-18 : contrôles de plateforme et modules qui ont des routeurs et des pages. La production n'est pas vérifiée.",
   ),
   kind: "pdf",
   status: "published",
   src: "/documents/project-summaries/nexusos-portfolio-summary.pdf",
   preview: "/documents/project-summaries/nexusos-portfolio-summary.preview.webp",
-  meta: l10n("PDF · 2 pages · 23 KB", "PDF · 2 Seiten · 23 KB", "PDF · 2 pages · 23 KB"),
+  meta: l10n("PDF · 2 pages · 120 KB", "PDF · 2 Seiten · 120 KB", "PDF · 2 pages · 120 KB"),
+};
+
+export const implementationStatus: Asset = {
+  id: "nexusos-implementation-status",
+  title: l10n(
+    "NexusOS — Implementation Status",
+    "NexusOS — Umsetzungsstand",
+    "NexusOS — État d'implémentation",
+  ),
+  description: l10n(
+    "Module status from the 2026-10-18 documentation pass: implemented, partial, placeholder, and planned. No completion percentage. Production is unverified.",
+    "Modulstand aus dem Dokumentationslauf vom 2026-10-18: umgesetzt, teilweise, Platzhalter und geplant. Kein Fertigstellungsgrad. Die Produktion ist nicht geprüft.",
+    "État des modules d'après le passage de documentation du 2026-10-18 : implémenté, partiel, placeholder et prévu. Aucun pourcentage d'achèvement. La production n'est pas vérifiée.",
+  ),
+  kind: "pdf",
+  status: "published",
+  src: "/documents/project-summaries/nexusos-implementation-status.pdf",
+  preview: "/documents/project-summaries/nexusos-implementation-status.preview.webp",
+  meta: l10n("PDF · 3 pages · 382 KB", "PDF · 3 Seiten · 382 KB", "PDF · 3 pages · 382 KB"),
 };
 
 export const portfolio2026Redacted: Asset = {
@@ -172,7 +195,7 @@ export const projectSummaryRedacted: Asset = {
   status: "published",
   src: "/documents/project-summaries/nexusos-project-summary-redacted.pdf",
   preview: "/documents/project-summaries/nexusos-project-summary-redacted.preview.webp",
-  meta: l10n("PDF · 4 pages · 184 KB", "PDF · 4 Seiten · 184 KB", "PDF · 4 pages · 184 KB"),
+  meta: l10n("PDF · 4 pages · 185 KB", "PDF · 4 Seiten · 185 KB", "PDF · 4 pages · 185 KB"),
   note: REDACTED_NOTE,
   label: REDACTED_LABEL,
 };
@@ -201,11 +224,11 @@ export const systemArchitecture = image(
   "system-architecture",
   l10n("System Architecture", "Systemarchitektur", "Architecture système"),
   l10n(
-    "Five layers from the untrusted browser to PostgreSQL and Redis, with the live API surface and implementation status.",
-    "Fünf Schichten vom nicht vertrauenswürdigen Browser bis zu PostgreSQL und Redis, mit der live API-Oberfläche und dem Umsetzungsstand.",
-    "Cinq couches, du navigateur non fiable jusqu'à PostgreSQL et Redis, avec la surface d'API en ligne et l'état d'implémentation.",
+    "Live domain routers, including finance, from the browser to PostgreSQL. Documents are not a first-class module. PostgreSQL RLS is planned and absent. Redis rate limiting fails open. Cloudflare WAF rules are unverified.",
+    "Live-Domain-Router, auch Finanzen, vom Browser bis PostgreSQL. Dokumente sind kein eigenes Modul. PostgreSQL RLS ist geplant und fehlt. Das Redis-Rate-Limit lässt die Anfrage durch, wenn Redis ausfällt. Cloudflare-WAF-Regeln sind nicht geprüft.",
+    "Routeurs de domaine en service, finance comprise, du navigateur jusqu'à PostgreSQL. Les documents ne sont pas un module de premier plan. La RLS PostgreSQL est prévue et absente. La limitation de débit Redis laisse passer la requête si Redis tombe en erreur. Les règles WAF Cloudflare ne sont pas vérifiées.",
   ),
-  diagram("3600×2082"),
+  diagram("1600×900"),
 );
 
 export const securityArchitecture = image(
@@ -213,11 +236,11 @@ export const securityArchitecture = image(
   "security-architecture",
   l10n("Security Architecture", "Sicherheitsarchitektur", "Architecture de sécurité"),
   l10n(
-    "Seven layered controls applied to every request, cross-cutting controls, and what is deliberately not claimed.",
-    "Sieben geschichtete Kontrollen für jede Anfrage, querschnittliche Kontrollen und das, was bewusst nicht behauptet wird.",
-    "Sept contrôles en couches appliqués à chaque requête, des contrôles transverses, et ce qui n'est délibérément pas revendiqué.",
+    "Application controls on the request path. Redis rate limiting fails open. PostgreSQL RLS is not implemented. Cloudflare WAF rules are unverified. The figure cites backend/tests/security/ and test_tenant_isolation.py, with no pass count.",
+    "Kontrollen der Anwendung auf dem Anfrageweg. Das Redis-Rate-Limit lässt die Anfrage durch, wenn Redis ausfällt. PostgreSQL RLS ist nicht umgesetzt. Cloudflare-WAF-Regeln sind nicht geprüft. Die Abbildung nennt backend/tests/security/ und test_tenant_isolation.py, ohne Zahl bestandener Tests.",
+    "Contrôles de l'application sur le chemin de requête. La limitation de débit Redis laisse passer la requête si Redis tombe en erreur. La RLS PostgreSQL n'est pas implémentée. Les règles WAF Cloudflare ne sont pas vérifiées. La figure cite backend/tests/security/ et test_tenant_isolation.py, sans nombre de tests réussis.",
   ),
-  diagram("3600×2076"),
+  diagram("1600×1000"),
 );
 
 export const multiTenantFlow = image(
@@ -225,11 +248,11 @@ export const multiTenantFlow = image(
   "multi-tenant-request-flow",
   l10n("Multi-Tenant Request Flow", "Ablauf einer Mandantenanfrage", "Flux d'une requête multi-tenant"),
   l10n(
-    "How one authenticated request establishes identity, authority and tenant scope, and where each becomes authoritative.",
-    "Wie eine authentifizierte Anfrage Identität, Befugnis und Mandantenbereich festlegt, und wo jedes davon maßgeblich wird.",
-    "Comment une requête authentifiée établit l'identité, l'autorité et le périmètre du tenant, et où chacun devient déterminant.",
+    "company_id comes from the database user row, not from a client field. Isolation is application filters plus composite foreign keys. PostgreSQL RLS is not implemented.",
+    "company_id kommt aus der Nutzerzeile in der Datenbank, nicht aus einem Client-Feld. Die Isolierung besteht aus Filtern in der Anwendung und aus zusammengesetzten Fremdschlüsseln. PostgreSQL RLS ist nicht umgesetzt.",
+    "company_id vient de la ligne utilisateur en base, pas d'un champ client. L'isolation, ce sont des filtres dans l'application plus des clés étrangères composites. La RLS PostgreSQL n'est pas implémentée.",
   ),
-  diagram("3600×2083"),
+  diagram("1600×980"),
 );
 
 const CURRENT = "screenshots/current-design";
@@ -241,9 +264,12 @@ const currentMeta = l10n(
 const shot = (name: string, title: L10n<string>, description: L10n<string>) => image(CURRENT, name, title, description, currentMeta);
 
 /**
- * Captured from the running NexusOS frontend (main @ 879e442) at 1600×1000,
- * 2× pixel ratio, against a local API stub. Earlier-design originals are kept
- * outside public/ in assets/screenshots/legacy/ and are never shown here.
+ * Captured earlier from the running NexusOS frontend (main @ 879e442) at
+ * 1600×1000, 2× pixel ratio, against a local API stub. That commit is capture
+ * history only. The documentation reference is main @ 1974025 (2026-10-18).
+ * Neither SHA is a claim that nexuops.com is running it. Earlier-design
+ * originals are kept outside public/ in assets/screenshots/legacy/ and are
+ * never shown here.
  */
 export const currentDesignShots: Asset[] = [
   shot(
@@ -658,12 +684,12 @@ export const nexusLibraryFolders: Folder[] = [
     id: "project-documentation",
     label: l10n("Project Documentation", "Projektdokumentation", "Documentation de projet"),
     description: l10n(
-      "The two-page NexusOS portfolio summary.",
-      "Der zweiseitige NexusOS-Portfolio-Überblick.",
-      "La synthèse de portfolio NexusOS en deux pages.",
+      "The corrected two-page portfolio summary and the implementation-status note. Production is unverified.",
+      "Die korrigierte zweiseitige Portfolio-Zusammenfassung und die Notiz zum Umsetzungsstand. Die Produktion ist nicht geprüft.",
+      "La synthèse de portfolio corrigée, en deux pages, et la note d'état d'implémentation. La production n'est pas vérifiée.",
     ),
     group: "Documents",
-    assets: [portfolioSummary],
+    assets: [portfolioSummary, implementationStatus],
   },
 ];
 

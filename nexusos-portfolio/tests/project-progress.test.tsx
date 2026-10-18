@@ -70,8 +70,11 @@ describe("project progress", () => {
     expect(weightedCompletion(ghostProtocolAssessment.measurements)).toBe(78);
     expect(progressById("nexusos")?.percent).toBe(82);
     expect(progressById("ghost-protocol")?.percent).toBe(78);
+    expect(progressById("nexusos")?.status).toBe("in-progress");
+    expect(progressById("ghost-protocol")?.status).toBe("in-progress");
     expect(PENTEST_COMPLETION_PERCENT).toBeNull();
     expect(progressById("pentest-report-generator")?.percent).toBeNull();
+    expect(progressById("pentest-report-generator")?.status).toBeUndefined();
   });
 
   it("exposes the configured percentage on an accessible progressbar", () => {
@@ -88,6 +91,8 @@ describe("project progress", () => {
     expect(screen.getByText("NexusOS").closest("p")).toHaveTextContent("NexusOS — 82%");
     expect(screen.getByText("In Progress")).toBeInTheDocument();
     expect(screen.getByText("Assessed 16 October 2026")).toBeInTheDocument();
+    expect(screen.getAllByText(/Owner's engineering estimate, not an audited measurement/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/This is not test coverage, and a deployment is not treated as fully operational/).length).toBeGreaterThan(0);
   });
 
   it("counts up to the configured value when motion is allowed", () => {
@@ -103,6 +108,9 @@ describe("project progress", () => {
     expect(screen.getByText("78%")).toBeInTheDocument();
     expect(screen.getByText("Ghost Protocol").closest("p")).toHaveTextContent("Ghost Protocol — 78%");
     expect(bar.querySelector(".project-progress-fill")).toHaveStyle({ width: "78%" });
+    expect(screen.getByText("In Progress")).toBeInTheDocument();
+    expect(screen.getAllByText(/Owner's engineering estimate, not an audited measurement/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/This is not test coverage, and a deployed URL is not treated as a finished release/).length).toBeGreaterThan(0);
   });
 
   it("keeps the bar empty until the indicator is in view", () => {
@@ -123,6 +131,7 @@ describe("project progress", () => {
     expect(bar).not.toHaveAttribute("aria-valuenow");
     expect(bar).toHaveAttribute("aria-valuetext", "Not assessed");
     expect(screen.getByText("Not assessed")).toBeInTheDocument();
+    expect(screen.queryByText("In Progress")).not.toBeInTheDocument();
     expect(bar.querySelector(".project-progress-fill")).toHaveStyle({ width: "0%" });
   });
 
@@ -140,6 +149,8 @@ describe("project progress", () => {
     expect(bar).toHaveAttribute("aria-valuenow", "82");
     expect(screen.getByText("In Entwicklung")).toBeInTheDocument();
     expect(screen.getByText("Bewertet am 16. Oktober 2026")).toBeInTheDocument();
+    expect(screen.getAllByText(/Technische Schätzung des Eigentümers, keine auditierte Messung/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Das ist keine Testabdeckung/).length).toBeGreaterThan(0);
     expect(screen.queryByText("In Progress")).not.toBeInTheDocument();
     expect(bar.querySelector(".project-progress-fill")).toHaveStyle({ width: "82%" });
   });

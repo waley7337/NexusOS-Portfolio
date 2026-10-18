@@ -5,6 +5,7 @@ import zlib from "node:zlib";
 import { describe, expect, it } from "vitest";
 import {
   DEGREE_PRIVACY_NOTICE,
+  caseStudy,
   currentDesignShots,
   cv,
   degree,
@@ -76,6 +77,18 @@ describe("personal documents", () => {
     expect(all.filter((a) => /(^|-)cv(-|$)/.test(a.id)).map((a) => a.id)).toEqual(["cv-de"]);
   });
 
+  it("keeps the outdated NexusOS case study at its published bytes", () => {
+    expect(caseStudy.src).toBe("/documents/technical-documentation/nexusos-case-study.pdf");
+    expect(caseStudy.meta.en).toBe(
+      "PDF · 3 pages · 202 KB · outdated relative to main @ 1974025 (2026-10-18)",
+    );
+    const bytes = served(caseStudy.src);
+    expect(bytes.byteLength).toBe(206478);
+    expect(crypto.createHash("sha256").update(bytes).digest("hex")).toBe(
+      "d4354ed5ac2a07d012e05ee737e3d7c035f31b9e90c870a89238c008de5dc5c8",
+    );
+  });
+
   it("serves the original degree certificate byte-for-byte", () => {
     expect(degree.status).toBe("published");
     const sha = crypto.createHash("sha256").update(served(degree.src)).digest("hex");
@@ -88,6 +101,18 @@ describe("personal documents", () => {
     );
     expect(degree.notice).toBe(DEGREE_PRIVACY_NOTICE);
     expect(degree.preview).toBeUndefined();
+  });
+
+  it("labels the redacted project summary at the nearest kilobyte", () => {
+    const bytes = served(projectSummaryRedacted.src);
+    expect(bytes.byteLength).toBe(189208);
+    const kb = Math.round(bytes.byteLength / 1024);
+    expect(kb).toBe(185);
+    expect(projectSummaryRedacted.meta).toEqual({
+      en: "PDF · 4 pages · 185 KB",
+      de: "PDF · 4 Seiten · 185 KB",
+      fr: "PDF · 4 pages · 185 KB",
+    });
   });
 
   it.each([portfolio2026Redacted, projectSummaryRedacted])("$id has the removed values gone from every layer", (asset) => {
@@ -138,7 +163,7 @@ describe("links and screenshots", () => {
       ["Architecture & System Design", 2],
       ["Security & Access Control", 1],
       ["System & interface", 15],
-      ["Project Documentation", 1],
+      ["Project Documentation", 2],
     ]);
     expect(nexusLibraryFolders.every((folder) => folder.assets.length > 0)).toBe(true);
     expect(nexusCaseStudyPreviews.map((asset) => asset.title.en)).toEqual([

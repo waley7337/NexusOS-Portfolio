@@ -421,6 +421,11 @@ describe("App", () => {
     const label = within(overview).getByText(transparencyOpening.en.label);
     expect(label).toHaveClass("text-foreground");
     expect(note.textContent).not.toMatch(/[[\]]/);
+    expect(within(overview).getByText("Architecture")).toBeInTheDocument();
+    expect(within(overview).getByText("System architecture")).toBeInTheDocument();
+    expect(overview).not.toHaveTextContent("Architecture layers");
+    expect(within(overview).getByText("7")).toBeInTheDocument();
+    expect(within(overview).getByText("~110")).toBeInTheDocument();
     const figures = within(overview).getByText("NexusOS figures, from the project documentation");
     expect(note.compareDocumentPosition(figures) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(overview).not.toHaveTextContent(transparencyOpening.de.body);
@@ -448,6 +453,9 @@ describe("App", () => {
     expect(overviewDe).toHaveTextContent(transparencyOpening.de.body);
     expect(within(overviewDe).getByText(transparencyOpening.de.label)).toHaveClass("text-foreground");
     expect(overviewDe).not.toHaveTextContent(transparencyOpening.en.body);
+    expect(within(overviewDe).getByText("Architektur")).toBeInTheDocument();
+    expect(within(overviewDe).getByText("System-Architektur")).toBeInTheDocument();
+    expect(overviewDe).not.toHaveTextContent("Architekturschichten");
     const tab = screen.getByRole("region", { name: transparencyTitle.de });
     expect(tab).not.toHaveTextContent(verificationWorkflow.en.paragraphs[0]);
     expect(within(tab).getByRole("heading", { level: 3, name: verificationWorkflow.de.title })).toBeInTheDocument();

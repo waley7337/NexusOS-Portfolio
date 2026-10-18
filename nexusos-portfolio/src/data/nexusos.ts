@@ -1,7 +1,7 @@
 /**
- * NexusOS project copy, taken from Waley's README, website copy and case
- * study. Status wording is kept exactly as precise as the source: what is
- * implemented, what is prepared, what is not built.
+ * NexusOS project copy. Status wording follows the 2026-10-18 documentation
+ * on main @ 1974025: what has routers and pages, what is partial, what is a
+ * placeholder, and what is planned. Production on nexuops.com is unverified.
  */
 import { l10n } from "~/i18n/l10n";
 
@@ -76,9 +76,9 @@ export const nexusos = {
     {
       title: l10n("Layered request security", "Mehrschichtige Anfragesicherheit", "Sécurité des requêtes en couches"),
       body: l10n(
-        "CORS allowlisting with production startup validation, security headers, Redis-backed rate limiting, and a trusted-proxy boundary for IP-based controls.",
-        "CORS-Allowlist mit Prüfung beim Produktionsstart, Sicherheitsheader, Rate-Limiting über Redis und eine Grenze für vertrauenswürdige Proxys bei IP-basierten Kontrollen.",
-        "Liste d'autorisation CORS avec validation au démarrage en production, en-têtes de sécurité, limitation de débit appuyée sur Redis, et une frontière de proxy de confiance pour les contrôles basés sur l'IP.",
+        "CORS allowlisting with production startup validation, security headers, Redis-backed rate limiting that fails open if Redis errors, and a trusted-proxy boundary for IP-based controls.",
+        "CORS-Allowlist mit Prüfung beim Produktionsstart, Sicherheitsheader, Rate-Limiting über Redis, das die Anfrage durchlässt, wenn Redis ausfällt, und eine Grenze für vertrauenswürdige Proxys bei IP-basierten Kontrollen.",
+        "Liste d'autorisation CORS avec validation au démarrage en production, en-têtes de sécurité, limitation de débit appuyée sur Redis qui laisse passer la requête si Redis tombe en erreur, et une frontière de proxy de confiance pour les contrôles basés sur l'IP.",
       ),
     },
     {
@@ -88,9 +88,9 @@ export const nexusos = {
         "Un design system construit comme une infrastructure",
       ),
       body: l10n(
-        "157 design tokens and 31 components with a living style-guide route: the same system this portfolio is built on.",
-        "157 Design-Tokens und 31 Komponenten mit einer lebendigen Style-Guide-Route: dasselbe System, auf dem dieses Portfolio aufbaut.",
-        "157 jetons de design et 31 composants, avec une route de guide de style vivante : le même système sur lequel ce portfolio est construit.",
+        "A living style-guide route: the same system this portfolio is built on.",
+        "Eine lebendige Style-Guide-Route: dasselbe System, auf dem dieses Portfolio aufbaut.",
+        "Une route de guide de style vivante : le même système sur lequel ce portfolio est construit.",
       ),
     },
   ],
@@ -101,24 +101,24 @@ export const nexusos = {
       "NexusOS est une plateforme logicielle en développement actif, avec des modules centraux implémentés et une suite encore en cours.",
     ),
     implemented: l10n(
-      "Platform: multi-tenant identity model, full authentication lifecycle, RBAC with database re-validation, the security middleware layer, and the frontend shell with its design system. CRM: tenant-safe APIs and workspaces for customers, contacts, leads and deals, plus customer timeline notes. HR: an Employees API and workspace (list and detail).",
-      "Plattform: mandantenfähiges Identitätsmodell, vollständiger Authentifizierungslebenszyklus, RBAC mit erneuter Prüfung in der Datenbank, die Sicherheits-Middleware und die Frontend-Shell mit ihrem Designsystem. CRM: mandantensichere APIs und Arbeitsbereiche für Kunden, Kontakte, Leads und Deals sowie Notizen zur Kundenchronik. HR: eine Employees-API und ein Arbeitsbereich (Liste und Detail).",
-      "Plateforme : modèle d'identité multi-tenant, cycle d'authentification complet, RBAC avec revalidation en base, la couche de middleware de sécurité, et le shell frontend avec son design system. CRM : API et espaces de travail sûrs pour le tenant, pour clients, contacts, leads et deals, plus les notes de chronologie client. HR : une API Employees et un espace de travail (liste et détail).",
+      "Platform: multi-tenant identity model, full authentication lifecycle, RBAC with database re-validation, the security middleware layer, and the frontend shell with its design system. Modules with routers and pages: CRM, HR, finance, inventory, projects, tasks, reports, settings, and dashboard metrics. Notifications are an inbox in the shell, not a separate page. HR covers employees, leave, and attendance. That is not all of HR. Implemented: projects, tasks, finance, inventory, reports, settings, notifications, dashboard metrics. Production on nexuops.com is unverified.",
+      "Plattform: mandantenfähiges Identitätsmodell, vollständiger Authentifizierungsablauf, RBAC mit erneuter Prüfung in der Datenbank, die Sicherheits-Middleware und die Frontend-Shell mit dem Designsystem. Module mit Routern und Seiten: CRM, HR, Finanzen, Lager, Projekte, Aufgaben, Berichte, Einstellungen und Dashboard-Metriken. Benachrichtigungen sind ein Posteingang in der Shell und keine eigene Seite. HR umfasst Mitarbeiter, Urlaub und Anwesenheit. Nicht das ganze HR ist fertig. Umgesetzt: Projekte, Aufgaben, Finanzen, Lager, Berichte, Einstellungen, Benachrichtigungen, Dashboard-Metriken. Die Produktion auf nexuops.com ist nicht geprüft.",
+      "Plateforme : modèle d'identité multi-tenant, cycle d'authentification complet, RBAC avec revalidation en base, la couche de middleware de sécurité, et le shell frontend avec son design system. Modules avec routeurs et pages : CRM, RH, finance, stocks, projets, tâches, rapports, réglages et métriques du tableau de bord. Les notifications sont une boîte de réception dans le shell, et non une page séparée. Les RH couvrent les employés, les congés et la présence. Cela ne couvre pas toutes les RH. Implémenté : projets, tâches, finance, stocks, rapports, réglages, notifications, métriques du tableau de bord. La production sur nexuops.com n'est pas vérifiée.",
     ),
     partial: l10n(
-      "HR covers employee records only so far. The dashboard shows live API and database probes, but its operations panel has no metrics source yet, and its module field still marks only CRM as operational.",
-      "HR umfasst bisher nur Mitarbeiterdatensätze. Das Dashboard zeigt Live-Prüfungen von API und Datenbank, aber das Operations-Panel hat noch keine Metrikquelle, und das Modulfeld markiert weiterhin nur CRM als betriebsbereit.",
-      "HR ne couvre pour l'instant que les dossiers des employés. Le tableau de bord montre des sondes en direct de l'API et de la base, mais son panneau d'opérations n'a pas encore de source de métriques, et son champ de modules ne marque encore que le CRM comme opérationnel.",
+      "Partial: AI fails soft without a key. Stripe stays fail-closed until it is configured.",
+      "Teilweise: Die KI fällt ohne Schlüssel weich aus. Stripe bleibt geschlossen, bis es konfiguriert ist.",
+      "Partiel : l'IA échoue en douceur sans clé. Stripe reste fermé tant qu'il n'est pas configuré.",
     ),
     future: l10n(
-      "Projects, tasks, finance, inventory, documents, reports, settings and the AI assistant (routed today as honest placeholders), plus PostgreSQL row-level security. Tenant isolation is currently application-level and relational.",
-      "Projekte, Aufgaben, Finanzen, Lager, Dokumente, Berichte, Einstellungen und der KI-Assistent (heute als ehrliche Platzhalter geroutet) sowie Row-Level Security in PostgreSQL. Die Mandantenisolierung ist derzeit auf Anwendungs- und Relationsebene umgesetzt.",
-      "Projets, tâches, finance, stocks, documents, rapports, réglages et l'assistant IA (aujourd'hui routés comme des espaces réservés honnêtes), plus la sécurité au niveau des lignes dans PostgreSQL. L'isolation des tenants est aujourd'hui au niveau de l'application et relationnelle.",
+      "Placeholder: documents. The documents route is a placeholder, not a first-class module. Planned: PostgreSQL RLS (not implemented). Tenant isolation stays application-level, with composite foreign keys. It is not row-level security.",
+      "Platzhalter: Dokumente. Die Dokumente-Route ist ein Platzhalter, kein eigenes Modul. Geplant: PostgreSQL RLS (nicht umgesetzt). Die Mandantenisolierung bleibt auf Anwendungsebene, mit zusammengesetzten Fremdschlüsseln. Das ist keine Row-Level Security.",
+      "Placeholder : documents. La route documents est un placeholder, pas un module de premier plan. Prévu : PostgreSQL RLS (non implémentée). L'isolation des tenants reste au niveau de l'application, avec des clés étrangères composites. Ce n'est pas une sécurité au niveau des lignes.",
     ),
     asOf: l10n(
-      "As of main @ 879e442 · HR Part 07.4",
-      "Stand main @ 879e442 · HR Part 07.4",
-      "État main @ 879e442 · HR Part 07.4",
+      "Documentation reference: main @ 1974025, dated 2026-10-18. This does not say nexuops.com is running that commit. Production stays unverified.",
+      "Dokumentationsstand: main @ 1974025, Datum 2026-10-18. Das sagt nicht, dass nexuops.com diesen Stand ausführt. Die Produktion bleibt ungeprüft.",
+      "Référence de documentation : main @ 1974025, datée du 2026-10-18. Cela ne dit pas que nexuops.com exécute ce commit. La production reste non vérifiée.",
     ),
   },
   stack: [
@@ -149,9 +149,9 @@ export const nexusos = {
     {
       label: l10n("Infra & tests", "Infrastruktur und Tests", "Infra et tests"),
       value: l10n(
-        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff, mypy",
-        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff, mypy",
-        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff, mypy",
+        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff. mypy is a project tool, not part of the current CI gate.",
+        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff. mypy ist ein Werkzeug im Projekt und gehört nicht zur aktuellen CI-Prüfung.",
+        "Docker Compose, GitHub Actions CI, pytest, Vitest + Testing Library, ruff. mypy est un outil du projet, et il ne fait pas partie du contrôle CI actuel.",
       ),
     },
   ],
@@ -162,19 +162,19 @@ export const nexusos = {
   ),
   architecture: {
     system: l10n(
-      "Routers stay thin and delegate to services. Identity is resolved by dependencies rather than by each endpoint, so a new route cannot accidentally skip it. Every response returns in the same envelope, and one database session per request is committed on success and rolled back on any exception.",
-      "Router bleiben schlank und delegieren an Services. Die Identität wird über Dependencies aufgelöst, nicht in jedem Endpunkt, damit eine neue Route sie nicht versehentlich überspringt. Jede Antwort kommt im selben Umschlag zurück, und eine Datenbanksitzung je Anfrage wird bei Erfolg committed und bei jeder Ausnahme zurückgerollt.",
-      "Les routeurs restent minces et délèguent aux services. L'identité est résolue par des dépendances plutôt que par chaque point d'accès, pour qu'une nouvelle route ne puisse pas l'oublier. Chaque réponse revient dans la même enveloppe, et une session de base par requête est validée en cas de succès et annulée à toute exception.",
+      "Domain routers are live, including finance. Documents are not a first-class module. PostgreSQL RLS is planned and not implemented. Redis rate limiting fails open if Redis errors. Cloudflare WAF rules are unverified. Production is unverified.",
+      "Die Domain-Router sind live, auch Finanzen. Dokumente sind kein eigenes Modul. PostgreSQL RLS ist geplant und nicht umgesetzt. Das Redis-Rate-Limit lässt die Anfrage durch, wenn Redis ausfällt. Cloudflare-WAF-Regeln sind nicht geprüft. Die Produktion ist nicht geprüft.",
+      "Les routeurs de domaine sont en service, finance comprise. Les documents ne sont pas un module de premier plan. La RLS PostgreSQL est prévue et non implémentée. La limitation de débit Redis laisse passer la requête si Redis tombe en erreur. Les règles WAF Cloudflare ne sont pas vérifiées. La production n'est pas vérifiée.",
     ),
     security: l10n(
-      "Every layer shown is present and wired in the codebase. The panel listing what is not claimed is the more important half: no row-level security, no issuer validation, no account lockout, no revocation of access tokens before expiry.",
-      "Jede gezeigte Schicht ist vorhanden und in der Codebasis verdrahtet. Das Panel dessen, was nicht behauptet wird, ist die wichtigere Hälfte: keine Row-Level Security, keine Issuer-Prüfung, keine Kontosperre, kein Widerruf von Access-Tokens vor Ablauf.",
-      "Chaque couche montrée est présente et câblée dans la base de code. Le panneau de ce qui n'est pas revendiqué est la moitié la plus importante : pas de sécurité au niveau des lignes, pas de validation de l'émetteur, pas de verrouillage de compte, pas de révocation des jetons d'accès avant expiration.",
+      "The request path shows application controls. Redis rate limiting fails open if Redis errors. PostgreSQL RLS is not implemented. Cloudflare WAF rules are unverified. The diagram cites backend/tests/security/ and test_tenant_isolation.py. It shows no pass count and no cross-tenant screenshot.",
+      "Der Anfrageweg zeigt Kontrollen in der Anwendung. Das Redis-Rate-Limit lässt die Anfrage durch, wenn Redis ausfällt. PostgreSQL RLS ist nicht umgesetzt. Cloudflare-WAF-Regeln sind nicht geprüft. Das Diagramm nennt backend/tests/security/ und test_tenant_isolation.py. Es zeigt keine Zahl bestandener Tests und keinen Screenshot über Mandanten hinweg.",
+      "Le chemin de requête montre des contrôles dans l'application. La limitation de débit Redis laisse passer la requête si Redis tombe en erreur. La RLS PostgreSQL n'est pas implémentée. Les règles WAF Cloudflare ne sont pas vérifiées. Le diagramme cite backend/tests/security/ et test_tenant_isolation.py. Il ne montre ni nombre de tests réussis, ni capture inter-tenants.",
     ),
     tenancy: l10n(
-      "The access token carries a company identifier. It is ignored. The token's subject only locates the user row; every scoping decision is then read from that row. After sign-in, nothing in a request influences its own tenant scope.",
-      "Das Access-Token trägt eine Unternehmenskennung. Sie wird ignoriert. Das Subject des Tokens findet nur die Nutzerzeile; jede Abgrenzungsentscheidung wird danach aus dieser Zeile gelesen. Nach der Anmeldung beeinflusst nichts in einer Anfrage ihren eigenen Mandantenbereich.",
-      "Le jeton d'accès porte un identifiant d'entreprise. Il est ignoré. Le sujet du jeton ne sert qu'à trouver la ligne utilisateur ; chaque décision de périmètre est ensuite lue dans cette ligne. Après la connexion, rien dans une requête n'influence son propre périmètre de tenant.",
+      "The access token carries a company identifier. Scope ignores it. The token subject locates the user row, and company_id is read from that row. Isolation is application filters plus composite foreign keys. PostgreSQL RLS is not implemented.",
+      "Das Access-Token trägt eine Unternehmenskennung. Für den Mandantenbereich zählt sie nicht. Das Subject des Tokens findet die Nutzerzeile, und company_id wird aus dieser Zeile gelesen. Die Isolierung besteht aus Filtern in der Anwendung und aus zusammengesetzten Fremdschlüsseln. PostgreSQL RLS ist nicht umgesetzt.",
+      "Le jeton d'accès porte un identifiant d'entreprise. Le périmètre l'ignore. Le sujet du jeton trouve la ligne utilisateur, et company_id est lu dans cette ligne. L'isolation, ce sont des filtres dans l'application plus des clés étrangères composites. La RLS PostgreSQL n'est pas implémentée.",
     ),
   },
 };

@@ -84,7 +84,8 @@ export function ProjectProgress({ id }: { id: string }) {
   if (!entry) return null;
 
   const chrome = progressChrome[language];
-  const statusLabel = progressStatusLabel[language][entry.status];
+  const status = entry.status;
+  const statusLabel = status ? progressStatusLabel[language][status] : null;
   const scope = entry.scope[language];
   const assessed = entry.updatedLabel ? `${chrome.assessed} ${entry.updatedLabel[language]}` : null;
   const valueText = percent === null ? chrome.notAssessed : `${percent}%`;
@@ -110,7 +111,7 @@ export function ProjectProgress({ id }: { id: string }) {
             </>
           ) : null}
         </p>
-        <Badge variant={STATUS_VARIANT[entry.status]}>{statusLabel}</Badge>
+        {status && statusLabel ? <Badge variant={STATUS_VARIANT[status]}>{statusLabel}</Badge> : null}
       </div>
       {percent === null ? (
         <p className="num font-mono text-[28px] font-semibold leading-none text-foreground" aria-hidden="true">
@@ -131,7 +132,7 @@ export function ProjectProgress({ id }: { id: string }) {
       <p className="text-small leading-relaxed text-muted-foreground">{scope}</p>
       {assessed ? <p className="text-machine">{assessed}</p> : null}
       <p className="sr-only">
-        {entry.name}. {valueText}. {statusLabel}. {scope}
+        {entry.name}. {valueText}. {statusLabel ? `${statusLabel}. ` : ""}{scope}
         {assessed ? ` ${assessed}.` : ""}
       </p>
     </div>

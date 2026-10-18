@@ -35,9 +35,9 @@ export const otherProjects: OtherProject[] = [
     stack: ["Electron 37", "Static web", "Node.js", "PostgreSQL", "Argon2id", "JWT"],
     features: [
       l10n(
-        "Dashboard, missions, quizzes and XP in both the desktop app and the web client.",
-        "Dashboard, Missionen, Quiz und XP in der Desktop-App und im Webclient.",
-        "Tableau de bord, missions, quiz et XP dans l'application bureau et dans le client web.",
+        "Dashboard, missions, and XP in both the desktop app and the web client.",
+        "Dashboard, Missionen und XP in der Desktop-App und im Webclient.",
+        "Tableau de bord, missions et XP dans l'application bureau et dans le client web.",
       ),
       l10n(
         "API routes for register, login, refresh, logout and Google sign-in, plus profile and progress read/write.",
