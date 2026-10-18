@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { AppWindow, BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit, ScrollText, Shield, Workflow } from "lucide-react";
+import { AppWindow, BookOpen, FileText, FolderOpen, GraduationCap, LayoutDashboard, Mail, Network, Orbit, ScrollText, Shield, Target, Workflow } from "lucide-react";
 import { pick, type L10n, type PortfolioLanguage } from "~/i18n/l10n";
 
 export interface SectionEntry {
@@ -33,6 +33,12 @@ const nexusGroup = same("NexusOS");
 const ghostGroup = same("Ghost Protocol");
 
 export const SECTIONS: SectionEntry[] = [
+  {
+    id: "objective",
+    label: "Engineering objective",
+    labels: { en: "Engineering objective", de: "Entwicklungsziel", fr: "Objectif d'ingénierie" },
+    icon: Target,
+  },
   {
     id: "overview",
     label: "Overview",

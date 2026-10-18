@@ -65,9 +65,9 @@ export const approach = [
   {
     title: l10n("Stay honest", "Ehrlich bleiben", "Rester honnête"),
     body: l10n(
-      "I do not yet understand every component of my projects equally well — and I am actively building that competence.",
-      "Ich verstehe noch nicht jede Komponente meiner Projekte gleich gut — und ich baue diese Kompetenz bewusst auf.",
-      "Je ne comprends pas encore chaque composant de mes projets au même niveau — et je construis activement cette compétence.",
+      "I do not yet understand every component of my projects equally well, and I am actively building that competence.",
+      "Ich verstehe noch nicht jede Komponente meiner Projekte gleich gut, und ich baue diese Kompetenz bewusst auf.",
+      "Je ne comprends pas encore chaque composant de mes projets au même niveau, et je construis activement cette compétence.",
     ),
   },
 ];

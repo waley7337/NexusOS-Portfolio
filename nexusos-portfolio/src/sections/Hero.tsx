@@ -23,7 +23,7 @@ export function Hero() {
         <div className="space-y-3">
           <h1 className="text-display">{profile.name}</h1>
           <p className="text-h2 text-foreground/90">
-            {t(profile.role)} <span className="text-muted-foreground">— {t(profile.focus)}</span>
+            {t(profile.role)}{language === "fr" ? " " : ""}<span className="text-muted-foreground">: {t(profile.focus)}</span>
           </p>
           <p className="text-machine">{profile.stack.join("  ·  ")}</p>
         </div>
@@ -46,9 +46,7 @@ export function Hero() {
 
       <Card className="p-5 sm:p-6">
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          <span className="font-medium text-foreground">{transparencyOpening[language].label}</span>
-          {" — "}
-          {transparencyOpening[language].body}
+          <span className="font-medium text-foreground">{transparencyOpening[language].label}</span>{language === "fr" ? " : " : ": "}{transparencyOpening[language].body}
         </p>
       </Card>
 

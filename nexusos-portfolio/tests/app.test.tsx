@@ -14,6 +14,7 @@ import {
   nexusLiveApplication,
 } from "~/data/demoAccess";
 import { ghostDocs } from "~/data/ghostProtocol";
+import { objectiveParagraphs } from "~/data/objective";
 import { nexusos } from "~/data/nexusos";
 import { profile } from "~/data/profile";
 import { otherProjects } from "~/data/projects";
@@ -318,7 +319,14 @@ describe("App", () => {
     const expected = SECTIONS.map((section) => `#${section.id}`);
     expect(hrefs(document.querySelector("aside nav") as Element)).toEqual(expected);
     expect(hrefs(document.querySelector("nav.portfolio-nav-scroll") as Element)).toEqual(expected);
-    expect(ids[0]).toBe("overview");
+    expect(ids[0]).toBe("objective");
+    expect(ids[1]).toBe("overview");
+    const objective = screen.getByRole("region", { name: "Engineering objective" });
+    for (const paragraph of objectiveParagraphs.en) {
+      expect(objective).toHaveTextContent(paragraph);
+    }
+    expect([...document.querySelectorAll("aside nav a")][0]).toHaveTextContent("Engineering objective");
+    expect([...document.querySelectorAll("nav.portfolio-nav-scroll a")][0]).toHaveTextContent("Engineering objective");
     expect(ids.at(-1)).toBe("contact");
     expect(ids.indexOf("cv")).toBeLessThan(ids.indexOf("nexusos"));
     expect(ids.indexOf("education")).toBeLessThan(ids.indexOf("nexusos"));

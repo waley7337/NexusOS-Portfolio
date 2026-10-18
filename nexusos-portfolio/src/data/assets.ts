@@ -74,7 +74,7 @@ export const cv: Asset = {
   status: "published",
   src: "/documents/cv/waley-el-nagdi-cv-de.pdf",
   preview: "/documents/cv/waley-el-nagdi-cv-de.preview.webp",
-  meta: l10n("PDF · 1 page · 6 KB · DE", "PDF · 1 Seite · 6 KB · DE", "PDF · 1 page · 6 KB · DE"),
+  meta: l10n("PDF · 1 page · 45 KB · DE", "PDF · 1 Seite · 45 KB · DE", "PDF · 1 page · 45 KB · DE"),
 };
 
 export const degree: Asset = {
@@ -225,9 +225,9 @@ export const multiTenantFlow = image(
   "multi-tenant-request-flow",
   l10n("Multi-Tenant Request Flow", "Ablauf einer Mandantenanfrage", "Flux d'une requête multi-tenant"),
   l10n(
-    "How one authenticated request establishes identity, authority and tenant scope — and where each becomes authoritative.",
-    "Wie eine authentifizierte Anfrage Identität, Befugnis und Mandantenbereich festlegt — und wo jedes davon maßgeblich wird.",
-    "Comment une requête authentifiée établit l'identité, l'autorité et le périmètre du tenant — et où chacun devient déterminant.",
+    "How one authenticated request establishes identity, authority and tenant scope, and where each becomes authoritative.",
+    "Wie eine authentifizierte Anfrage Identität, Befugnis und Mandantenbereich festlegt, und wo jedes davon maßgeblich wird.",
+    "Comment une requête authentifiée établit l'identité, l'autorité et le périmètre du tenant, et où chacun devient déterminant.",
   ),
   diagram("3600×2083"),
 );
@@ -295,9 +295,9 @@ export const currentDesignShots: Asset[] = [
     "04-dashboard-dark-lower",
     l10n("Module field", "Modulfeld", "Champ des modules"),
     l10n(
-      "Every module route with its real state — operational or not — and the platform pillars.",
-      "Jede Modulroute mit ihrem tatsächlichen Zustand — betriebsbereit oder nicht — und die Plattformpfeiler.",
-      "Chaque route de module avec son état réel — opérationnel ou non — et les piliers de la plateforme.",
+      "Every module route with its real state, operational or not, and the platform pillars.",
+      "Jede Modulroute mit ihrem tatsächlichen Zustand, betriebsbereit oder nicht, und die Plattformpfeiler.",
+      "Chaque route de module avec son état réel, opérationnel ou non, et les piliers de la plateforme.",
     ),
   ),
   shot(
@@ -448,9 +448,9 @@ export const ghostProtocolTour: Asset[] = [
     "01-boot-sequence",
     l10n("Boot sequence", "Startsequenz", "Séquence de démarrage"),
     l10n(
-      "The initialization screen — Ghost Protocol systems coming online before the operations center loads.",
-      "Der Initialisierungsbildschirm — Ghost-Protocol-Systeme gehen online, bevor das Operations Center lädt.",
-      "L'écran d'initialisation — les systèmes Ghost Protocol se mettent en ligne avant le chargement de l'Operations Center.",
+      "The initialization screen: Ghost Protocol systems coming online before the operations center loads.",
+      "Der Initialisierungsbildschirm: Ghost-Protocol-Systeme gehen online, bevor das Operations Center lädt.",
+      "L'écran d'initialisation : les systèmes Ghost Protocol se mettent en ligne avant le chargement de l'Operations Center.",
     ),
     webClientMeta,
   ),
@@ -478,9 +478,9 @@ export const ghostProtocolTour: Asset[] = [
     "04-intel-codex",
     l10n("Intel Codex", "Intel Codex", "Intel Codex"),
     l10n(
-      "A reference of the smuggling concepts behind the missions — CL.TE, TE.CL, TE.TE, H2.CL, CRLF injection, response queue poisoning and more.",
-      "Ein Nachschlagewerk der Schmuggelkonzepte hinter den Missionen — CL.TE, TE.CL, TE.TE, H2.CL, CRLF-Injection, Response Queue Poisoning und weitere.",
-      "Un référentiel des concepts de smuggling derrière les missions — CL.TE, TE.CL, TE.TE, H2.CL, injection CRLF, response queue poisoning et d'autres.",
+      "A reference of the smuggling concepts behind the missions: CL.TE, TE.CL, TE.TE, H2.CL, CRLF injection, response queue poisoning and more.",
+      "Ein Nachschlagewerk der Schmuggelkonzepte hinter den Missionen: CL.TE, TE.CL, TE.TE, H2.CL, CRLF-Injection, Response Queue Poisoning und weitere.",
+      "Un référentiel des concepts de smuggling derrière les missions : CL.TE, TE.CL, TE.TE, H2.CL, injection CRLF, response queue poisoning et d'autres.",
     ),
     webClientMeta,
   ),
@@ -518,9 +518,9 @@ export const ghostProtocolTour: Asset[] = [
     "08-mission-complete",
     l10n("Mission complete", "Mission abgeschlossen", "Mission terminée"),
     l10n(
-      "The HTTP/2 request-splitting mission solved — the +500 XP reward and best-time overlay.",
-      "Die gelöste Mission HTTP/2 Request Splitting — die Belohnung +500 XP und die Bestzeit-Einblendung.",
-      "La mission HTTP/2 request splitting résolue — la récompense +500 XP et l'incrustation du meilleur temps.",
+      "The HTTP/2 request-splitting mission solved: the +500 XP reward and best-time overlay.",
+      "Die gelöste Mission HTTP/2 Request Splitting: die Belohnung +500 XP und die Bestzeit-Einblendung.",
+      "La mission HTTP/2 request splitting résolue : la récompense +500 XP et l'incrustation du meilleur temps.",
     ),
     webClientMeta,
   ),
@@ -571,9 +571,9 @@ export const ghostProtocolSystemArchitecture = ghostAsset(
   "system-architecture",
   l10n("System Architecture", "Systemarchitektur", "Architecture système"),
   l10n(
-    "Four layers — client, trust boundary, backend API, and data and platform — for the Electron desktop app, the web client, the token-authenticated API and Railway PostgreSQL. The status panel separates implemented controls from documented limits and items marked planned.",
-    "Vier Schichten — Client, Vertrauensgrenze, Backend-API sowie Daten und Plattform — für die Electron-Desktop-App, den Webclient, die tokenauthentifizierte API und Railway PostgreSQL. Das Statuspanel trennt umgesetzte Kontrollen von dokumentierten Grenzen und als geplant markierten Punkten.",
-    "Quatre couches — client, frontière de confiance, API backend, données et plateforme — pour l'application bureau Electron, le client web, l'API authentifiée par jeton et PostgreSQL sur Railway. Le panneau d'état sépare les contrôles implémentés des limites documentées et des éléments marqués comme prévus.",
+    "Four layers: client, trust boundary, backend API, and data and platform, for the Electron desktop app, the web client, the token-authenticated API and Railway PostgreSQL. The status panel separates implemented controls from documented limits and items marked planned.",
+    "Vier Schichten: Client, Vertrauensgrenze, Backend-API sowie Daten und Plattform, für die Electron-Desktop-App, den Webclient, die tokenauthentifizierte API und Railway PostgreSQL. Das Statuspanel trennt umgesetzte Kontrollen von dokumentierten Grenzen und als geplant markierten Punkten.",
+    "Quatre couches : client, frontière de confiance, API backend, données et plateforme, pour l'application bureau Electron, le client web, l'API authentifiée par jeton et PostgreSQL sur Railway. Le panneau d'état sépare les contrôles implémentés des limites documentées et des éléments marqués comme prévus.",
   ),
   diagram("3600×2082"),
 );
@@ -582,9 +582,9 @@ export const ghostProtocolSecurityArchitecture = ghostAsset(
   "security-architecture",
   l10n("Security Architecture", "Sicherheitsarchitektur", "Architecture de sécurité"),
   l10n(
-    "Defense in depth across the renderer, bridge, credential and backend layers — the controls live today and the residual risks that remain honest.",
-    "Defense in Depth über Renderer, Brücke, Zugangsdaten und Backend — die Kontrollen, die heute live sind, und die Restrisiken, die ehrlich benannt bleiben.",
-    "Défense en profondeur sur les couches renderer, pont, identifiants et backend — les contrôles en place aujourd'hui et les risques résiduels qui restent nommés honnêtement.",
+    "Defense in depth across the renderer, bridge, credential and backend layers: the controls live today and the residual risks that remain honest.",
+    "Defense in Depth über Renderer, Brücke, Zugangsdaten und Backend: die Kontrollen, die heute live sind, und die Restrisiken, die ehrlich benannt bleiben.",
+    "Défense en profondeur sur les couches renderer, pont, identifiants et backend : les contrôles en place aujourd'hui et les risques résiduels qui restent nommés honnêtement.",
   ),
   diagram("3600×2082"),
 );

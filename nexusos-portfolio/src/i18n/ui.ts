@@ -27,9 +27,9 @@ export const ui = {
     "Construit sur le design system NexusOS",
   ),
   builtOnDesignSystemLong: l10n(
-    "Built on the NexusOS design system — tokens, SpaceField and Starfield compiled from the NexusOS frontend",
-    "Auf dem NexusOS-Designsystem aufgebaut — Tokens, SpaceField und Starfield aus dem NexusOS-Frontend übernommen",
-    "Construit sur le design system NexusOS — jetons, SpaceField et Starfield repris du frontend NexusOS",
+    "Built on the NexusOS design system: tokens, SpaceField and Starfield compiled from the NexusOS frontend",
+    "Auf dem NexusOS-Designsystem aufgebaut: Tokens, SpaceField und Starfield aus dem NexusOS-Frontend übernommen",
+    "Construit sur le design system NexusOS : jetons, SpaceField et Starfield repris du frontend NexusOS",
   ),
   portfolioBadge: l10n("Portfolio · 2026", "Portfolio · 2026", "Portfolio · 2026"),
   exploreNexus: l10n("Explore NexusOS", "NexusOS ansehen", "Explorer NexusOS"),
@@ -88,7 +88,7 @@ export const ui = {
   partial: l10n("Partial", "Teilweise", "Partiel"),
   future: l10n("Future", "Geplant", "À venir"),
   decisions: l10n("Decisions", "Entscheidungen", "Décisions"),
-  statusPrecise: l10n("Status — stated precisely", "Status — genau benannt", "État — formulé avec précision"),
+  statusPrecise: l10n("Status: stated precisely", "Status: genau benannt", "État : formulé avec précision"),
   caseStudy: l10n("Case study", "Fallstudie", "Étude de cas"),
   githubProfile: l10n("GitHub profile", "GitHub-Profil", "Profil GitHub"),
   liveAppSignIn: l10n("Live app · sign in", "Live-Anwendung · anmelden", "Application en ligne · connexion"),
@@ -115,9 +115,9 @@ export const ui = {
   ),
   openDoc: l10n("Open", "Öffnen", "Ouvrir"),
   otherProjectsSubtitle: l10n(
-    "Personal, self-directed projects listed in the CV — not employment as a developer. NexusOS remains the flagship above.",
-    "Persönliche, eigenständig umgesetzte Projekte aus dem Lebenslauf — keine Anstellung als Entwickler. NexusOS bleibt das Leitprojekt darüber.",
-    "Projets personnels menés en autonomie, mentionnés dans le CV — pas un emploi de développeur. NexusOS reste le projet phare au-dessus.",
+    "Personal, self-directed projects listed in the CV, not employment as a developer. NexusOS remains the flagship above.",
+    "Persönliche, eigenständig umgesetzte Projekte aus dem Lebenslauf, keine Anstellung als Entwickler. NexusOS bleibt das Leitprojekt darüber.",
+    "Projets personnels menés en autonomie, mentionnés dans le CV, pas un emploi de développeur. NexusOS reste le projet phare au-dessus.",
   ),
   demosTitle: l10n("Live demos & access", "Live-Demos und Zugang", "Démos en ligne et accès"),
   demosSubtitle: l10n(
@@ -147,9 +147,9 @@ export const ui = {
   fromTheCv: l10n("(from the CV)", "(laut Lebenslauf)", "(selon le CV)"),
   degreeCertificate: l10n("Degree certificate", "Diplomurkunde", "Diplôme"),
   degreeOnRequest: l10n(
-    "Degree certificate — available on request",
-    "Diplomurkunde — auf Anfrage verfügbar",
-    "Diplôme — disponible sur demande",
+    "Degree certificate: available on request",
+    "Diplomurkunde: auf Anfrage verfügbar",
+    "Diplôme : disponible sur demande",
   ),
   architectureSubtitle: l10n(
     "Diagrams derived from the implemented NexusOS codebase. Click to inspect at full size.",

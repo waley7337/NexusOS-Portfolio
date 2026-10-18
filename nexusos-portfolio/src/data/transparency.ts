@@ -75,7 +75,7 @@ export const transparencyDetail = {
       heading: "Learning by building",
       paragraphs: [
         "I treat software development as a continuous process of building, questioning, testing and improving. These projects are practical learning environments: I work through software architecture, integrate technologies, take on technical problems and develop a clearer understanding of how systems actually behave.",
-        "I want to be transparent about what these projects show — and what they do not claim.",
+        "I want to be transparent about what these projects show, and what they do not claim.",
       ],
     },
     {
@@ -105,7 +105,7 @@ export const transparencyDetail = {
     {
       heading: "An honest account of progress",
       paragraphs: [
-        "A completion percentage is meant to describe the documented state of a clearly defined project scope — not my personal competence and not the volume of code written. It should rest on criteria that can be followed and on the evidence available. When the information is not enough for a defensible assessment, the progress stays unset.",
+        "A completion percentage is meant to describe the documented state of a clearly defined project scope, not my personal competence and not the volume of code written. It should rest on criteria that can be followed and on the evidence available. When the information is not enough for a defensible assessment, the progress stays unset.",
         "I distinguish implementation progress, technical verification and production readiness. A function can be implemented and still untested. An application can work locally and still fail in integration or deployment. A technically substantial project can still be unfit for production use.",
         "The aim is not to present every project as finished. I want to show what I can build, how I approach technical problems, what I understand today and how I intend to keep developing.",
       ],
@@ -157,7 +157,7 @@ export const transparencyDetail = {
       heading: "Apprendre en construisant",
       paragraphs: [
         "Je considère le développement logiciel comme un processus continu de construction, de questionnement, de test et d'amélioration. Ces projets sont des environnements d'apprentissage concrets : j'y travaille l'architecture logicielle, j'intègre des technologies, je prends en charge des problèmes techniques et je comprends mieux comment les systèmes se comportent réellement.",
-        "Je veux être transparent sur ce que ces projets montrent — et sur ce qu'ils ne revendiquent pas.",
+        "Je veux être transparent sur ce que ces projets montrent, et sur ce qu'ils ne revendiquent pas.",
       ],
     },
     {
@@ -187,7 +187,7 @@ export const transparencyDetail = {
     {
       heading: "Un compte rendu honnête de l'avancement",
       paragraphs: [
-        "Un pourcentage d'avancement doit décrire l'état documenté d'un périmètre de projet clairement défini — pas ma compétence personnelle et pas le volume de code écrit. Il doit reposer sur des critères que l'on peut suivre et sur les éléments disponibles. Lorsque l'information ne suffit pas à une évaluation défendable, l'avancement reste non évalué.",
+        "Un pourcentage d'avancement doit décrire l'état documenté d'un périmètre de projet clairement défini, pas ma compétence personnelle et pas le volume de code écrit. Il doit reposer sur des critères que l'on peut suivre et sur les éléments disponibles. Lorsque l'information ne suffit pas à une évaluation défendable, l'avancement reste non évalué.",
         "Je distingue l'avancement de l'implémentation, la vérification technique et la maturité de production. Une fonction peut être implémentée et rester non testée. Une application peut fonctionner en local et échouer à l'intégration ou au déploiement. Un projet techniquement substantiel peut rester impropre à un usage en production.",
         "Le but n'est pas de présenter chaque projet comme terminé. Je veux montrer ce que je sais construire, comment j'aborde les problèmes techniques, ce que je comprends aujourd'hui et comment je compte continuer à progresser.",
       ],

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { cv, type Asset } from "~/data/assets";
 import { profile } from "~/data/profile";
 import { blockPreviewGesture, shouldGuardPreview } from "~/components/previewGuard";
-import { usePick } from "~/i18n/language";
+import { usePick, usePortfolioLanguage } from "~/i18n/language";
 import { ui } from "~/i18n/ui";
 
 /** Preview for any registry asset: image, PDF, or a withheld placeholder. */
@@ -54,6 +54,8 @@ export function AssetPreviewDialog({ asset, onClose }: { asset: Asset | null; on
 
 function AssetBody({ asset }: { asset: Asset }) {
   const t = usePick();
+  const { language } = usePortfolioLanguage();
+  const pageAlt = `${t(asset.title)}${language === "fr" ? " : " : ": "}${t(ui.firstPage)}`;
   if (asset.status === "withheld") {
     return (
       <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
@@ -77,11 +79,11 @@ function AssetBody({ asset }: { asset: Asset }) {
     <>
       <object data={asset.src} type="application/pdf" className="hidden h-[68dvh] w-full md:block" aria-label={t(asset.title)}>
         {asset.preview && (
-          <img src={asset.preview} alt={`${t(asset.title)} — ${t(ui.firstPage)}`} className="mx-auto block h-auto max-w-full" />
+          <img src={asset.preview} alt={pageAlt} className="mx-auto block h-auto max-w-full" />
         )}
       </object>
       {asset.preview && (
-        <img src={asset.preview} alt={`${t(asset.title)} — ${t(ui.firstPage)}`} className="mx-auto block h-auto max-w-full md:hidden" />
+        <img src={asset.preview} alt={pageAlt} className="mx-auto block h-auto max-w-full md:hidden" />
       )}
     </>
   );

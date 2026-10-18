@@ -7,9 +7,9 @@ import { l10n } from "~/i18n/l10n";
 
 export const nexusos = {
   subtitle: l10n(
-    "A multi-tenant business platform built in the unfashionable order — identity, authorization and tenant isolation first, product modules second.",
-    "Eine mandantenfähige Business-Plattform, gebaut in der unüblichen Reihenfolge — zuerst Identität, Autorisierung und Mandantenisolierung, danach die Produktmodule.",
-    "Une plateforme métier multi-tenant construite dans l'ordre peu courant — d'abord l'identité, l'autorisation et l'isolation des tenants, ensuite les modules produit.",
+    "A multi-tenant business platform built in the unfashionable order: identity, authorization and tenant isolation first, product modules second.",
+    "Eine mandantenfähige Business-Plattform, gebaut in der unüblichen Reihenfolge: zuerst Identität, Autorisierung und Mandantenisolierung, danach die Produktmodule.",
+    "Une plateforme métier multi-tenant construite dans l'ordre peu courant : d'abord l'identité, l'autorisation et l'isolation des tenants, ensuite les modules produit.",
   ),
   summary: [
     l10n(
@@ -18,15 +18,15 @@ export const nexusos = {
       "Les logiciels métier se fragmentent parce que chaque capacité arrive avec sa propre idée de qui est l'utilisateur, de l'entreprise à laquelle il appartient et de ce qu'il a le droit de faire. NexusOS répond à ces trois questions une seule fois, au niveau de la plateforme.",
     ),
     l10n(
-      "The straightforward path would have been to ship a CRM and retrofit multi-tenancy later. That path is faster to a demo and structurally hard to recover from — so the sequence was inverted: identity, permission and isolation layers were built and tested first, and product modules inherit them rather than reimplement them.",
-      "Der naheliegende Weg wäre gewesen, ein CRM auszuliefern und Mandantenfähigkeit später nachzurüsten. Dieser Weg führt schneller zu einer Demo und ist strukturell schwer zu korrigieren — deshalb wurde die Reihenfolge umgekehrt: Identitäts-, Berechtigungs- und Isolierungsschichten wurden zuerst gebaut und getestet, und die Produktmodule erben sie, statt sie neu zu implementieren.",
-      "La voie directe aurait été de livrer un CRM et d'ajouter le multi-tenant plus tard. Cette voie mène plus vite à une démo et se corrige difficilement — la séquence a donc été inversée : les couches d'identité, de permission et d'isolation ont été construites et testées d'abord, et les modules produit en héritent au lieu de les réimplémenter.",
+      "The straightforward path would have been to ship a CRM and retrofit multi-tenancy later. That path is faster to a demo and structurally hard to recover from, so the sequence was inverted: identity, permission and isolation layers were built and tested first, and product modules inherit them rather than reimplement them.",
+      "Der naheliegende Weg wäre gewesen, ein CRM auszuliefern und Mandantenfähigkeit später nachzurüsten. Dieser Weg führt schneller zu einer Demo und ist strukturell schwer zu korrigieren, deshalb wurde die Reihenfolge umgekehrt: Identitäts-, Berechtigungs- und Isolierungsschichten wurden zuerst gebaut und getestet, und die Produktmodule erben sie, statt sie neu zu implementieren.",
+      "La voie directe aurait été de livrer un CRM et d'ajouter le multi-tenant plus tard. Cette voie mène plus vite à une démo et se corrige difficilement, la séquence a donc été inversée : les couches d'identité, de permission et d'isolation ont été construites et testées d'abord, et les modules produit en héritent au lieu de les réimplémenter.",
     ),
   ],
   role: l10n(
-    "Sole engineer — system architecture, backend, frontend, database design, security engineering, design system, test suite and CI pipeline.",
-    "Alleiniger Entwickler — Systemarchitektur, Backend, Frontend, Datenbankentwurf, Sicherheitsengineering, Designsystem, Testsuite und CI-Pipeline.",
-    "Seul ingénieur — architecture système, backend, frontend, conception de la base de données, ingénierie de la sécurité, design system, suite de tests et pipeline CI.",
+    "Sole engineer: system architecture, backend, frontend, database design, security engineering, design system, test suite and CI pipeline.",
+    "Alleiniger Entwickler: Systemarchitektur, Backend, Frontend, Datenbankentwurf, Sicherheitsengineering, Designsystem, Testsuite und CI-Pipeline.",
+    "Seul ingénieur : architecture système, backend, frontend, conception de la base de données, ingénierie de la sécurité, design system, suite de tests et pipeline CI.",
   ),
   highlights: [
     {
@@ -48,9 +48,9 @@ export const nexusos = {
         "L'autorisation est recalculée depuis la base",
       ),
       body: l10n(
-        "Role and permissions are loaded fresh on every protected request and fail closed — revocation takes effect on the next request, not at token expiry.",
-        "Rolle und Berechtigungen werden bei jeder geschützten Anfrage neu geladen und scheitern geschlossen — ein Widerruf wirkt bei der nächsten Anfrage, nicht erst beim Ablauf des Tokens.",
-        "Le rôle et les permissions sont rechargés à chaque requête protégée et échouent fermé — une révocation prend effet à la requête suivante, pas à l'expiration du jeton.",
+        "Role and permissions are loaded fresh on every protected request and fail closed: revocation takes effect on the next request, not at token expiry.",
+        "Rolle und Berechtigungen werden bei jeder geschützten Anfrage neu geladen und scheitern geschlossen: ein Widerruf wirkt bei der nächsten Anfrage, nicht erst beim Ablauf des Tokens.",
+        "Le rôle et les permissions sont rechargés à chaque requête protégée et échouent fermé : une révocation prend effet à la requête suivante, pas à l'expiration du jeton.",
       ),
     },
     {
@@ -68,9 +68,9 @@ export const nexusos = {
     {
       title: l10n("Isolation is enforced twice", "Die Isolierung wird zweimal erzwungen", "L'isolation est imposée deux fois"),
       body: l10n(
-        "Application-level scoping plus composite foreign keys — (id, company_id) — that make a cross-tenant relationship unrepresentable in the database.",
-        "Abgrenzung auf Anwendungsebene plus zusammengesetzte Fremdschlüssel — (id, company_id) —, die eine mandantenübergreifende Beziehung in der Datenbank nicht darstellbar machen.",
-        "Un cadrage au niveau de l'application, plus des clés étrangères composites — (id, company_id) — qui rendent une relation inter-tenants impossible à représenter dans la base.",
+        "Application-level scoping plus composite foreign keys, (id, company_id), that make a cross-tenant relationship unrepresentable in the database.",
+        "Abgrenzung auf Anwendungsebene plus zusammengesetzte Fremdschlüssel, (id, company_id), die eine mandantenübergreifende Beziehung in der Datenbank nicht darstellbar machen.",
+        "Un cadrage au niveau de l'application, plus des clés étrangères composites, (id, company_id), qui rendent une relation inter-tenants impossible à représenter dans la base.",
       ),
     },
     {
@@ -88,9 +88,9 @@ export const nexusos = {
         "Un design system construit comme une infrastructure",
       ),
       body: l10n(
-        "157 design tokens and 31 components with a living style-guide route — the same system this portfolio is built on.",
-        "157 Design-Tokens und 31 Komponenten mit einer lebendigen Style-Guide-Route — dasselbe System, auf dem dieses Portfolio aufbaut.",
-        "157 jetons de design et 31 composants, avec une route de guide de style vivante — le même système sur lequel ce portfolio est construit.",
+        "157 design tokens and 31 components with a living style-guide route: the same system this portfolio is built on.",
+        "157 Design-Tokens und 31 Komponenten mit einer lebendigen Style-Guide-Route: dasselbe System, auf dem dieses Portfolio aufbaut.",
+        "157 jetons de design et 31 composants, avec une route de guide de style vivante : le même système sur lequel ce portfolio est construit.",
       ),
     },
   ],
@@ -156,9 +156,9 @@ export const nexusos = {
     },
   ],
   interfaceNote: l10n(
-    "Current design, captured from the running NexusOS frontend against a local API stub with a demo identity — no production data. The full set of fifteen screens is in the library under System & interface.",
-    "Aktuelles Design, aufgenommen vom laufenden NexusOS-Frontend gegen einen lokalen API-Stub mit einer Demo-Identität — keine Produktionsdaten. Alle fünfzehn Bildschirme liegen in der Bibliothek unter System und Oberfläche.",
-    "Design actuel, capturé depuis le frontend NexusOS en cours d'exécution contre un stub d'API local avec une identité de démo — aucune donnée de production. Les quinze écrans sont dans la bibliothèque, sous Système et interface.",
+    "Current design, captured from the running NexusOS frontend against a local API stub with a demo identity: no production data. The full set of fifteen screens is in the library under System & interface.",
+    "Aktuelles Design, aufgenommen vom laufenden NexusOS-Frontend gegen einen lokalen API-Stub mit einer Demo-Identität: keine Produktionsdaten. Alle fünfzehn Bildschirme liegen in der Bibliothek unter System und Oberfläche.",
+    "Design actuel, capturé depuis le frontend NexusOS en cours d'exécution contre un stub d'API local avec une identité de démo : aucune donnée de production. Les quinze écrans sont dans la bibliothèque, sous Système et interface.",
   ),
   architecture: {
     system: l10n(
